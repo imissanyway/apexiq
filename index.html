@@ -1,0 +1,1091 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#070914" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="ApexIQ" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>ApexIQ Mobile</title>
+  <style>
+    :root{
+      --bg:#08070a;
+      --panel:rgba(255,255,255,.078);
+      --panel2:rgba(255,255,255,.125);
+      --stroke:rgba(255,255,255,.15);
+      --text:#fff7f2;
+      --muted:#b9aeb0;
+      --accent:#ff3c1f;
+      --accent2:#ff9d2e;
+      --good:#46e39b;
+      --warn:#ffd166;
+      --bad:#ff5a5f;
+      --glow:rgba(255,60,31,.36);
+      --bg1:rgba(255,60,31,.36);
+      --bg2:rgba(255,157,46,.28);
+      --bg3:rgba(70,227,155,.10);
+      --glassBlur:18px;
+      --radiusScale:1;
+      --motionSpeed:18s;
+    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html{background:var(--bg)}
+    body{
+      margin:0;
+      min-height:100svh;
+      color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Inter,system-ui,sans-serif;
+      background:
+        radial-gradient(circle at 15% 10%,var(--bg1),transparent 26%),
+        radial-gradient(circle at 90% 5%,var(--bg2),transparent 28%),
+        radial-gradient(circle at 70% 95%,var(--bg3),transparent 28%),
+        linear-gradient(180deg,var(--bg),#050407);
+      padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+    }
+    .app{width:min(100% - 24px,520px);margin:0 auto;padding:18px 0 34px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;margin:4px 0 20px}
+    .brand{display:flex;gap:10px;align-items:center;font-weight:950;letter-spacing:-.015em;font-size:22px}
+    .mark{height:40px;width:40px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 12px 34px rgba(255,56,95,.32);font-weight:950}
+    .pill{display:inline-flex;border:1px solid rgba(70,227,155,.24);background:rgba(70,227,155,.12);color:#bfffe1;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:850}
+    h1{font-size:54px;line-height:.88;letter-spacing:-.035em;margin:14px 0}
+    h2,h3{letter-spacing:-.02em}
+    .gradient{background:linear-gradient(135deg,#fff,#ff8ca3 48%,#a99bff);-webkit-background-clip:text;color:transparent}
+    .lead{font-size:16px;line-height:1.55;color:#c6cee4;margin:0 0 18px}
+    .card{border:1px solid var(--stroke);background:linear-gradient(180deg,var(--panel2),rgba(255,255,255,.045));border-radius:28px;box-shadow:0 24px 70px rgba(0,0,0,.4);backdrop-filter:blur(18px)}
+    .search{padding:18px;margin:20px 0}
+    .row{display:grid;grid-template-columns:105px 1fr;gap:10px;margin-top:14px}
+    select,input,button{min-height:52px;border-radius:16px;font:inherit}
+    select,input{border:1px solid var(--stroke);background:rgba(255,255,255,.08);color:var(--text);padding:0 14px;outline:none}
+    select option{color:#111}
+    button{border:0;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;font-weight:950;width:100%;margin-top:10px;box-shadow:0 12px 34px rgba(255,56,95,.28)}
+    .hero-card{padding:22px;position:relative;overflow:hidden;margin-top:18px}
+    .hero-card:after{content:"";position:absolute;inset:auto -20% -50% 22%;height:220px;background:radial-gradient(circle,rgba(255,56,95,.35),transparent 68%)}
+    .player{font-size:42px;letter-spacing:-.025em;margin:14px 0 8px}
+    .score-wrap{display:flex;justify-content:space-between;gap:14px;align-items:end}
+    .score-label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.14em;font-weight:800}
+    .score{font-size:74px;line-height:.8;font-weight:950;letter-spacing:-.045em}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+    .stat{border:1px solid var(--stroke);background:rgba(255,255,255,.065);border-radius:22px;padding:14px}
+    .label{color:var(--muted);font-size:12px}
+    .value{font-size:25px;font-weight:950;letter-spacing:-.015em;margin-top:6px}
+    .section{padding:18px;margin-top:14px}
+    .title{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .title h2{margin:0;font-size:24px}
+    .list{display:grid;gap:10px}
+    .item{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid rgba(255,255,255,.095);background:rgba(255,255,255,.055);border-radius:18px;padding:13px}
+    .name{font-weight:900}
+    .sub{color:var(--muted);font-size:13px;margin-top:3px}
+    .insight{border:1px solid var(--stroke);background:rgba(255,255,255,.055);border-radius:20px;padding:14px}
+    .insight.elite{background:linear-gradient(135deg,rgba(255,56,95,.17),rgba(124,92,255,.12))}
+    .insight h3{font-size:16px;margin:0 0 7px}
+    .insight p{font-size:14px;color:#c6cee4;line-height:1.5;margin:0}
+    .tabs{position:sticky;bottom:12px;margin-top:18px;display:grid;grid-template-columns:repeat(6,minmax(64px,1fr));overflow-x:auto;gap:8px;padding:8px;border-radius:24px;background:rgba(10,12,24,.78);border:1px solid var(--stroke);backdrop-filter:blur(18px)}
+    .tab{min-height:48px;margin:0;border-radius:17px;background:rgba(255,255,255,.07);box-shadow:none;font-size:12px}
+    .tab.active{background:linear-gradient(135deg,var(--accent),var(--accent2))}
+    .hidden{display:none}
+    .note{color:var(--muted);font-size:13px;line-height:1.5;margin-top:12px}
+    .big-empty{padding:28px 18px;text-align:center;color:#c6cee4}
+
+
+    .progress-wrap{
+      height:18px;
+      border-radius:999px;
+      overflow:hidden;
+      background:rgba(255,255,255,.08);
+      border:1px solid var(--stroke);
+      margin:12px 0 8px;
+    }
+    .progress-bar{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg,var(--good),var(--warn),var(--accent));
+      border-radius:999px;
+      transition:width .35s ease;
+    }
+    .heirloom-number{
+      font-size:54px;
+      font-weight:950;
+      letter-spacing:-.025em;
+      line-height:.95;
+    }
+    .range-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px}
+    .mini-stat{border:1px solid var(--stroke);background:rgba(255,255,255,.055);border-radius:18px;padding:12px}
+    .mini-stat strong{display:block;font-size:20px;letter-spacing:-.015em}
+    .switch-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px}
+
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+    .form-grid.full{grid-template-columns:1fr}
+    textarea{
+      width:100%;
+      min-height:86px;
+      border-radius:16px;
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.08);
+      color:var(--text);
+      padding:14px;
+      outline:none;
+      resize:vertical;
+      font:inherit;
+    }
+    .chip-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .chip{
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.07);
+      color:var(--text);
+      border-radius:999px;
+      padding:8px 10px;
+      font-size:12px;
+      font-weight:800;
+    }
+    .chip.hot{background:rgba(255,56,95,.14);border-color:rgba(255,56,95,.28);color:#ffc8d3}
+    .chip.good{background:rgba(70,227,155,.12);border-color:rgba(70,227,155,.24);color:#bfffe1}
+    .post-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+    .secondary-btn{
+      background:rgba(255,255,255,.08);
+      border:1px solid var(--stroke);
+      box-shadow:none;
+    }
+    .danger-btn{
+      background:rgba(255,90,95,.14);
+      border:1px solid rgba(255,90,95,.24);
+      box-shadow:none;
+    }
+
+
+    .forum-card{
+      border:1px solid var(--stroke);
+      background:linear-gradient(180deg,rgba(255,255,255,.085),rgba(255,255,255,.045));
+      border-radius:24px;
+      padding:14px;
+      position:relative;
+      overflow:hidden;
+    }
+    .forum-card.pinned{
+      background:linear-gradient(135deg,rgba(255,56,95,.15),rgba(124,92,255,.11));
+    }
+    .post-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:10px}
+    .avatar{
+      width:44px;height:44px;border-radius:16px;
+      display:grid;place-items:center;font-weight:950;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      box-shadow:0 12px 28px rgba(255,56,95,.18);
+      flex:0 0 auto;
+    }
+    .post-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:7px}
+    .reaction-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .reaction{
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.07);
+      color:var(--text);
+      border-radius:999px;
+      padding:7px 10px;
+      font-size:13px;
+      font-weight:850;
+      width:auto;
+      min-height:auto;
+      margin:0;
+      box-shadow:none;
+    }
+    .comment-box{
+      margin-top:12px;
+      padding:10px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.09);
+      background:rgba(0,0,0,.12);
+    }
+    .comment{
+      padding:9px 0;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      color:#d8def0;
+      font-size:14px;
+      line-height:1.45;
+    }
+    .comment:last-child{border-bottom:0}
+    .comment-form{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:9px}
+    .comment-form input{min-height:42px}
+    .comment-form button{min-height:42px;width:72px;margin:0}
+    .sticker-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+      margin-top:12px;
+    }
+    .sticker{
+      min-height:84px;
+      border-radius:20px;
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.065);
+      display:grid;
+      place-items:center;
+      text-align:center;
+      padding:10px 6px;
+      cursor:pointer;
+      position:relative;
+    }
+    .sticker .big{font-size:30px;line-height:1}
+    .sticker .caption{font-size:10px;color:var(--muted);font-weight:850;margin-top:6px}
+    .sticker.locked{opacity:.55;filter:grayscale(.35)}
+    .sticker.locked:after{
+      content:"LOCK";
+      position:absolute;
+      right:7px;top:7px;
+      font-size:9px;
+      font-weight:950;
+      color:#ffd6de;
+      background:rgba(255,56,95,.22);
+      border:1px solid rgba(255,56,95,.3);
+      border-radius:999px;
+      padding:3px 5px;
+    }
+    .pack-card{
+      border:1px solid var(--stroke);
+      border-radius:22px;
+      background:rgba(255,255,255,.06);
+      padding:14px;
+    }
+    .pack-card.active{
+      background:linear-gradient(135deg,rgba(70,227,155,.12),rgba(124,92,255,.08));
+      border-color:rgba(70,227,155,.25);
+    }
+    .segmented{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:8px;
+      margin-top:12px;
+    }
+    .segmented button{
+      min-height:42px;
+      margin:0;
+      box-shadow:none;
+      background:rgba(255,255,255,.07);
+      border:1px solid var(--stroke);
+      font-size:12px;
+    }
+    .segmented button.active{background:linear-gradient(135deg,var(--accent),var(--accent2))}
+
+
+    body.motion-on{
+      background-size:130% 130%;
+      animation:apexiqDrift var(--motionSpeed) ease-in-out infinite alternate;
+    }
+    @keyframes apexiqDrift{
+      from{background-position:0% 0%}
+      to{background-position:100% 70%}
+    }
+    .card,.search,.section,.hero-card,.forum-card,.pack-card,.stat,.mini-stat,.item,.insight,.comment-box{
+      border-radius:calc(24px * var(--radiusScale));
+    }
+    .search-card,.card{
+      backdrop-filter:blur(var(--glassBlur));
+    }
+    .glass-off .search-card,.glass-off .card{
+      backdrop-filter:none;
+    }
+    .compact-on .app{padding-top:10px}
+    .compact-on h1{font-size:46px;margin:10px 0}
+    .compact-on .lead{font-size:14px}
+    .compact-on .card,.compact-on .section,.compact-on .search{padding:14px}
+    input,select,textarea{
+      width:100%;
+      min-width:0;
+      max-width:100%;
+    }
+    .row{
+      grid-template-columns:1fr;
+    }
+    .row select,.row input{
+      width:100%;
+      min-width:0;
+      max-width:100%;
+    }
+    .search-card{
+      overflow:hidden;
+    }
+    .brand-mark,.mark{
+      background:linear-gradient(135deg,var(--accent),var(--accent2)) !important;
+      box-shadow:0 12px 34px var(--glow) !important;
+    }
+    .btn,button:not(.tab):not(.reaction):not(.secondary-btn):not(.danger-btn){
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      box-shadow:0 12px 34px var(--glow);
+    }
+    .gradient{
+      background:linear-gradient(135deg,#fff,var(--accent2) 38%,var(--accent));
+      -webkit-background-clip:text;
+      color:transparent;
+    }
+    .theme-preview{
+      height:92px;
+      border-radius:22px;
+      border:1px solid var(--stroke);
+      background:
+        radial-gradient(circle at 20% 20%,var(--bg1),transparent 34%),
+        radial-gradient(circle at 85% 30%,var(--bg2),transparent 36%),
+        linear-gradient(135deg,var(--bg),#090a12);
+      position:relative;
+      overflow:hidden;
+      margin-top:12px;
+    }
+    .theme-preview:after{
+      content:"";
+      position:absolute;
+      inset:14px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.16);
+      background:linear-gradient(135deg,rgba(255,255,255,.09),rgba(255,255,255,.025));
+    }
+    .theme-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:10px;
+      margin-top:12px;
+    }
+    .theme-tile{
+      min-height:112px;
+      padding:12px;
+      border-radius:22px;
+      border:1px solid var(--stroke);
+      background:
+        radial-gradient(circle at 18% 20%,var(--tile-a),transparent 34%),
+        radial-gradient(circle at 82% 25%,var(--tile-b),transparent 36%),
+        linear-gradient(135deg,var(--tile-bg),#090a12);
+      text-align:left;
+      margin:0;
+      box-shadow:none;
+      color:white;
+      position:relative;
+      overflow:hidden;
+    }
+    .theme-tile.active{
+      outline:2px solid var(--accent2);
+      box-shadow:0 14px 34px var(--glow);
+    }
+    .theme-tile strong{display:block;font-size:14px}
+    .theme-tile span{display:block;color:rgba(255,255,255,.72);font-size:11px;margin-top:5px;line-height:1.35}
+    .theme-controls{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+      margin-top:12px;
+    }
+    .range-row{
+      display:grid;
+      grid-template-columns:110px 1fr;
+      gap:10px;
+      align-items:center;
+      color:var(--muted);
+      font-size:13px;
+      font-weight:800;
+    }
+    input[type="range"]{
+      accent-color:var(--accent);
+    }
+    .toggle-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    @media(max-width:370px){h1{font-size:47px}.player{font-size:36px}.score{font-size:62px}}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <div class="topbar">
+      <div class="brand"><div class="mark">IQ</div><span>ApexIQ</span></div>
+      <span class="pill">mobile v0.6</span>
+    </div>
+
+    <section id="home">
+      <div class="pill">theme forge</div>
+      <h1>Stop showing stats.<br><span class="gradient">Explain them.</span></h1>
+      <p class="lead">ApexIQ Mobile is a launchable prototype for iPhone with an Apex-styled theme system, demo stats, forum/LFG, Heirloom Lab, and future API/database support.</p>
+
+      <form class="card search" id="searchForm">
+        <strong>Search demo profile</strong>
+        <div class="row">
+          <select id="platform">
+            <option value="pc">PC</option>
+            <option value="steam">Steam</option>
+            <option value="origin">Origin</option>
+            <option value="psn">PSN</option>
+            <option value="xbl">Xbox</option>
+            <option value="switch">Switch</option>
+          </select>
+          <input id="handle" value="IMissAnyway" placeholder="Player name" />
+        </div>
+        <button type="submit">Analyze</button>
+        <p class="note">This version includes Forum posts, comments, Squad Finder, Heirloom Lab, sticker packs, and advanced themes saved locally on your iPhone.</p>
+      </form>
+    </section>
+
+    <section id="dashboard" class="hidden">
+      <div class="card hero-card">
+        <span class="pill" id="sourcePill">PC • mock</span>
+        <div class="score-wrap">
+          <div>
+            <h2 class="player" id="playerName">IMissAnyway</h2>
+            <p class="lead" id="archetype">High-Risk Entry Carry • Rank: Gold I</p>
+          </div>
+          <div style="text-align:right">
+            <div class="score-label">IQ score</div>
+            <div class="score gradient">94</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="stat"><div class="label">Lifetime kills</div><div class="value">25,140</div></div>
+        <div class="stat"><div class="label">Lifetime damage</div><div class="value">6.28M</div></div>
+        <div class="stat"><div class="label">Kills gained</div><div class="value">+560</div></div>
+        <div class="stat"><div class="label">Damage gained</div><div class="value">+164K</div></div>
+      </div>
+
+      <div class="card section">
+        <div class="title"><h2>Top legends</h2><span class="pill">kills</span></div>
+        <div class="list" id="legendList"></div>
+      </div>
+
+      <div class="card section">
+        <div class="title"><h2>IQ insights</h2><span class="pill">beta</span></div>
+        <div class="list">
+          <div class="insight elite">
+            <h3>Momentum check</h3>
+            <p>Since the last snapshot you gained 560 kills and 164,000 damage. That is heavy carry-volume.</p>
+          </div>
+          <div class="insight elite">
+            <h3>Fastest growing legend</h3>
+            <p>Axle gained 360 kills in this window. That is your current hot hand.</p>
+          </div>
+          <div class="insight">
+            <h3>Identity</h3>
+            <p>Your profile reads like a high-risk entry carry: SMG/L-STAR pressure, high-kill Wildcard ceiling, and aggressive legend picks.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="leaders" class="hidden">
+      <div class="card section">
+        <div class="title"><h2>Leaderboard</h2><span class="pill">tracked</span></div>
+        <div class="list">
+          <div class="item"><div><div class="name">IMissAnyway</div><div class="sub">High-Risk Entry Carry</div></div><strong>94</strong></div>
+          <div class="item"><div><div class="name">VoltGoblin</div><div class="sub">SMG Duelist</div></div><strong>88</strong></div>
+          <div class="item"><div><div class="name">FenceDemon</div><div class="sub">Anchor Controller</div></div><strong>82</strong></div>
+          <div class="item"><div><div class="name">SkyFarmed</div><div class="sub">Damage Farmer</div></div><strong>77</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="heirloom" class="hidden">
+      <div class="card section">
+        <div class="title">
+          <h2>Heirloom Lab</h2>
+          <span class="pill">pity estimate</span>
+        </div>
+        <p class="lead">A confidence-based heirloom progress tracker. It cannot read Respawn’s hidden pack counter, but it can build the best estimate from level packs, paid packs, event packs, battle passes, and reset history.</p>
+
+        <div class="form-grid">
+          <select id="hlTier">
+            <option value="1">Tier 1 / levels 1-500</option>
+            <option value="2">Tier 2 / prestige 1</option>
+            <option value="3">Tier 3 / prestige 2</option>
+            <option value="4">Tier 4 / prestige 3</option>
+          </select>
+          <input id="hlLevel" type="number" min="1" max="500" value="458" placeholder="Current level in tier" />
+        </div>
+
+        <div class="form-grid">
+          <input id="hlBought" type="number" min="0" value="0" placeholder="Bought Apex Packs" />
+          <input id="hlBattlepass" type="number" min="0" value="0" placeholder="Battle pass/event packs" />
+        </div>
+
+        <div class="form-grid">
+          <input id="hlTreasure" type="number" min="0" value="0" placeholder="Treasure/free/promo packs" />
+          <input id="hlManual" type="number" min="0" value="0" placeholder="Other known packs" />
+        </div>
+
+        <div class="form-grid">
+          <input id="hlResets" type="number" min="0" value="0" placeholder="Heirlooms/shard drops owned" />
+          <input id="hlSinceReset" type="number" min="0" max="499" value="" placeholder="Known packs since last shards" />
+        </div>
+
+        <div class="switch-row">
+          <span class="sub">Use conservative uncertainty range</span>
+          <select id="hlConfidence">
+            <option value="medium">Medium confidence</option>
+            <option value="high">High confidence / tracked receipts</option>
+            <option value="low">Low confidence / rough memory</option>
+          </select>
+        </div>
+
+        <button id="hlCalc" type="button">Calculate Progress</button>
+        <button id="hlSave" class="secondary-btn" type="button">Save Heirloom Snapshot</button>
+      </div>
+
+      <div class="card section">
+        <div class="title">
+          <h2>Your estimate</h2>
+          <span class="pill" id="hlBadge">not calculated</span>
+        </div>
+
+        <div class="heirloom-number gradient" id="hlMain">— / 500</div>
+        <div class="progress-wrap"><div class="progress-bar" id="hlBar"></div></div>
+        <p class="lead" id="hlSummary">Enter what you know, then calculate.</p>
+
+        <div class="range-grid">
+          <div class="mini-stat"><div class="label">Low estimate</div><strong id="hlLow">—</strong></div>
+          <div class="mini-stat"><div class="label">Best estimate</div><strong id="hlBest">—</strong></div>
+          <div class="mini-stat"><div class="label">High estimate</div><strong id="hlHigh">—</strong></div>
+        </div>
+
+        <div class="insights" style="margin-top:12px">
+          <div class="insight">
+            <h3>How ApexIQ estimates it</h3>
+            <p id="hlMethod">Level packs + known purchases + battle pass/event packs + free/promo packs. If you enter “known packs since last shards,” ApexIQ trusts that more than lifetime estimates.</p>
+          </div>
+          <div class="insight elite">
+            <h3>Accuracy trick</h3>
+            <p>Use screenshots/receipts: Battle Pass pages, event reward tracks, store purchase history, level badge tier, and the date you last got shards. ApexIQ should track proof quality, not just a single number.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card section">
+        <div class="title">
+          <h2>Saved snapshots</h2>
+          <span class="pill" id="hlSnapCount">0 saved</span>
+        </div>
+        <div class="list" id="hlSnapshots"></div>
+      </div>
+    </section>
+
+
+    <section id="community" class="hidden">
+      <div class="card section">
+        <div class="title">
+          <h2>Community Forge</h2>
+          <span class="pill">guest forum</span>
+        </div>
+        <p class="lead">Guest LFG/forum posts, comments, reactions, and original Apex-inspired stickers. This v0.5 build saves everything locally on your phone until we add real accounts and a database.</p>
+
+        <div class="segmented">
+          <button class="active" id="forumTabPosts" type="button">Posts</button>
+          <button id="forumTabCreate" type="button">Create</button>
+          <button id="forumTabShop" type="button">Sticker Shop</button>
+        </div>
+      </div>
+
+      <div id="forumCreatePanel" class="card section hidden">
+        <div class="title">
+          <h2>Create guest post</h2>
+          <span class="pill">no login</span>
+        </div>
+
+        <form id="forumForm">
+          <div class="form-grid">
+            <input id="forumName" placeholder="Guest name" value="IMissAnyway" />
+            <select id="forumCategory">
+              <option value="LFG">LFG</option>
+              <option value="Ranked">Ranked</option>
+              <option value="Wildcard">Wildcard</option>
+              <option value="Clips">Clips</option>
+              <option value="Coaching">Coaching</option>
+              <option value="Question">Question</option>
+            </select>
+          </div>
+
+          <div class="form-grid">
+            <input id="forumTitle" placeholder="Post title" value="Need Wildcard teammates who stay close" />
+            <select id="forumVibe">
+              <option value="Aggressive">Aggressive</option>
+              <option value="Chill">Chill</option>
+              <option value="Competitive">Competitive</option>
+              <option value="Mic Required">Mic Required</option>
+              <option value="No Mic">No Mic</option>
+            </select>
+          </div>
+
+          <div class="form-grid full">
+            <textarea id="forumBody" placeholder="Write your post">Looking for teammates who don’t insta-leave. I play aggressive entry and want people who can hold hands in fights.</textarea>
+          </div>
+
+          <div class="title" style="margin-top:12px">
+            <h2 style="font-size:18px">Add sticker</h2>
+            <span class="pill" id="selectedStickerLabel">none</span>
+          </div>
+          <div class="sticker-grid" id="forumStickerPicker"></div>
+
+          <button type="submit">Post to Forum</button>
+          <p class="note">Keep posts safe: gamer tags/Discord handles are okay, but don’t share address, phone, school, passwords, or private info.</p>
+        </form>
+      </div>
+
+      <div id="forumShopPanel" class="card section hidden">
+        <div class="title">
+          <h2>Sticker Shop</h2>
+          <span class="pill">Kik-style packs</span>
+        </div>
+        <p class="lead">Original Apex-inspired sticker packs. Not official EA/Respawn art. Unlock packs locally and use them in posts/comments.</p>
+        <div class="list" id="stickerPacks"></div>
+      </div>
+
+      <div id="forumPostsPanel" class="card section">
+        <div class="title">
+          <h2>Forum feed</h2>
+          <span class="pill" id="forumCount">0 posts</span>
+        </div>
+
+        <div class="form-grid">
+          <select id="forumFilter">
+            <option value="All">All categories</option>
+            <option value="LFG">LFG</option>
+            <option value="Ranked">Ranked</option>
+            <option value="Wildcard">Wildcard</option>
+            <option value="Clips">Clips</option>
+            <option value="Coaching">Coaching</option>
+            <option value="Question">Question</option>
+          </select>
+          <select id="forumSort">
+            <option value="new">Newest</option>
+            <option value="hot">Most reactions</option>
+            <option value="comments">Most comments</option>
+          </select>
+        </div>
+
+        <div class="list" id="forumPosts" style="margin-top:12px"></div>
+      </div>
+    </section>
+
+
+    <section id="squad" class="hidden">
+      <div class="card section">
+        <div class="title">
+          <h2>Squad Finder</h2>
+          <span class="pill">local LFG</span>
+        </div>
+        <p class="lead">Create a clean Looking For Group post based on your ApexIQ profile. This v0.3 version saves posts on your phone only.</p>
+
+        <form id="lfgForm">
+          <div class="form-grid">
+            <input id="lfgName" placeholder="Apex name" value="IMissAnyway" />
+            <select id="lfgPlatform">
+              <option value="PC">PC</option>
+              <option value="PSN">PSN</option>
+              <option value="Xbox">Xbox</option>
+              <option value="Switch">Switch</option>
+            </select>
+          </div>
+
+          <div class="form-grid">
+            <select id="lfgMode">
+              <option value="Wildcard">Wildcard</option>
+              <option value="Ranked">Ranked</option>
+              <option value="Pubs">Pubs</option>
+              <option value="Mixtape">Mixtape</option>
+            </select>
+            <select id="lfgGoal">
+              <option value="High-kill games">High-kill games</option>
+              <option value="Rank grind">Rank grind</option>
+              <option value="Chill wins">Chill wins</option>
+              <option value="1v3 practice">1v3 practice</option>
+              <option value="Content clips">Content clips</option>
+            </select>
+          </div>
+
+          <div class="form-grid">
+            <select id="lfgMain">
+              <option value="Axle">Axle</option>
+              <option value="Valkyrie">Valkyrie</option>
+              <option value="Rampart">Rampart</option>
+              <option value="Octane">Octane</option>
+              <option value="Conduit">Conduit</option>
+              <option value="Caustic">Caustic</option>
+              <option value="Flexible">Flexible</option>
+            </select>
+            <select id="lfgMic">
+              <option value="Mic preferred">Mic preferred</option>
+              <option value="Mic required">Mic required</option>
+              <option value="No mic needed">No mic needed</option>
+            </select>
+          </div>
+
+          <div class="form-grid">
+            <select id="lfgStyle">
+              <option value="Aggressive entry">Aggressive entry</option>
+              <option value="Smart ranked">Smart ranked</option>
+              <option value="Hold hands">Hold hands</option>
+              <option value="Anchor/support">Anchor/support</option>
+              <option value="Chill but trying">Chill but trying</option>
+            </select>
+            <input id="lfgTime" placeholder="When? e.g. tonight 8PM CT" value="Tonight" />
+          </div>
+
+          <div class="form-grid full">
+            <textarea id="lfgNotes" placeholder="Notes">Need teammates who don’t insta-leave. I play aggressive, can carry fights, and want people who stay close and comm.</textarea>
+          </div>
+
+          <button type="submit">Create LFG Post</button>
+        </form>
+
+        <p class="note">Safety: keep it to gamer tags/Discord handles. Don’t post your address, phone number, school, or private info.</p>
+      </div>
+
+      <div class="card section">
+        <div class="title">
+          <h2>Open posts</h2>
+          <span class="pill" id="postCount">0 saved</span>
+        </div>
+
+        <div class="form-grid">
+          <select id="filterMode">
+            <option value="All">All modes</option>
+            <option value="Wildcard">Wildcard</option>
+            <option value="Ranked">Ranked</option>
+            <option value="Pubs">Pubs</option>
+            <option value="Mixtape">Mixtape</option>
+          </select>
+          <select id="filterStyle">
+            <option value="All">All styles</option>
+            <option value="Aggressive entry">Aggressive entry</option>
+            <option value="Smart ranked">Smart ranked</option>
+            <option value="Hold hands">Hold hands</option>
+            <option value="Anchor/support">Anchor/support</option>
+            <option value="Chill but trying">Chill but trying</option>
+          </select>
+        </div>
+
+        <div class="list" id="lfgPosts" style="margin-top:12px"></div>
+      </div>
+    </section>
+
+
+    <section id="themes" class="hidden">
+      <div class="card section">
+        <div class="title">
+          <h2>Theme Forge</h2>
+          <span class="pill">advanced</span>
+        </div>
+        <p class="lead">Switch the whole app between Apex-styled palettes, legend-inspired themes, motion, glass blur, compact mode, and intensity. These are original color themes, not official EA/Respawn art.</p>
+
+        <div class="theme-preview" id="themePreview"></div>
+
+        <div class="form-grid">
+          <select id="themeCategory">
+            <option value="all">All themes</option>
+            <option value="apex">ApexIQ originals</option>
+            <option value="assault">Assault legends</option>
+            <option value="skirmisher">Skirmisher legends</option>
+            <option value="recon">Recon legends</option>
+            <option value="controller">Controller legends</option>
+            <option value="support">Support legends</option>
+          </select>
+          <button id="randomThemeBtn" class="secondary-btn" type="button">Randomize</button>
+        </div>
+
+        <div class="theme-grid" id="themeGrid"></div>
+      </div>
+
+      <div class="card section">
+        <div class="title">
+          <h2>Theme controls</h2>
+          <span class="pill" id="currentThemePill">Molten Drop</span>
+        </div>
+
+        <div class="theme-controls">
+          <div class="range-row">
+            <span>Intensity</span>
+            <input id="themeIntensity" type="range" min="50" max="140" value="100" />
+          </div>
+          <div class="range-row">
+            <span>Glass blur</span>
+            <input id="themeBlur" type="range" min="0" max="28" value="18" />
+          </div>
+          <div class="range-row">
+            <span>Roundness</span>
+            <input id="themeRadius" type="range" min="70" max="130" value="100" />
+          </div>
+        </div>
+
+        <div class="toggle-grid">
+          <button id="motionToggle" class="secondary-btn" type="button">Motion: Off</button>
+          <button id="glassToggle" class="secondary-btn" type="button">Glass: On</button>
+          <button id="compactToggle" class="secondary-btn" type="button">Compact: Off</button>
+          <button id="resetThemeBtn" class="danger-btn" type="button">Reset</button>
+        </div>
+
+        <p class="note">Theme settings save locally on your iPhone. Later we can add user accounts so themes sync across devices and unlock via the sticker shop.</p>
+      </div>
+
+      <div class="card section">
+        <div class="title">
+          <h2>Legend theme packs</h2>
+          <span class="pill">roadmap</span>
+        </div>
+        <div class="list">
+          <div class="item"><div><div class="name">Starter Pack</div><div class="sub">Molten Drop, Storm Point, Neon Pred</div></div><strong>Free</strong></div>
+          <div class="item"><div><div class="name">Legend Packs</div><div class="sub">Color-only legend-inspired sets with original icons/stickers</div></div><strong>Planned</strong></div>
+          <div class="item"><div><div class="name">Animated Packs</div><div class="sub">Subtle moving gradients, glow, and menu animations</div></div><strong>Planned</strong></div>
+        </div>
+      </div>
+    </section>
+
+
+    <section id="data" class="hidden">
+      <div class="card section">
+        <span class="pill">data transparency</span>
+        <h2>We don’t fake Respawn-level certainty.</h2>
+        <p class="lead">ApexIQ labels data as verified API, snapshot-inferred, user-submitted, estimated, or mock. That honesty is part of the product.</p>
+        <div class="list">
+          <div class="item"><strong>verified_api</strong><span class="sub">direct provider data</span></div>
+          <div class="item"><strong>snapshot_inferred</strong><span class="sub">calculated from history</span></div>
+          <div class="item"><strong>user_submitted</strong><span class="sub">manual uploads</span></div>
+          <div class="item"><strong>estimated</strong><span class="sub">modeled, not perfect</span></div>
+          <div class="item"><strong>mock</strong><span class="sub">demo/dev mode</span></div>
+        </div>
+      </div>
+    </section>
+
+    <nav class="tabs">
+      <button class="tab active" data-tab="home">Home</button>
+      <button class="tab" data-tab="dashboard">Stats</button>
+      <button class="tab" data-tab="heirloom">Packs</button>
+      <button class="tab" data-tab="community">Forum</button>
+      <button class="tab" data-tab="squad">Squad</button>
+      <button class="tab" data-tab="themes">Themes</button>
+    </nav>
+  </main>
+
+  <script>
+    const legends = [
+      ["Valkyrie", "3,035 kills", "872K damage"],
+      ["Rampart", "2,215 kills", "616K damage"],
+      ["Axle", "1,860 kills", "608K damage"],
+      ["Octane", "1,718 kills", "517K damage"],
+      ["Caustic", "1,408 kills", "423K damage"],
+      ["Conduit", "1,412 kills", "405K damage"]
+    ];
+
+    const legendList = document.getElementById("legendList");
+    legendList.innerHTML = legends.map(([name,kills,dmg]) => `
+      <div class="item">
+        <div><div class="name">${name}</div><div class="sub">${dmg}</div></div>
+        <strong>${kills}</strong>
+      </div>
+    `).join("");
+
+    function show(tab){
+      ["home","dashboard","leaders","heirloom","community","squad","themes","data"].forEach(id => {
+        document.getElementById(id).classList.toggle("hidden", id !== tab);
+      });
+      document.querySelectorAll(".tab").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.tab === tab);
+      });
+      window.scrollTo({top:0, behavior:"smooth"});
+    }
+
+    document.querySelectorAll(".tab").forEach(btn => btn.addEventListener("click", () => show(btn.dataset.tab)));
+
+    document.getElementById("searchForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const handle = document.getElementById("handle").value.trim() || "IMissAnyway";
+      const platform = document.getElementById("platform").value.toUpperCase();
+      document.getElementById("playerName").textContent = handle;
+      document.getElementById("sourcePill").textContent = platform + " • mock";
+      show("dashboard");
+    });
+
+    /* service worker disabled in single-file preview */
+  
+    const themeLibrary = [
+      {id:"molten-drop",name:"Molten Drop",cat:"apex",desc:"Default ApexIQ red/orange armor glow",bg:"#08070a",a:"#ff3c1f",b:"#ff9d2e",g:"#ff3c1f",m:"#b9aeb0"},
+      {id:"neon-pred",name:"Neon Pred",cat:"apex",desc:"Ranked demon pink/purple glow",bg:"#070914",a:"#ff2f7d",b:"#8d5cff",g:"#ff2f7d",m:"#b9b4d6"},
+      {id:"storm-point",name:"Storm Point",cat:"apex",desc:"tropical blue, green, gold",bg:"#061018",a:"#16d6ff",b:"#ffcf5a",g:"#16d6ff",m:"#afd1d7"},
+      {id:"worlds-edge",name:"World's Edge",cat:"apex",desc:"lava, steel, smoke",bg:"#0d0907",a:"#ff4b21",b:"#747b86",g:"#ff4b21",m:"#c7bbb4"},
+
+      {id:"bangalore",name:"Bangalore Smoke",cat:"assault",desc:"charcoal, military gold, smoke",bg:"#090908",a:"#d29b38",b:"#6f757c",g:"#d29b38",m:"#c7c0ad"},
+      {id:"fuse",name:"Fuse Bombshell",cat:"assault",desc:"explosive orange and steel",bg:"#100807",a:"#ff6a00",b:"#d7b45f",g:"#ff6a00",m:"#d4c0a9"},
+      {id:"ash",name:"Ash Phase Steel",cat:"assault",desc:"cold violet blade energy",bg:"#080810",a:"#a986ff",b:"#d8e4ff",g:"#a986ff",m:"#c6c7d8"},
+      {id:"mad-maggie",name:"Maggie Riot",cat:"assault",desc:"red riot punk energy",bg:"#100509",a:"#ff2b3d",b:"#ffb14a",g:"#ff2b3d",m:"#d8b5b8"},
+
+      {id:"wraith",name:"Wraith Void",cat:"skirmisher",desc:"deep void purple and blue",bg:"#060813",a:"#805cff",b:"#30d9ff",g:"#805cff",m:"#bcb8e6"},
+      {id:"pathfinder",name:"Pathfinder Zipline",cat:"skirmisher",desc:"bright robot blue/yellow",bg:"#061018",a:"#21c7ff",b:"#ffd84b",g:"#21c7ff",m:"#bee6ee"},
+      {id:"octane",name:"Octane Stim",cat:"skirmisher",desc:"lime speed and black tech",bg:"#071008",a:"#7dff3a",b:"#ff3c1f",g:"#7dff3a",m:"#b8dcb3"},
+      {id:"valkyrie",name:"Valkyrie Afterburn",cat:"skirmisher",desc:"sky blue and jet flame",bg:"#07111c",a:"#4bb8ff",b:"#ff7a2f",g:"#4bb8ff",m:"#c2d7e8"},
+      {id:"horizon",name:"Horizon Gravity",cat:"skirmisher",desc:"space teal and violet",bg:"#070b16",a:"#41f0db",b:"#b36cff",g:"#41f0db",m:"#bde6e3"},
+      {id:"revenant",name:"Revenant Nightmare",cat:"skirmisher",desc:"shadow red and bone",bg:"#090407",a:"#e0182d",b:"#d7c2a2",g:"#e0182d",m:"#c8aeb0"},
+
+      {id:"bloodhound",name:"Bloodhound Hunt",cat:"recon",desc:"raven red and amber scan",bg:"#0b0706",a:"#c61d2d",b:"#ffb347",g:"#c61d2d",m:"#d2b9aa"},
+      {id:"crypto",name:"Crypto Drone",cat:"recon",desc:"hacker green and black glass",bg:"#03100c",a:"#27f59a",b:"#37a7ff",g:"#27f59a",m:"#a9d8c4"},
+      {id:"seer",name:"Seer Spotlight",cat:"recon",desc:"gold glow and deep blue",bg:"#060a16",a:"#f2c94c",b:"#674bff",g:"#f2c94c",m:"#d8cfaf"},
+      {id:"vantage",name:"Vantage Scope",cat:"recon",desc:"icy sniper blue and red",bg:"#071019",a:"#7de3ff",b:"#ff5364",g:"#7de3ff",m:"#c1dbe4"},
+
+      {id:"caustic",name:"Caustic Gas",cat:"controller",desc:"toxic green and hazard yellow",bg:"#071006",a:"#9dff38",b:"#d8b33e",g:"#9dff38",m:"#c8d4a8"},
+      {id:"wattson",name:"Wattson Spark",cat:"controller",desc:"electric blue and warm orange",bg:"#06101b",a:"#3dd8ff",b:"#ffb347",g:"#3dd8ff",m:"#b9d7e4"},
+      {id:"rampart",name:"Rampart Mod Shop",cat:"controller",desc:"hot pink, steel, workshop glow",bg:"#100711",a:"#ff4ecb",b:"#7d8bff",g:"#ff4ecb",m:"#e2b9d7"},
+      {id:"catalyst",name:"Catalyst Ferro",cat:"controller",desc:"black ferrofluid and magenta",bg:"#07060b",a:"#cf4fff",b:"#2b2438",g:"#cf4fff",m:"#d7bde2"},
+
+      {id:"lifeline",name:"Lifeline DOC",cat:"support",desc:"medic teal and red pulse",bg:"#061311",a:"#2ee6c8",b:"#ff5a5f",g:"#2ee6c8",m:"#bddbd5"},
+      {id:"gibraltar",name:"Gibraltar Shield",cat:"support",desc:"island armor orange and blue",bg:"#081015",a:"#ff8a2a",b:"#3aa0ff",g:"#ff8a2a",m:"#cdd0c7"},
+      {id:"loba",name:"Loba Boutique",cat:"support",desc:"luxury red, gold, and black",bg:"#0c0608",a:"#ff2e55",b:"#f2c94c",g:"#ff2e55",m:"#dcc0bd"},
+      {id:"newcastle",name:"Newcastle Hero",cat:"support",desc:"hero blue and gold shield",bg:"#06101a",a:"#318bff",b:"#ffd166",g:"#318bff",m:"#c1d2e0"},
+      {id:"conduit",name:"Conduit Radiant",cat:"support",desc:"bright yellow-blue shield energy",bg:"#071018",a:"#ffe15a",b:"#36c8ff",g:"#ffe15a",m:"#dde2bd"}
+    ];
+
+    const defaultThemeState = {
+      themeId:"molten-drop",
+      intensity:100,
+      blur:18,
+      radius:100,
+      motion:false,
+      glass:true,
+      compact:false
+    };
+
+    function hexToRgb(hex){
+      const clean = hex.replace("#","");
+      const num = parseInt(clean,16);
+      return {r:(num>>16)&255,g:(num>>8)&255,b:num&255};
+    }
+
+    function rgba(hex, alpha){
+      const {r,g,b} = hexToRgb(hex);
+      return `rgba(${r},${g},${b},${alpha})`;
+    }
+
+    function currentThemeState(){
+      try{
+        return {...defaultThemeState, ...JSON.parse(localStorage.getItem("apexiq-theme-state") || "{}")};
+      }catch(e){
+        return {...defaultThemeState};
+      }
+    }
+
+    function saveThemeState(state){
+      localStorage.setItem("apexiq-theme-state", JSON.stringify(state));
+    }
+
+    function findTheme(id){
+      return themeLibrary.find(t => t.id === id) || themeLibrary[0];
+    }
+
+    function applyTheme(state=currentThemeState()){
+      const theme = findTheme(state.themeId);
+      const mult = Math.max(.5, Math.min(1.4, Number(state.intensity || 100) / 100));
+      const root = document.documentElement;
+      root.style.setProperty("--bg", theme.bg);
+      root.style.setProperty("--accent", theme.a);
+      root.style.setProperty("--accent2", theme.b);
+      root.style.setProperty("--muted", theme.m);
+      root.style.setProperty("--glow", rgba(theme.g, 0.34 * mult));
+      root.style.setProperty("--bg1", rgba(theme.a, 0.32 * mult));
+      root.style.setProperty("--bg2", rgba(theme.b, 0.28 * mult));
+      root.style.setProperty("--bg3", rgba(theme.g, 0.10 * mult));
+      root.style.setProperty("--glassBlur", `${Number(state.blur ?? 18)}px`);
+      root.style.setProperty("--radiusScale", `${Number(state.radius ?? 100) / 100}`);
+      document.body.classList.toggle("motion-on", !!state.motion);
+      document.body.classList.toggle("glass-off", !state.glass);
+      document.body.classList.toggle("compact-on", !!state.compact);
+
+      const pill = document.getElementById("currentThemePill");
+      if(pill) pill.textContent = theme.name;
+      const motion = document.getElementById("motionToggle");
+      if(motion) motion.textContent = `Motion: ${state.motion ? "On" : "Off"}`;
+      const glass = document.getElementById("glassToggle");
+      if(glass) glass.textContent = `Glass: ${state.glass ? "On" : "Off"}`;
+      const compact = document.getElementById("compactToggle");
+      if(compact) compact.textContent = `Compact: ${state.compact ? "On" : "Off"}`;
+
+      ["themeIntensity","themeBlur","themeRadius"].forEach(id=>{
+        const el = document.getElementById(id);
+        if(!el) return;
+        if(id === "themeIntensity") el.value = state.intensity;
+        if(id === "themeBlur") el.value = state.blur;
+        if(id === "themeRadius") el.value = state.radius;
+      });
+
+      renderThemeGrid();
+    }
+
+    function renderThemeGrid(){
+      const root = document.getElementById("themeGrid");
+      if(!root) return;
+      const state = currentThemeState();
+      const cat = document.getElementById("themeCategory")?.value || "all";
+      const themes = themeLibrary.filter(t => cat === "all" || t.cat === cat);
+      root.innerHTML = themes.map(t => `
+        <button type="button"
+          class="theme-tile ${state.themeId === t.id ? "active" : ""}"
+          onclick="setTheme('${t.id}')"
+          style="--tile-bg:${t.bg};--tile-a:${rgba(t.a,.42)};--tile-b:${rgba(t.b,.34)}">
+          <strong>${t.name}</strong>
+          <span>${t.desc}</span>
+        </button>
+      `).join("");
+    }
+
+    window.setTheme = function(id){
+      const state = currentThemeState();
+      state.themeId = id;
+      saveThemeState(state);
+      applyTheme(state);
+    }
+
+    function bindThemeControls(){
+      document.getElementById("themeCategory")?.addEventListener("change", renderThemeGrid);
+      document.getElementById("randomThemeBtn")?.addEventListener("click", () => {
+        const cat = document.getElementById("themeCategory")?.value || "all";
+        const pool = themeLibrary.filter(t => cat === "all" || t.cat === cat);
+        const pick = pool[Math.floor(Math.random()*pool.length)] || themeLibrary[0];
+        window.setTheme(pick.id);
+      });
+      document.getElementById("themeIntensity")?.addEventListener("input", e => {
+        const state = currentThemeState();
+        state.intensity = Number(e.target.value);
+        saveThemeState(state);
+        applyTheme(state);
+      });
+      document.getElementById("themeBlur")?.addEventListener("input", e => {
+        const state = currentThemeState();
+        state.blur = Number(e.target.value);
+        saveThemeState(state);
+        applyTheme(state);
+      });
+      document.getElementById("themeRadius")?.addEventListener("input", e => {
+        const state = currentThemeState();
+        state.radius = Number(e.target.value);
+        saveThemeState(state);
+        applyTheme(state);
+      });
+      document.getElementById("motionToggle")?.addEventListener("click", () => {
+        const state = currentThemeState();
+        state.motion = !state.motion;
+        saveThemeState(state);
+        applyTheme(state);
+      });
+      document.getElementById("glassToggle")?.addEventListener("click", () => {
+        const state = currentThemeState();
+        state.glass = !state.glass;
+        saveThemeState(state);
+        applyTheme(state);
+      });
+      document.getElementById("compactToggle")?.addEventListener("click", () => {
+        const state = currentThemeState();
+        state.compact = !state.compact;
+        saveThemeState(state);
+        applyTheme(state);
+      });
+      document.getElementById("resetThemeBtn")?.addEventListener("click", () => {
+        saveThemeState(defaultThemeState);
+        applyTheme(defaultThemeState);
+      });
+    }
+
+    bindThemeControls();
+    applyTheme();
+
+</script>
+</body>
+</html>
