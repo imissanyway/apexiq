@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-title" content="ApexIQ"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <link rel="manifest" href="manifest.json"/>
-  <title>ApexIQ Mobile v1.1</title>
+  <title>ApexIQ Mobile v1.2</title>
   <style>
     :root{
       --bg:#090a0f;
@@ -299,42 +299,52 @@
     @keyframes sway{50%{transform:rotate(8deg)}}
 
 
-    .emoji-toolbar{
-      display:grid;
-      grid-template-columns:1fr;
-      gap:8px;
-      margin:8px 0 10px;
-    }
-    .emoji-search{
-      min-height:44px;
-      border-radius:14px;
-    }
     .emoji-card{
-      position:relative;
-      min-height:96px;
-      border-radius:20px;
+      min-height:108px !important;
+      border-radius:22px !important;
       overflow:hidden;
       background:
-        radial-gradient(circle at 24% 16%,rgba(255,255,255,.13),transparent 24%),
-        linear-gradient(145deg,rgba(255,255,255,.09),rgba(255,255,255,.035));
+        radial-gradient(circle at 25% 15%,rgba(255,255,255,.17),transparent 25%),
+        linear-gradient(145deg,rgba(255,255,255,.10),rgba(255,255,255,.035)) !important;
+      position:relative;
     }
     .emoji-card:before{
       content:"";
       position:absolute;
       inset:0;
-      background:linear-gradient(135deg,var(--packA,rgba(255,61,32,.20)),transparent 46%,var(--packB,rgba(255,162,46,.18)));
-      opacity:.86;
+      background:linear-gradient(135deg,var(--packA,rgba(255,61,32,.18)),transparent 48%,var(--packB,rgba(255,162,46,.15)));
       pointer-events:none;
     }
     .emoji-card > div{position:relative;z-index:1}
     .emoji-glyph{
-      width:48px !important;
-      height:48px !important;
-      filter:drop-shadow(0 0 8px var(--packGlow,var(--glow)));
+      width:58px !important;
+      height:58px !important;
+      margin:auto;
+      filter:drop-shadow(0 0 10px var(--packGlow,var(--glow))) drop-shadow(0 5px 8px rgba(0,0,0,.34)) !important;
     }
-    .emoji-card .caption{
-      color:rgba(255,255,255,.82);
+    .emoji-glyph svg{width:58px !important;height:58px !important}
+    .caption{
+      color:rgba(255,255,255,.86) !important;
       text-shadow:0 1px 2px rgba(0,0,0,.45);
+    }
+    .sticker-svg .line{fill:none;stroke:currentColor;stroke-width:4.2;stroke-linecap:round;stroke-linejoin:round}
+    .sticker-svg .thin{fill:none;stroke:currentColor;stroke-width:2.7;stroke-linecap:round;stroke-linejoin:round;opacity:.88}
+    .sticker-svg .fillA{fill:var(--accent);stroke:rgba(255,255,255,.78);stroke-width:2.2}
+    .sticker-svg .fillB{fill:var(--accent2);stroke:rgba(255,255,255,.70);stroke-width:2.1}
+    .sticker-svg .fillC{fill:var(--accent3);stroke:rgba(255,255,255,.62);stroke-width:2}
+    .sticker-svg .dark{fill:#11141a;stroke:rgba(255,255,255,.58);stroke-width:2.2}
+    .sticker-svg .pulse{animation:stickerPulse 1.55s ease-in-out infinite}
+    .sticker-svg .spin{transform-origin:32px 32px;animation:stickerSpin 6s linear infinite}
+    .sticker-svg .float{animation:stickerFloat 2.2s ease-in-out infinite alternate}
+    .sticker-svg .zap{animation:stickerZap 1.25s steps(2) infinite}
+    @keyframes stickerPulse{50%{transform:scale(1.08);opacity:.78}}
+    @keyframes stickerSpin{to{transform:rotate(360deg)}}
+    @keyframes stickerFloat{to{transform:translateY(-4px)}}
+    @keyframes stickerZap{50%{opacity:.36}}
+    .emoji-search{
+      min-height:44px;
+      border-radius:14px;
+      margin-bottom:10px;
     }
     .pack-card{
       position:relative;
@@ -345,39 +355,32 @@
       position:absolute;
       inset:0;
       background:
-        radial-gradient(circle at 14% 10%,var(--packA,rgba(255,255,255,.12)),transparent 28%),
-        radial-gradient(circle at 90% 8%,var(--packB,rgba(255,255,255,.10)),transparent 30%);
-      opacity:.95;
+        radial-gradient(circle at 14% 10%,var(--packA,rgba(255,255,255,.11)),transparent 30%),
+        radial-gradient(circle at 90% 8%,var(--packB,rgba(255,255,255,.10)),transparent 32%);
       pointer-events:none;
     }
     .pack-card > *{position:relative;z-index:1}
     .pack-title-row{
       display:grid;
-      grid-template-columns:48px 1fr auto;
+      grid-template-columns:54px 1fr auto;
       align-items:center;
       gap:10px;
-      margin-bottom:8px;
+      margin-bottom:10px;
     }
     .pack-mini-icon{
-      width:48px;
-      height:48px;
-      border-radius:16px;
-      display:grid;
-      place-items:center;
+      width:54px;height:54px;border-radius:17px;
+      display:grid;place-items:center;
       background:rgba(0,0,0,.18);
       border:1px solid rgba(255,255,255,.13);
     }
+    .pack-mini-icon .emoji-glyph,.pack-mini-icon .emoji-glyph svg{
+      width:44px !important;height:44px !important;
+    }
     .sticker-pack-filter{
-      display:flex;
-      gap:8px;
-      overflow-x:auto;
-      padding-bottom:8px;
-      margin-top:10px;
+      display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-top:10px;
     }
     .filter-chip{
-      min-height:38px;
-      width:auto;
-      white-space:nowrap;
+      min-height:38px;width:auto;white-space:nowrap;
       background:rgba(255,255,255,.07);
       border:1px solid var(--stroke);
       box-shadow:none;
@@ -389,49 +392,6 @@
       box-shadow:0 10px 24px var(--glow);
     }
 
-
-    .emoji-card{
-      min-height:112px !important;
-      border-radius:22px !important;
-      background:
-        radial-gradient(circle at 26% 16%,rgba(255,255,255,.16),transparent 24%),
-        linear-gradient(145deg,rgba(255,255,255,.10),rgba(255,255,255,.035)) !important;
-    }
-    .emoji-glyph{
-      width:58px !important;
-      height:58px !important;
-      filter:drop-shadow(0 0 10px var(--packGlow,var(--glow))) drop-shadow(0 5px 8px rgba(0,0,0,.36)) !important;
-    }
-    .emoji-glyph svg{
-      width:58px !important;
-      height:58px !important;
-    }
-    .pack-mini-icon .emoji-glyph,
-    .pack-mini-icon .emoji-glyph svg{
-      width:42px !important;
-      height:42px !important;
-    }
-    .theme-tile .emoji-glyph,
-    .theme-tile .emoji-glyph svg{
-      width:48px !important;
-      height:48px !important;
-    }
-    .sticker-svg .fillA{fill:var(--accent);stroke:rgba(255,255,255,.78)}
-    .sticker-svg .fillB{fill:var(--accent2);stroke:rgba(255,255,255,.72)}
-    .sticker-svg .fillC{fill:var(--accent3);stroke:rgba(255,255,255,.65)}
-    .sticker-svg .dark{fill:#10131a;stroke:rgba(255,255,255,.55)}
-    .sticker-svg .line{fill:none;stroke:currentColor;stroke-width:4.2;stroke-linecap:round;stroke-linejoin:round}
-    .sticker-svg .thin{fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
-    .sticker-svg .glow{filter:drop-shadow(0 0 7px var(--accent))}
-    .sticker-svg .spark{animation:stickerPulse 1.5s ease-in-out infinite}
-    .sticker-svg .spin{transform-origin:32px 32px;animation:stickerSpin 6s linear infinite}
-    .sticker-svg .float{animation:stickerFloat 2.2s ease-in-out infinite alternate}
-    .sticker-svg .zap{animation:stickerZap 1.2s steps(2) infinite}
-    @keyframes stickerPulse{50%{transform:scale(1.08);opacity:.78}}
-    @keyframes stickerSpin{to{transform:rotate(360deg)}}
-    @keyframes stickerFloat{to{transform:translateY(-4px)}}
-    @keyframes stickerZap{50%{opacity:.36}}
-
     body.compact-on .app{padding-top:12px}
     body.compact-on h1{font-size:44px}
     body.compact-on .section,body.compact-on .search-card,body.compact-on .hero-stat{padding:14px}
@@ -441,13 +401,13 @@
   <main class="app">
     <div class="topbar">
       <div class="brand"><div class="mark">IQ</div><span>ApexIQ</span></div>
-      <span class="pill">mobile v1.1</span>
+      <span class="pill">mobile v1.2</span>
     </div>
 
     <section id="home">
-      <span class="pill">Legend Sticker Engine</span>
+      <span class="pill">Legend Sticker Fix</span>
       <h1>Stop showing stats.<br><span class="gradient">Explain them.</span></h1>
-      <p class="lead">Rebuilt emoji engine with custom legend sticker packs, SVG-style ApexIQ glyphs, all packs organized by legend, and Axle included.</p>
+      <p class="lead">Theme changer restored. Emoji dock fixed with real visible legend sticker packs, including Wraith, Pathfinder, Maggie, and Axle.</p>
 
       <form class="search-card" id="searchForm">
         <strong>Search demo profile</strong>
@@ -561,9 +521,7 @@
                 <div><h2 style="font-size:20px">Emoji Dock</h2><div class="sub">Tap to insert into the post box</div></div>
                 <span class="pill" id="activePackName">Starter</span>
               </div>
-              <div class="emoji-toolbar">
-                <input class="emoji-search" id="emojiSearch" placeholder="Search stickers or legends..." />
-              </div>
+              <input class="emoji-search" id="emojiSearch" placeholder="Search legend or sticker..." />
               <div class="emoji-tabs" id="emojiTabs"></div>
               <div class="emoji-grid" id="emojiGrid"></div>
             </div>
@@ -578,7 +536,7 @@
 
       <div id="emojiShop" class="section">
         <div class="title"><h2>Emoji Shop</h2><span class="pill">legend packs</span></div>
-        <p class="lead">Custom ApexIQ-designed sticker sets for every legend. These are actual mini sticker illustrations built from inline SVG — ability/personality-inspired, organized by legend, and unlocked by default.</p>
+        <p class="lead">Original Apex-inspired emoji/sticker sets for every legend. No official EA/Respawn artwork copied.</p>
         <div class="sticker-pack-filter" id="packFilters"></div>
         <div class="pack-grid" id="packShop"></div>
       </div>
@@ -648,206 +606,178 @@
 
 
     const legendData = [
-      {id:"bangalore", name:"Bangalore", cat:"assault", glyph:"smoke", fx:"fx-smoke", colors:["#0a0908","#d39a38","#6f757c","#f4d38a"], desc:"smoke canister, tracer gold, hard-cover soldier energy"},
-      {id:"fuse", name:"Fuse", cat:"assault", glyph:"bomb", fx:"fx-fire", colors:["#120706","#ff6a00","#d7b45f","#ffd68a"], desc:"grenade arc, brass fuse, explosive orange"},
-      {id:"ash", name:"Ash", cat:"assault", glyph:"blade", fx:"fx-void", colors:["#070711","#9e7cff","#d8e4ff","#b99cff"], desc:"phase blade, cold steel, purple tear"},
-      {id:"maggie", name:"Mad Maggie", cat:"assault", glyph:"riot", fx:"fx-fire", colors:["#120506","#ff2538","#ffb14a","#ff7f87"], desc:"riot spikes, red punk fire, shotgun chaos"},
-      {id:"ballistic", name:"Ballistic", cat:"assault", glyph:"smart", fx:"fx-scan", colors:["#0b0706","#ffbe58","#c7522a","#ffe0a0"], desc:"smart round reticle, classy gold, old-school gunrunner"},
-      {id:"sparrow", name:"Sparrow", cat:"recon", glyph:"arrow", fx:"fx-scan", colors:["#07100b","#8df06f","#4ac7ff","#d8ffb0"], desc:"arrow sweep, green scan trail, hunter-tech rhythm"},
-
-      {id:"wraith", name:"Wraith", cat:"skirmisher", glyph:"portal", fx:"fx-void", colors:["#050713","#805cff","#30d9ff","#ccbaff"], desc:"void ring, phase tear, blue rift static"},
-      {id:"pathfinder", name:"Pathfinder", cat:"skirmisher", glyph:"robot", fx:"fx-electric", colors:["#061018","#21c7ff","#ffd84b","#b8efff"], desc:"robot lens, zipline hook, friendly bright tech"},
-      {id:"octane", name:"Octane", cat:"skirmisher", glyph:"stim", fx:"fx-toxic", colors:["#061008","#7dff3a","#ff3c1f","#d6ff84"], desc:"stim vial, speed blur, danger red"},
-      {id:"valkyrie", name:"Valkyrie", cat:"skirmisher", glyph:"wing", fx:"fx-jet", colors:["#07111c","#4bb8ff","#ff7a2f","#c6e8ff"], desc:"jet wing, missile arc, sky afterburn"},
-      {id:"horizon", name:"Horizon", cat:"skirmisher", glyph:"gravity", fx:"fx-gravity", colors:["#060916","#41f0db","#b36cff","#c9fff8"], desc:"gravity ring, black hole core, star dust"},
-      {id:"revenant", name:"Revenant", cat:"skirmisher", glyph:"skull", fx:"fx-shadow", colors:["#080306","#e0182d","#d7c2a2","#ff8b8b"], desc:"shadow skull, bone slash, nightmare red"},
-      {id:"alter", name:"Alter", cat:"skirmisher", glyph:"rift", fx:"fx-void", colors:["#050512","#ff4ff0","#4b2cff","#ffd1fb"], desc:"rift mask, glitch magenta, dimensional cut"},
-      {id:"axle", name:"Axle", cat:"skirmisher", glyph:"wheel", fx:"fx-fire", colors:["#090908","#ff3020","#ffcf33","#ff8b4a"], desc:"nitro gate, drift wheel, Kickstart impact, overclocked speed"},
-
-      {id:"bloodhound", name:"Bloodhound", cat:"recon", glyph:"raven", fx:"fx-scan", colors:["#0b0706","#c61d2d","#ffb347","#ffd19a"], desc:"raven beak, scan ring, hunt trail"},
-      {id:"crypto", name:"Crypto", cat:"recon", glyph:"drone", fx:"fx-electric", colors:["#03100c","#27f59a","#37a7ff","#aaffd8"], desc:"drone eye, hacker green, EMP pulse"},
-      {id:"seer", name:"Seer", cat:"recon", glyph:"eye", fx:"fx-scan", colors:["#050817","#f2c94c","#674bff","#ffe99c"], desc:"spotlight eye, gold pulse, stage presence"},
-      {id:"vantage", name:"Vantage", cat:"recon", glyph:"scope", fx:"fx-scan", colors:["#061019","#7de3ff","#ff5364","#cbf5ff"], desc:"sniper scope, icy blue, red shot marker"},
-
-      {id:"caustic", name:"Caustic", cat:"controller", glyph:"hazard", fx:"fx-toxic", colors:["#061006","#9dff38","#d8b33e","#d9ff84"], desc:"hazard mask, toxic fog, lab yellow"},
-      {id:"wattson", name:"Wattson", cat:"controller", glyph:"bolt", fx:"fx-electric", colors:["#06101b","#3dd8ff","#ffb347","#c3f5ff"], desc:"electric fence nodes, blue arcs, warm spark"},
-      {id:"rampart", name:"Rampart", cat:"controller", glyph:"wrench", fx:"fx-shop", colors:["#100711","#ff4ecb","#7d8bff","#ffd0f3"], desc:"mod-shop wrench, metal violet, hot pink sparks"},
-      {id:"catalyst", name:"Catalyst", cat:"controller", glyph:"ferro", fx:"fx-void", colors:["#05050a","#cf4fff","#2b2438","#efc6ff"], desc:"ferrofluid drop, dark veil, witchy magenta"},
-
-      {id:"lifeline", name:"Lifeline", cat:"support", glyph:"med", fx:"fx-scan", colors:["#051210","#2ee6c8","#ff5a5f","#b9fff1"], desc:"DOC cross, revive pulse, medic teal"},
-      {id:"gibraltar", name:"Gibraltar", cat:"support", glyph:"dome", fx:"fx-jet", colors:["#061018","#ff8a2a","#3aa0ff","#ffcca3"], desc:"dome shield, island orange, blue armor"},
-      {id:"mirage", name:"Mirage", cat:"support", glyph:"decoy", fx:"fx-scan", colors:["#0b0804","#ffc247","#6b4fff","#ffe19c"], desc:"holo decoys, gold flash, trickster shimmer"},
-      {id:"loba", name:"Loba", cat:"support", glyph:"diamond", fx:"fx-shop", colors:["#0c0608","#ff2e55","#f2c94c","#ffd1d8"], desc:"boutique diamond, crimson velvet, gold loot"},
-      {id:"newcastle", name:"Newcastle", cat:"support", glyph:"castle", fx:"fx-electric", colors:["#06101a","#318bff","#ffd166","#b8d7ff"], desc:"castle wall, hero shield, armored blue"},
-      {id:"conduit", name:"Conduit", cat:"support", glyph:"battery", fx:"fx-electric", colors:["#071018","#ffe15a","#36c8ff","#fff1a6"], desc:"radiant battery, shield pulse, blue-yellow charge"}
+      {id:"bangalore", name:"Bangalore", cat:"assault", fx:"fx-smoke", colors:["#0a0908","#d39a38","#6f757c","#f4d38a"], desc:"smoke canister, tracer gold, hard-cover soldier energy"},
+      {id:"fuse", name:"Fuse", cat:"assault", fx:"fx-fire", colors:["#120706","#ff6a00","#d7b45f","#ffd68a"], desc:"grenade arc, brass fuse, explosive orange"},
+      {id:"ash", name:"Ash", cat:"assault", fx:"fx-void", colors:["#070711","#9e7cff","#d8e4ff","#b99cff"], desc:"phase blade, cold steel, purple tear"},
+      {id:"maggie", name:"Mad Maggie", cat:"assault", fx:"fx-fire", colors:["#120506","#ff2538","#ffb14a","#ff7f87"], desc:"wrecking ball, riot spikes, drill flames"},
+      {id:"ballistic", name:"Ballistic", cat:"assault", fx:"fx-scan", colors:["#0b0706","#ffbe58","#c7522a","#ffe0a0"], desc:"smart round reticle, classy gold, old-school gunrunner"},
+      {id:"sparrow", name:"Sparrow", cat:"recon", fx:"fx-scan", colors:["#07100b","#8df06f","#4ac7ff","#d8ffb0"], desc:"arrow sweep, green scan trail, hunter-tech rhythm"},
+      {id:"wraith", name:"Wraith", cat:"skirmisher", fx:"fx-void", colors:["#050713","#805cff","#30d9ff","#ccbaff"], desc:"void ring, phase tear, kunai edge"},
+      {id:"pathfinder", name:"Pathfinder", cat:"skirmisher", fx:"fx-electric", colors:["#061018","#21c7ff","#ffd84b","#b8efff"], desc:"MRVN face, grapple hook, zipline cable"},
+      {id:"octane", name:"Octane", cat:"skirmisher", fx:"fx-toxic", colors:["#061008","#7dff3a","#ff3c1f","#d6ff84"], desc:"stim vial, speed blur, launch pad"},
+      {id:"valkyrie", name:"Valkyrie", cat:"skirmisher", fx:"fx-jet", colors:["#07111c","#4bb8ff","#ff7a2f","#c6e8ff"], desc:"jet wing, missile arc, sky afterburn"},
+      {id:"horizon", name:"Horizon", cat:"skirmisher", fx:"fx-gravity", colors:["#060916","#41f0db","#b36cff","#c9fff8"], desc:"black hole, gravity lift, star pull"},
+      {id:"revenant", name:"Revenant", cat:"skirmisher", fx:"fx-shadow", colors:["#080306","#e0182d","#d7c2a2","#ff8b8b"], desc:"shadow skull, claws, nightmare red"},
+      {id:"alter", name:"Alter", cat:"skirmisher", fx:"fx-void", colors:["#050512","#ff4ff0","#4b2cff","#ffd1fb"], desc:"rift mask, glitch magenta, dimensional cut"},
+      {id:"axle", name:"Axle", cat:"skirmisher", fx:"fx-fire", colors:["#090908","#ff3020","#ffcf33","#ff8b4a"], desc:"nitro gate, drift wheel, Kickstart impact"},
+      {id:"bloodhound", name:"Bloodhound", cat:"recon", fx:"fx-scan", colors:["#0b0706","#c61d2d","#ffb347","#ffd19a"], desc:"raven beak, scan ring, hunt trail"},
+      {id:"crypto", name:"Crypto", cat:"recon", fx:"fx-electric", colors:["#03100c","#27f59a","#37a7ff","#aaffd8"], desc:"drone eye, hacker green, EMP pulse"},
+      {id:"seer", name:"Seer", cat:"recon", fx:"fx-scan", colors:["#050817","#f2c94c","#674bff","#ffe99c"], desc:"spotlight eye, gold pulse, moth motif"},
+      {id:"vantage", name:"Vantage", cat:"recon", fx:"fx-scan", colors:["#061019","#7de3ff","#ff5364","#cbf5ff"], desc:"sniper scope, echo bat, laser ping"},
+      {id:"caustic", name:"Caustic", cat:"controller", fx:"fx-toxic", colors:["#061006","#9dff38","#d8b33e","#d9ff84"], desc:"gas trap, toxic cloud, hazard mask"},
+      {id:"wattson", name:"Wattson", cat:"controller", fx:"fx-electric", colors:["#06101b","#3dd8ff","#ffb347","#c3f5ff"], desc:"fence node, spark bolt, pylon"},
+      {id:"rampart", name:"Rampart", cat:"controller", fx:"fx-shop", colors:["#100711","#ff4ecb","#7d8bff","#ffd0f3"], desc:"mod wrench, Sheila, amped wall"},
+      {id:"catalyst", name:"Catalyst", cat:"controller", fx:"fx-void", colors:["#05050a","#cf4fff","#2b2438","#efc6ff"], desc:"ferrofluid drop, dark veil, moon rune"},
+      {id:"lifeline", name:"Lifeline", cat:"support", fx:"fx-scan", colors:["#051210","#2ee6c8","#ff5a5f","#b9fff1"], desc:"DOC drone, revive hand, healing cross"},
+      {id:"gibraltar", name:"Gibraltar", cat:"support", fx:"fx-jet", colors:["#061018","#ff8a2a","#3aa0ff","#ffcca3"], desc:"dome shield, fortress, bombardment"},
+      {id:"mirage", name:"Mirage", cat:"support", fx:"fx-scan", colors:["#0b0804","#ffc247","#6b4fff","#ffe19c"], desc:"holo decoys, bamboozle, finger guns"},
+      {id:"loba", name:"Loba", cat:"support", fx:"fx-shop", colors:["#0c0608","#ff2e55","#f2c94c","#ffd1d8"], desc:"black market, diamond, bracelet jump"},
+      {id:"newcastle", name:"Newcastle", cat:"support", fx:"fx-electric", colors:["#06101a","#318bff","#ffd166","#b8d7ff"], desc:"mobile shield, castle wall, hero star"},
+      {id:"conduit", name:"Conduit", cat:"support", fx:"fx-electric", colors:["#071018","#ffe15a","#36c8ff","#fff1a6"], desc:"battery core, shield burst, radiant pulse"}
     ];
 
-    function glyph(kind, size=46){
-      const common = `viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"`;
-      const c = "var(--accent)";
-      const c2 = "var(--accent2)";
-      const map = {
-        fire:`<svg ${common}><path class="glyph-core anim-pulse" d="M34 8c2 12-8 13-3 24 2-7 9-9 10-18 9 8 15 22 7 33-8 11-26 10-33-1-8-12 0-24 10-33-1 7 2 11 6 14-1-7 0-13 3-19z" fill="${c}" fill-opacity=".22"/><path d="M25 50c-7-9 3-16 8-23 0 7 9 9 7 18" stroke="${c2}"/></svg>`,
-        smoke:`<svg ${common}><path class="anim-sway glyph-core" d="M18 42c-8-1-10-13 1-16 1-11 17-14 23-5 9-1 15 8 10 16"/><path class="anim-float" d="M16 48h34M22 55h21" stroke="${c2}"/></svg>`,
-        bomb:`<svg ${common}><circle class="glyph-core anim-pulse" cx="31" cy="36" r="16"/><path d="M42 21l7-7M45 12l7 7" stroke="${c2}"/><path class="anim-sway" d="M24 22c5-6 12-6 18 0"/></svg>`,
-        blade:`<svg ${common}><path class="glyph-core anim-sway" d="M16 50L48 12l4 4-32 38z"/><path d="M20 46l-8 6M44 18l8-6" stroke="${c2}"/></svg>`,
-        riot:`<svg ${common}><path class="glyph-core" d="M18 14h28l6 16-20 22-20-22z"/><path class="anim-pulse" d="M22 30h20M26 39h12" stroke="${c2}"/></svg>`,
-        smart:`<svg ${common}><circle class="glyph-core" cx="32" cy="32" r="18"/><path class="anim-scan" d="M32 10v44M10 32h44" stroke="${c2}"/><circle cx="32" cy="32" r="5"/></svg>`,
-        arrow:`<svg ${common}><path class="glyph-core anim-sway" d="M12 48L45 15"/><path d="M30 14h16v16M19 46l-6 6" stroke="${c2}"/></svg>`,
-        portal:`<svg ${common}><ellipse class="glyph-core anim-spin" cx="32" cy="32" rx="20" ry="14"/><path class="anim-pulse" d="M20 32c7-8 17-8 24 0" stroke="${c2}"/></svg>`,
-        robot:`<svg ${common}><rect class="glyph-core" x="16" y="18" width="32" height="28" rx="9"/><circle cx="27" cy="32" r="4" stroke="${c2}"/><circle cx="39" cy="32" r="4" stroke="${c2}"/><path d="M32 18v-8M24 50h16"/></svg>`,
-        stim:`<svg ${common}><path class="glyph-core anim-sway" d="M24 12h16l-3 34-5 7-5-7z"/><path d="M23 24h18M26 34h12" stroke="${c2}"/></svg>`,
-        wing:`<svg ${common}><path class="glyph-core anim-float" d="M32 48V16M31 25L12 17l9 18 10 4M33 25l19-8-9 18-10 4"/><path d="M26 49h12" stroke="${c2}"/></svg>`,
-        gravity:`<svg ${common}><circle class="glyph-core anim-spin" cx="32" cy="32" r="8"/><ellipse cx="32" cy="32" rx="24" ry="10" stroke="${c2}"/><ellipse cx="32" cy="32" rx="10" ry="24"/></svg>`,
-        skull:`<svg ${common}><path class="glyph-core" d="M20 25c0-9 24-9 24 0v12c0 8-24 8-24 0z"/><circle cx="27" cy="32" r="3" stroke="${c2}"/><circle cx="37" cy="32" r="3" stroke="${c2}"/><path d="M28 44h8M22 20L15 12M42 20l7-8"/></svg>`,
-        rift:`<svg ${common}><path class="glyph-core anim-zap" d="M34 10L20 34h12l-3 20 15-27H32z"/><path d="M16 18c8-8 24-8 32 0M16 46c8 8 24 8 32 0" stroke="${c2}"/></svg>`,
-        wheel:`<svg ${common}><circle class="glyph-core anim-spin" cx="32" cy="32" r="20"/><circle cx="32" cy="32" r="7" stroke="${c2}"/><path d="M32 12v13M32 39v13M12 32h13M39 32h13M18 18l9 9M37 37l9 9"/></svg>`,
-        raven:`<svg ${common}><path class="glyph-core anim-sway" d="M12 40c13-20 30-23 42-17-13 4-20 13-22 27-5-8-11-11-20-10z"/><path d="M38 23l12-10" stroke="${c2}"/></svg>`,
-        drone:`<svg ${common}><rect class="glyph-core" x="20" y="22" width="24" height="20" rx="8"/><circle class="anim-pulse" cx="32" cy="32" r="5" stroke="${c2}"/><path d="M20 32H8M44 32h12M16 18l-7-7M48 18l7-7"/></svg>`,
-        eye:`<svg ${common}><path class="glyph-core" d="M10 32s8-14 22-14 22 14 22 14-8 14-22 14S10 32 10 32z"/><circle class="anim-pulse" cx="32" cy="32" r="7" stroke="${c2}"/></svg>`,
-        scope:`<svg ${common}><circle class="glyph-core" cx="32" cy="32" r="19"/><path class="anim-scan" d="M32 10v44M10 32h44" stroke="${c2}"/><circle cx="32" cy="32" r="4"/></svg>`,
-        hazard:`<svg ${common}><path class="glyph-core anim-spin" d="M32 12v14M32 38v14M15 42l12-7M37 29l12-7M15 22l12 7M37 35l12 7"/><circle cx="32" cy="32" r="8" stroke="${c2}"/></svg>`,
-        bolt:`<svg ${common}><path class="glyph-core anim-zap" d="M35 8L17 36h13l-2 20 20-31H35z"/><path d="M15 15h10M39 49h10" stroke="${c2}"/></svg>`,
-        wrench:`<svg ${common}><path class="glyph-core anim-sway" d="M43 10a13 13 0 0 0-15 16L12 42l10 10 16-16a13 13 0 0 0 16-15l-9 9-9-9z"/><path d="M18 44l4 4" stroke="${c2}"/></svg>`,
-        ferro:`<svg ${common}><path class="glyph-core anim-pulse" d="M32 10c13 13 20 24 20 33 0 8-8 12-20 12s-20-4-20-12c0-9 7-20 20-33z"/><path d="M22 42c7 4 13 4 20 0" stroke="${c2}"/></svg>`,
-        med:`<svg ${common}><path class="glyph-core" d="M25 12h14v13h13v14H39v13H25V39H12V25h13z"/><path class="anim-pulse" d="M32 18v28M18 32h28" stroke="${c2}"/></svg>`,
-        dome:`<svg ${common}><path class="glyph-core anim-pulse" d="M12 44c4-20 36-20 40 0z"/><path d="M18 44h28M32 16v28" stroke="${c2}"/></svg>`,
-        decoy:`<svg ${common}><circle class="glyph-core" cx="24" cy="32" r="10"/><circle class="anim-pulse" cx="40" cy="32" r="10" stroke="${c2}"/><path d="M20 50c7-5 17-5 24 0"/></svg>`,
-        diamond:`<svg ${common}><path class="glyph-core anim-pulse" d="M32 8l20 18-20 30-20-30z"/><path d="M12 26h40M24 26l8 30 8-30" stroke="${c2}"/></svg>`,
-        castle:`<svg ${common}><path class="glyph-core" d="M14 52V20h8v8h8v-8h8v8h8v-8h4v32z"/><path d="M24 52V40c0-7 16-7 16 0v12" stroke="${c2}"/></svg>`,
-        battery:`<svg ${common}><rect class="glyph-core" x="18" y="16" width="28" height="36" rx="6"/><path d="M26 10h12M25 34h14M32 24v20" stroke="${c2}" class="anim-zap"/></svg>`,
-        nitro:`<svg ${common}><path class="glyph-core anim-zap" d="M10 38c11-18 31-24 44-22-8 7-10 15-8 24-11-3-22-1-36-2z"/><path d="M22 45h24M30 24l-8 10h11l-4 10 12-16H30z" stroke="${c2}"/></svg>`,
-        kick:`<svg ${common}><path class="glyph-core anim-pulse" d="M16 46h20l10-12-12-5-6 7H16z"/><path d="M43 18l8 8M50 14l8 8M38 11l7 7" stroke="${c2}"/></svg>`,
-        gate:`<svg ${common}><path class="glyph-core anim-pulse" d="M16 12h32v40H16z"/><path d="M24 20h16M24 32h16M24 44h16" stroke="${c2}"/></svg>`,
-        slide:`<svg ${common}><path class="glyph-core anim-float" d="M12 44c15 0 20-18 34-18h6"/><path d="M18 50h32M39 18l9 8-9 8" stroke="${c2}"/></svg>`
-      };
-      return `<span class="legend-glyph" aria-hidden="true">${map[kind] || map.smart}</span>`;
-    }
-
-    const legendsTop = [
-      ["Valkyrie","3,035 kills","872K damage","wing"],
-      ["Rampart","2,215 kills","616K damage","wrench"],
-      ["Axle","1,860 kills","608K damage","wheel"],
-      ["Octane","1,718 kills","517K damage","stim"],
-      ["Conduit","1,412 kills","405K damage","battery"],
-      ["Caustic","1,408 kills","423K damage","hazard"]
-    ];
-    document.getElementById("legendList").innerHTML = legendsTop.map(([name,kills,dmg,g]) => `
-      <div class="item"><div style="display:flex;gap:10px;align-items:center">${glyph(g,34)}<div><div class="name">${name}</div><div class="sub">${dmg}</div></div></div><strong>${kills}</strong></div>
-    `).join("");
-
-    function tierOnePacks(level){
-      const l = Math.max(1, Math.min(500, level));
-      let packs = 0;
-      if(l >= 2) packs += Math.min(l,20) - 1;
-      if(l >= 22) packs += Math.floor((Math.min(l,300)-20)/2);
-      if(l >= 305) packs += Math.floor((Math.min(l,500)-300)/5);
-      return Math.max(0,packs);
-    }
-    function prestigePacks(level){ return Math.floor((Math.max(1,Math.min(500,level))/500)*115); }
-    function calcHL(){
-      const tier = Number(document.getElementById("hlTier").value);
-      const level = Number(document.getElementById("hlLevel").value || 1);
-      const bought = Number(document.getElementById("hlBought").value || 0);
-      const extra = Number(document.getElementById("hlExtra").value || 0);
-      const resets = Number(document.getElementById("hlResets").value || 0);
-      const knownRaw = document.getElementById("hlKnown").value;
-      let levelPacks = tierOnePacks(tier === 1 ? level : 500);
-      if(tier >= 2) levelPacks += tier === 2 ? prestigePacks(level) : 115;
-      if(tier >= 3) levelPacks += tier === 3 ? prestigePacks(level) : 115;
-      if(tier >= 4) levelPacks += tier === 4 ? prestigePacks(level) : 115;
-      const lifetime = levelPacks + bought + extra;
-      let best = knownRaw === "" ? lifetime - resets*500 : Number(knownRaw);
-      best = Math.max(0, Math.min(499, best));
-      const low = Math.max(0,best-25), high = Math.min(499,best+25);
-      document.getElementById("hlMain").textContent = `${best} / 500`;
-      document.getElementById("hlBar").style.width = `${(best/500)*100}%`;
-      document.getElementById("hlLow").textContent = low;
-      document.getElementById("hlBest").textContent = best;
-      document.getElementById("hlHigh").textContent = high;
-      document.getElementById("hlSummary").textContent = `Best estimate: ${best} packs since last shards. Guaranteed within ${500-best} more Apex Packs max.`;
-    }
-    document.getElementById("hlCalc").addEventListener("click", calcHL);
-    ["hlTier","hlLevel","hlBought","hlExtra","hlResets","hlKnown"].forEach(id=>document.getElementById(id).addEventListener("input",calcHL));
-    calcHL();
-
-    const packItems = {
-      starter: [
-        ["fire","Hot Drop"],["skull","Cracked"],["diamond","Carry"],["dome","Reset"],["drone","Comms"],["rift","Quitters"],["scope","Rank"],["bomb","Bomb"]
-      ],
-      wraith: [["portal","Void Ring"],["rift","Phase Slip"],["blade","Kunai Edge"],["eye","Voices"],["portal","Portal Out"],["skull","Not Here"],["bolt","Sweaty"],["rift","Dimensional"]],
-      pathfinder: [["robot","Friendly"],["arrow","Zipline"],["drone","Beacon"],["scope","Scan Area"],["bolt","Grapple Pop"],["diamond","High Five"],["robot","Smile Bot"],["gate","Path Set"]],
-      octane: [["stim","Stim Up"],["bolt","Zoomin"],["jump","Launch Pad"],["skull","Full Send"],["stim","Need Speed"],["fire","Hot Legs"],["slide","Too Fast"],["hazard","Danger Push"]],
-      valkyrie: [["wing","VTOL"],["rocket","Missiles"],["scope","Enemy Locked"],["jet","On My Way"],["wing","Spread Wings"],["fire","Afterburn"],["arrow","Sky Rotate"],["diamond","Bandit"]],
-      horizon: [["gravity","Black Hole"],["rift","Zero G"],["gate","Gravity Lift"],["smart","Science"],["gravity","Event Horizon"],["portal","Space Mom"],["bolt","Orbit"],["scope","Star Read"]],
-      revenant: [["skull","Silence"],["rift","Shadow Pounce"],["skull","Death Mark"],["blade","Claws"],["eye","Death Eye"],["skull","No Mercy"],["smoke","Nightmare"],["rift","Forged Hate"]],
-      bangalore: [["smoke","Pop Smoke"],["scope","Tracer"],["arrow","Double Time"],["bomb","Rolling Thunder"],["smart","Mission Ready"],["shield","Ammo Up"],["smoke","Cover Me"],["fire","Weapon Supply"]],
-      fuse: [["bomb","Frag Out"],["fire","Motherlode"],["bomb","Cluster"],["riot","Knuckle"],["fire","Kaboom"],["shield","Salvo"],["bomb","Good Laugh"],["fire","Ripper"]],
-      ash: [["blade","Phase Blade"],["rift","Phase Tear"],["skull","Marked"],["smart","Rat Tracker"],["blade","Cold Steel"],["rift","Void Cut"],["eye","Predator"],["skull","Synthetic"]],
-      maggie: [["riot","Riot Flame"],["drill","Drill"],["bomb","Wrecking Ball"],["fire","Warlord"],["skull","Skull Bolt"],["riot","Back Off"],["fire","Shotgun Shell"],["blade","Rippa"]],
-      ballistic: [["smart","Smart Bullet"],["scope","Locked"],["battery","Overheat"],["diamond","Veteran"],["arrow","Whistle"],["fire","Tempest"],["shield","Holster"],["smart","Precision"]],
-      sparrow: [["arrow","Arrow Mark"],["scope","Hunter"],["raven","Scout"],["scan","Signal"],["arrow","Pierce"],["drone","Tracker"],["bolt","Quickshot"],["diamond","Perch"]],
-      bloodhound: [["raven","Raven Watch"],["scan","Scan Pulse"],["scope","Allfather"],["skull","Beast"],["arrow","Trail"],["raven","Hunter"],["eye","Sight"],["fire","Blood Rite"]],
-      crypto: [["drone","Drone Eye"],["bolt","EMP"],["smart","Hack"],["shield","Firewall"],["eye","Camera"],["gate","Beacon"],["battery","Crypto Key"],["skull","Data Leak"]],
-      seer: [["eye","Spotlight"],["eye","Heart Scan"],["drone","Microdrones"],["diamond","Moth"],["scan","Reveal"],["smart","Encore"],["bolt","Interrupt"],["scope","Focus"]],
-      vantage: [["scope","Rifle Scope"],["raven","Echo"],["scope","Laser Ping"],["skull","Headshot"],["eye","Overwatch"],["arrow","Long Shot"],["mountain","Nest"],["diamond","Mark"]],
-      caustic: [["hazard","Gas Trap"],["smoke","Toxic Cloud"],["flask","Lab Flask"],["skull","Nox"],["hazard","Breathe It"],["mask","Gas Mask"],["bomb","Nox Grenade"],["shield","Experiment"]],
-      wattson: [["bolt","Fence Node"],["battery","Battery"],["dome","Pylon"],["heart","Electric Heart"],["bolt","Static"],["smart","Cute Spark"],["shield","Shield Regen"],["gate","Perimeter"]],
-      rampart: [["wrench","Spanner"],["turret","Sheila"],["shield","Amped Wall"],["spray","Paint Can"],["bolt","Tool Bolt"],["diamond","Modded"],["fire","Minigun Heat"],["smart","Problem Fix"]],
-      catalyst: [["ferro","Ferro Drop"],["wall","Dark Veil"],["crystal","Crystal Thorn"],["eye","Witchy Eye"],["moon","Moon Rune"],["ferro","Liquid Hand"],["rift","Dark Pull"],["hazard","Spike Strip"]],
-      lifeline: [["med","DOC Drone"],["heart","Revive Hand"],["medkit","Med Kit"],["drop","Care Package"],["bolt","Beat Drop"],["med","Healing Cross"],["shield","Safe Rez"],["battery","Quick Heal"]],
-      gibraltar: [["dome","Dome Shield"],["castle","Fortress"],["rocket","Bombardment"],["shield","Guardian"],["anchor","Anchor"],["heart","Bruddah"],["fire","Air Strike"],["diamond","Fortified"]],
-      mirage: [["decoy","Holo Decoy"],["eye","Bamboozle"],["smart","Wink"],["decoy","Clone Party"],["bolt","Holo Flash"],["diamond","Showtime"],["skull","Fake Out"],["hand","Finger Guns"]],
-      loba: [["diamond","Diamond"],["gate","Black Market"],["rift","Teleport"],["bag","Loot Bag"],["raven","Wolf Motif"],["crown","Queen"],["eye","Find Loot"],["heart","Mine"]],
-      newcastle: [["castle","Castle Wall"],["shield","Mobile Shield"],["med","Drag Revive"],["dome","Barrier"],["fist","Protector"],["diamond","Hero Star"],["shield","Hold Line"],["heart","Got Your Back"]],
-      conduit: [["battery","Battery Core"],["shield","Shield Burst"],["bolt","Spark Charge"],["wave","Energy Wave"],["heart","Squad Lit"],["diamond","Radiant"],["gate","Boost Lane"],["bolt","Overcharge"]],
-      alter: [["rift","Portal Tear"],["skull","Catlike"],["hand","Dimensional"],["gate","Keyhole"],["eye","Neon Eye"],["rift","Phase Slip"],["moon","Reality"],["blade","Cut Through"]],
-      axle: [["wheel","Drift Wheel"],["gate","Nitro Gate"],["slide","Boosted Slide"],["kick","Kickstart"],["nitro","Nitro Trail"],["fire","Overclocked"],["arrow","Racing Line"],["bolt","Full Throttle"]]
+    const stickerDefs = {
+      starter:[["hot","Hot Drop"],["crack","Cracked"],["carry","Carry"],["reset","Reset"],["comms","Comms"],["door","Quitters"],["rank","Rank"],["boom","Bomb"]],
+      wraith:[["w_void","Into the Void"],["w_kunai","Kunai Cut"],["w_phase","Phase Walk"],["w_portal","Dimensional Rift"],["w_voice","Voices"],["w_ghost","Not Here"],["w_storm","Void Storm"],["w_watch","Watching"]],
+      pathfinder:[["p_face","Friendly!"],["p_grapple","Grapple On"],["p_zip","Zipline Time"],["p_beacon","Survey Beacon"],["p_hi","High Five"],["p_heart","Good Vibes"],["p_hook","Hook Swing"],["p_smile","MRVN Smile"]],
+      maggie:[["m_ball","Wrecking Ball"],["m_drill","Breaching Drill"],["m_shell","Shotgun Shell"],["m_riot","Riot Flame"],["m_skull","Skull Bolt"],["m_warlord","Warlord"],["m_spikes","Spiked"],["m_rippa","Rippa"]],
+      axle:[["ax_wheel","Drift Wheel"],["ax_gate","Nitro Gate"],["ax_slide","Boosted Slide"],["ax_kick","Kickstart"],["ax_nitro","Nitro Trail"],["ax_clock","Overclocked"],["ax_line","Racing Line"],["ax_full","Full Throttle"]],
+      bangalore:[["b_smoke","Pop Smoke"],["b_tracer","Tracer Rounds"],["b_double","Double Time"],["b_thunder","Rolling Thunder"],["b_soldier","Mission Ready"],["b_ammo","Ammo Up"],["b_cover","Cover Me"],["b_badge","Affirmative"]],
+      fuse:[["f_frag","Frag Out"],["f_cluster","Knuckle Cluster"],["f_fire","Motherlode"],["f_boom","KA-BOOM"],["f_grin","Good Laugh"],["f_shell","Shell Shock"],["f_thumb","Good On Ya"],["f_rip","Ripper"]],
+      ash:[["a_blade","Phase Blade"],["a_tear","Phase Tear"],["a_mask","Steel Mask"],["a_mark","Marked"],["a_eye","Rat Tracker"],["a_cold","Cold Logic"],["a_cut","Void Cut"],["a_sim","Synthetic"]],
+      ballistic:[["ba_smart","Smart Bullet"],["ba_pistol","Pistol Trio"],["ba_heat","Overheat"],["ba_vet","Veteran"],["ba_scope","Precision"],["ba_whistle","Whistle"],["ba_holster","Holster Crest"],["ba_class","Elegance"]],
+      sparrow:[["sp_arrow","Arrow Mark"],["sp_scope","Hunter Scope"],["sp_drone","Scout Drone"],["sp_signal","Signal Ping"],["sp_perch","Perch"],["sp_pierce","Pierce"],["sp_quick","Quickshot"],["sp_star","Clean Shot"]],
+      octane:[["o_stim","Stim Up"],["o_speed","Zoomin’"],["o_pad","Launch Pad"],["o_mask","Let’s Go"],["o_legs","Metal Legs"],["o_send","Full Send"],["o_juice","Green Juice"],["o_fast","Too Fast"]],
+      valkyrie:[["v_vtol","VTOL"],["v_missile","Missile Swarm"],["v_wing","Spread Wings"],["v_lock","Enemy Locked"],["v_sky","Sky Rotate"],["v_burn","Afterburn"],["v_badge","Bandit"],["v_cloud","On My Way"]],
+      horizon:[["h_black","Black Hole"],["h_lift","Gravity Lift"],["h_zero","Zero G"],["h_science","Science!"],["h_orbit","Event Horizon"],["h_moon","Moon Mind"],["h_star","Star Pull"],["h_cup","Quiet Please"]],
+      revenant:[["r_skull","Silence"],["r_pounce","Shadow Pounce"],["r_totem","Totem"],["r_claw","Death Mark"],["r_eye","Death Eye"],["r_forged","Forged Hate"],["r_shadow","Nightmare"],["r_inev","Inevitable"]],
+      alter:[["al_portal","Portal Tear"],["al_grin","Catlike Grin"],["al_hand","Dimensional Hand"],["al_key","Void Keyhole"],["al_eye","Neon Eye"],["al_slip","Phase Slip"],["al_reality","Reality Bent"],["al_cut","Cut Through"]],
+      bloodhound:[["bh_raven","Raven’s Watch"],["bh_scan","Scan Pulse"],["bh_track","Tracker Footprint"],["bh_beast","Beast Mode"],["bh_eye","Allfather Eye"],["bh_chop","Raven Chop"],["bh_hunt","Blood Hunt"],["bh_trial","Trail Found"]],
+      crypto:[["c_drone","Drone Eye"],["c_emp","EMP Burst"],["c_laptop","Hack System"],["c_mask","Stealth Mask"],["c_beacon","Beacon"],["c_shield","Broken Shield"],["c_key","Crypto Key"],["c_code","Code Red"]],
+      seer:[["s_eye","Spotlight Eye"],["s_moth","Moth Motif"],["s_heart","Heartbeat"],["s_swarm","Microdrones"],["s_pose","Star Pose"],["s_pulse","Reveal Pulse"],["s_focus","Focus"],["s_stage","Encore"]],
+      vantage:[["va_scope","Rifle Scope"],["va_echo","Echo Bat"],["va_laser","Laser Ping"],["va_nest","Sniper Nest"],["va_head","Headshot"],["va_eye","Overwatch"],["va_mark","Marked"],["va_long","Long Hit"]],
+      caustic:[["ca_trap","Gas Trap"],["ca_mask","Gas Mask"],["ca_hazard","Hazard"],["ca_cloud","Toxic Cloud"],["ca_flask","Lab Flask"],["ca_nox","Nox Grenade"],["ca_test","Experiment"],["ca_breathe","Breathe It"]],
+      wattson:[["wa_node","Fence Node"],["wa_bolt","Lightning Bolt"],["wa_pylon","Pylon"],["wa_spark","Cute Spark"],["wa_battery","Battery Charge"],["wa_heart","Electric Heart"],["wa_gate","Perimeter"],["wa_bread","Baguette"]],
+      rampart:[["ra_wrench","Spanner"],["ra_sheila","Sheila"],["ra_wall","Amped Wall"],["ra_gum","Bubble Grin"],["ra_bolt","Tool Bolt"],["ra_spray","Spray Paint"],["ra_mod","Modded"],["ra_heat","Minigun Heat"]],
+      catalyst:[["cat_drop","Ferro Drop"],["cat_veil","Dark Veil"],["cat_moon","Moon Rune"],["cat_thorn","Crystal Thorn"],["cat_eye","Witchy Eye"],["cat_hand","Liquid Hand"],["cat_spike","Spike Strip"],["cat_pull","Dark Pull"]],
+      lifeline:[["li_doc","DOC Drone"],["li_revive","Revive Hand"],["li_med","Med Kit"],["li_care","Care Package"],["li_music","Music Beat"],["li_cross","Healing Cross"],["li_safe","Safe Rez"],["li_quick","Quick Heal"]],
+      gibraltar:[["g_dome","Dome Shield"],["g_fort","Fortress"],["g_bomb","Bombardment"],["g_thumb","Bruddah"],["g_anchor","Anchor"],["g_guard","Guardian"],["g_fist","Fortified"],["g_safe","Safe Bubble"]],
+      mirage:[["mi_decoy","Holo Decoy"],["mi_wink","Wink"],["mi_party","Party Time"],["mi_bam","Bamboozle"],["mi_holo","Hologram"],["mi_finger","Finger Guns"],["mi_clone","Clone Army"],["mi_smirk","You Got Bamboozled"]],
+      loba:[["lo_diamond","Diamond"],["lo_market","Black Market"],["lo_jump","Bracelet"],["lo_bag","Loot Bag"],["lo_wolf","Wolf Motif"],["lo_queen","Queen"],["lo_vault","Vault Thief"],["lo_mine","Mine"]],
+      newcastle:[["n_shield","Mobile Shield"],["n_wall","Castle Wall"],["n_drag","Drag Revive"],["n_star","Hero Star"],["n_barrier","Barrier"],["n_fist","Protector Fist"],["n_hold","Hold Line"],["n_back","Got Your Back"]],
+      conduit:[["co_battery","Battery Core"],["co_burst","Shield Burst"],["co_spark","Spark Charge"],["co_wave","Energy Wave"],["co_grin","Friendly Grin"],["co_over","Overcharge"],["co_radiant","Radiant"],["co_lit","Squad Lit"]]
     };
 
-    function normalizeGlyphKind(kind){
-      const aliases = {
-        jump:"gate", rocket:"wing", shield:"dome", scan:"scope", flask:"hazard", mask:"hazard", turret:"wrench", spray:"wrench",
-        wall:"ferro", crystal:"ferro", moon:"rift", medkit:"med", drop:"dome", anchor:"dome", hand:"rift", bag:"diamond", crown:"diamond",
-        fist:"dome", wave:"battery", heart:"med", mountain:"scope", drill:"riot"
+    function svgWrap(inner){return `<span class="emoji-glyph"><svg class="sticker-svg" viewBox="0 0 64 64">${inner}</svg></span>`}
+    const S = {
+      fire:`<path class="fillA pulse" d="M34 8c2 12-8 13-3 24 2-7 9-9 10-18 9 8 15 22 7 33-8 11-26 10-33-1-8-12 0-24 10-33-1 7 2 11 6 14-1-7 0-13 3-19z"/><path class="thin" d="M25 50c-7-9 3-16 8-23 0 7 9 9 7 18"/>`,
+      skull:`<path class="dark" d="M20 25c0-10 24-10 24 0v13c0 9-24 9-24 0z"/><circle class="fillA" cx="27" cy="32" r="4"/><circle class="fillA" cx="37" cy="32" r="4"/><path class="thin" d="M28 44h8M22 20 15 12M42 20l7-8"/>`,
+      crown:`<path class="fillA pulse" d="M12 45h40l-4-26-10 13-6-18-6 18-10-13z"/><path class="thin" d="M16 50h32"/>`,
+      shield:`<path class="fillA" d="M32 8 52 16v14c0 13-8 22-20 27-12-5-20-14-20-27V16z"/><path class="thin" d="M22 31h20M32 18v28"/>`,
+      drone:`<rect class="dark" x="20" y="22" width="24" height="20" rx="8"/><circle class="fillA pulse" cx="32" cy="32" r="6"/><path class="thin" d="M20 32H8M44 32h12M16 18l-7-7M48 18l7-7"/>`,
+      gate:`<rect class="dark" x="15" y="10" width="34" height="44" rx="7"/><path class="thin zap" d="M24 19h16M24 31h16M24 43h16"/><path class="fillA" d="M20 14h5v36h-5zM39 14h5v36h-5z"/>`,
+      diamond:`<path class="fillA pulse" d="M32 8l20 18-20 30-20-30z"/><path class="thin" d="M12 26h40M24 26l8 30 8-30"/>`,
+      bomb:`<circle class="fillA pulse" cx="31" cy="36" r="16"/><path class="line" d="M42 21l8-8M46 12l7 7"/><path class="thin" d="M24 22c5-6 12-6 18 0"/>`,
+      portal:`<ellipse class="line spin" cx="32" cy="32" rx="20" ry="14"/><path class="thin pulse" d="M18 33c8-10 20-10 28 0"/><circle class="fillA" cx="32" cy="32" r="7"/>`,
+      blade:`<path class="fillA float" d="M17 51 47 11l6 5-31 39z"/><path class="thin" d="M22 45 12 54M43 18l9-7"/><path class="fillB" d="M25 43 42 20l3 3-17 23z"/>`,
+      eye:`<path class="line" d="M9 32s8-14 23-14 23 14 23 14-8 14-23 14S9 32 9 32z"/><circle class="fillA pulse" cx="32" cy="32" r="8"/><circle fill="#fff" cx="35" cy="29" r="2"/>`,
+      smoke:`<path class="line float" d="M18 42c-8-1-10-13 1-16 1-11 17-14 23-5 9-1 15 8 10 16"/><path class="thin" d="M16 49h34M22 56h21"/>`,
+      robot:`<rect class="dark" x="15" y="17" width="34" height="30" rx="10"/><circle class="fillA" cx="27" cy="32" r="5"/><circle class="fillA" cx="39" cy="32" r="5"/><path class="thin" d="M32 17V8M24 51h16"/><path stroke="#fff" stroke-width="2.2" d="M25 40h14"/>`,
+      hook:`<path class="line float" d="M17 16c8-7 22-6 28 2 6 8 3 20-7 24-8 3-17 0-20-8"/><path class="fillA" d="M38 39l10 10-7 5-9-12z"/>`,
+      zip:`<path class="line" d="M9 46 55 18"/><path class="fillA float" d="M25 31h14l-4 10H21z"/><path class="thin" d="M25 41h14"/>`,
+      hand:`<path class="fillA" d="M18 49c-2-10 0-24 3-24 2 0 3 7 3 10V17c0-4 6-4 6 0v16-19c0-4 6-4 6 0v20-16c0-4 6-4 6 0v20l4-7c2-4 8-1 6 4l-7 17z"/>`,
+      heart:`<path class="fillA pulse" d="M32 53S12 41 12 25c0-12 15-14 20-3 5-11 20-9 20 3 0 16-20 28-20 28z"/><path class="thin" d="M18 34h9l4-8 5 15 4-7h7"/>`,
+      stim:`<path class="fillA float" d="M24 12h16l-3 34-5 8-5-8z"/><path class="thin" d="M22 24h20M26 34h12"/><path stroke="#fff" stroke-width="2" d="M32 15v33"/>`,
+      speed:`<path class="line" d="M10 38c13-16 29-19 44-12"/><path class="fillA zap" d="M35 14 21 38h11l-4 13 17-26H34z"/><path class="thin" d="M13 48h30"/>`,
+      pad:`<path class="fillA" d="M15 40h34l-5 10H20z"/><path class="fillB" d="M20 24h24l5 16H15z"/><path class="thin pulse" d="M32 20v-9M24 17l-4-7M40 17l4-7"/>`,
+      mask:`<path class="dark" d="M18 20c8-9 20-9 28 0v17c-4 8-9 13-14 16-5-3-10-8-14-16z"/><path class="fillA" d="M23 31h8l-4 5zM33 31h8l-4 5z"/><path class="thin" d="M25 43h14"/>`,
+      legs:`<path class="line" d="M25 12v18l-8 20M39 12v18l8 20"/><path class="fillA" d="M12 51h15M37 51h15"/><path class="thin" d="M25 30h14"/>`,
+      wing:`<path class="fillA float" d="M32 49V15M31 25 11 17l9 19 11 4M33 25l20-8-9 19-11 4"/><path class="thin" d="M25 50h14"/>`,
+      missile:`<path class="fillA float" d="M17 45 40 16l8 8-29 23z"/><path class="fillB" d="M13 49l8-2-6-6z"/><path class="thin" d="M41 16l7-5M25 33l8 8"/>`,
+      scope:`<circle class="line" cx="32" cy="32" r="20"/><path class="thin pulse" d="M32 10v44M10 32h44"/><circle class="fillA" cx="32" cy="32" r="5"/>`,
+      arrow:`<path class="fillA" d="M14 48 46 16h-13v-8h27v27h-8V22L20 54z"/>`,
+      gravity:`<circle class="fillA spin" cx="32" cy="32" r="8"/><ellipse class="thin" cx="32" cy="32" rx="24" ry="10"/><ellipse class="thin" cx="32" cy="32" rx="10" ry="24"/>`,
+      lift:`<ellipse class="fillA pulse" cx="32" cy="48" rx="20" ry="7"/><path class="thin" d="M20 38c8-6 16-6 24 0M24 28c5-4 11-4 16 0M28 18c3-2 5-2 8 0"/>`,
+      flask:`<path class="fillA" d="M25 10h14v8l12 28c2 5-2 8-7 8H20c-5 0-9-3-7-8l12-28z"/><path class="thin" d="M24 18h16M20 43h24"/>`,
+      moon:`<path class="fillA" d="M42 9c-16 3-24 18-18 31 4 9 14 14 25 11-8 7-23 6-32-3C6 37 8 20 20 11c7-5 15-6 22-2z"/>`,
+      star:`<path class="fillA pulse" d="M32 7l7 17 18 1-14 11 5 18-16-10-16 10 5-18L7 25l18-1z"/>`,
+      cup:`<path class="fillA" d="M18 20h28l-4 28H22z"/><path class="thin" d="M46 25h7c0 9-5 13-11 12M20 52h24M24 16h16"/>`,
+      claw:`<path class="fillA" d="M12 47 31 12l-6 34 15-31-4 35 16-27-8 29z"/>`,
+      totem:`<path class="dark" d="M25 12h14l5 35-12 9-12-9z"/><circle class="fillA pulse" cx="32" cy="29" r="6"/><path class="thin" d="M22 47h20"/>`,
+      drill:`<path class="fillA" d="M12 41 39 14l13 13-27 27z"/><path class="thin" d="M32 21l11 11M26 27l11 11M20 33l11 11"/><path class="fillB" d="M45 12l7 7-4 4-7-7z"/>`,
+      shell:`<path class="fillA" d="M24 12h16v34l-8 8-8-8z"/><path class="thin" d="M24 22h16M24 34h16"/><path fill="#fff" opacity=".65" d="M28 15h8v28h-8z"/>`,
+      ball:`<circle class="fillA spin" cx="32" cy="32" r="16"/><path class="thin" d="M32 9v10M32 45v10M9 32h10M45 32h10M17 17l7 7M40 40l7 7"/>`,
+      spike:`<path class="fillA" d="M10 50 24 16l8 34 8-34 14 34z"/><path class="thin" d="M16 50h32"/>`,
+      wheel:`<circle class="line spin" cx="32" cy="32" r="21"/><circle class="fillA" cx="32" cy="32" r="8"/><path class="thin" d="M32 11v13M32 40v13M11 32h13M40 32h13M17 17l9 9M38 38l9 9"/>`,
+      slide:`<path class="line float" d="M10 45c17 0 21-18 36-18h8"/><path class="fillA" d="M37 18l11 9-11 9"/><path class="thin" d="M18 51h32"/>`,
+      kick:`<path class="fillA pulse" d="M15 46h22l10-12-13-6-7 8H15z"/><path class="thin" d="M44 18l8 8M51 14l7 8M38 11l7 7"/>`,
+      nitro:`<path class="fillA zap" d="M10 38c12-18 31-24 44-22-8 7-10 15-8 24-11-3-22-1-36-2z"/><path class="thin" d="M22 45h24M30 24l-8 10h11l-4 10 12-16H30z"/>`,
+      battery:`<rect class="dark" x="18" y="16" width="28" height="36" rx="6"/><path class="thin" d="M26 10h12M25 34h14"/><path class="fillA zap" d="M34 20 25 36h7l-2 10 11-18h-7z"/>`
+    };
+
+    function art(id){
+      const table = {
+        hot:S.fire, crack:S.skull, carry:S.crown, reset:S.shield, comms:S.drone, door:S.gate, rank:S.diamond, boom:S.bomb,
+        w_void:S.portal,w_kunai:S.blade,w_phase:S.bolt,w_portal:S.portal,w_voice:S.eye,w_ghost:S.smoke,w_storm:S.portal,w_watch:S.eye,
+        p_face:S.robot,p_grapple:S.hook,p_zip:S.zip,p_beacon:S.scope,p_hi:S.hand,p_heart:S.heart,p_hook:S.hook,p_smile:S.robot,
+        m_ball:S.ball,m_drill:S.drill,m_shell:S.shell,m_riot:S.fire,m_skull:S.skull,m_warlord:S.mask,m_spikes:S.spike,m_rippa:S.blade,
+        ax_wheel:S.wheel,ax_gate:S.gate,ax_slide:S.slide,ax_kick:S.kick,ax_nitro:S.nitro,ax_clock:S.bolt,ax_line:S.arrow,ax_full:S.speed,
+        b_smoke:S.smoke,b_tracer:S.scope,b_double:S.speed,b_thunder:S.missile,b_soldier:S.mask,b_ammo:S.shell,b_cover:S.shield,b_badge:S.diamond,
+        f_frag:S.bomb,f_cluster:S.bomb,f_fire:S.fire,f_boom:S.fire,f_grin:S.heart,f_shell:S.shell,f_thumb:S.hand,f_rip:S.blade,
+        a_blade:S.blade,a_tear:S.portal,a_mask:S.mask,a_mark:S.scope,a_eye:S.eye,a_cold:S.blade,a_cut:S.blade,a_sim:S.robot,
+        ba_smart:S.scope,ba_pistol:S.shell,ba_heat:S.fire,ba_vet:S.mask,ba_scope:S.scope,ba_whistle:S.drone,ba_holster:S.diamond,ba_class:S.crown,
+        sp_arrow:S.arrow,sp_scope:S.scope,sp_drone:S.drone,sp_signal:S.scope,sp_perch:S.raven||S.arrow,sp_pierce:S.arrow,sp_quick:S.bolt,sp_star:S.star,
+        o_stim:S.stim,o_speed:S.speed,o_pad:S.pad,o_mask:S.mask,o_legs:S.legs,o_send:S.bolt,o_juice:S.stim,o_fast:S.speed,
+        v_vtol:S.wing,v_missile:S.missile,v_wing:S.wing,v_lock:S.scope,v_sky:S.arrow,v_burn:S.fire,v_badge:S.diamond,v_cloud:S.smoke,
+        h_black:S.gravity,h_lift:S.lift,h_zero:S.gravity,h_science:S.flask,h_orbit:S.gravity,h_moon:S.moon,h_star:S.star,h_cup:S.cup,
+        r_skull:S.skull,r_pounce:S.claw,r_totem:S.totem,r_claw:S.claw,r_eye:S.eye,r_forged:S.skull,r_shadow:S.smoke,r_inev:S.skull,
+        al_portal:S.portal,al_grin:S.mask,al_hand:S.hand,al_key:S.gate,al_eye:S.eye,al_slip:S.portal,al_reality:S.gravity,al_cut:S.blade,
+        bh_raven:S.arrow,bh_scan:S.scope,bh_track:S.footprint||S.scope,bh_beast:S.claw,bh_eye:S.eye,bh_chop:S.blade,bh_hunt:S.arrow,bh_trial:S.scope,
+        c_drone:S.drone,c_emp:S.bolt,c_laptop:S.gate,c_mask:S.mask,c_beacon:S.scope,c_shield:S.shield,c_key:S.gate,c_code:S.gate,
+        s_eye:S.eye,s_moth:S.wing,s_heart:S.heart,s_swarm:S.drone,s_pose:S.star,s_pulse:S.scope,s_focus:S.eye,s_stage:S.diamond,
+        va_scope:S.scope,va_echo:S.wing,va_laser:S.bolt,va_nest:S.shield,va_head:S.skull,va_eye:S.eye,va_mark:S.scope,va_long:S.arrow,
+        ca_trap:S.gate,ca_mask:S.mask,ca_hazard:S.spike,ca_cloud:S.smoke,ca_flask:S.flask,ca_nox:S.bomb,ca_test:S.flask,ca_breathe:S.mask,
+        wa_node:S.battery,wa_bolt:S.bolt,wa_pylon:S.dome||S.shield,wa_spark:S.heart,wa_battery:S.battery,wa_heart:S.heart,wa_gate:S.gate,wa_bread:S.shell,
+        ra_wrench:S.wrench||S.blade,ra_sheila:S.scope,ra_wall:S.shield,ra_gum:S.heart,ra_bolt:S.bolt,ra_spray:S.fire,ra_mod:S.blade,ra_heat:S.fire,
+        cat_drop:S.gravity,cat_veil:S.shield,cat_moon:S.moon,cat_thorn:S.spike,cat_eye:S.eye,cat_hand:S.hand,cat_spike:S.spike,cat_pull:S.gravity,
+        li_doc:S.drone,li_revive:S.hand,li_med:S.shield,li_care:S.box||S.shield,li_music:S.heart,li_cross:S.shield,li_safe:S.shield,li_quick:S.bolt,
+        g_dome:S.shield,g_fort:S.shield,g_bomb:S.missile,g_thumb:S.hand,g_anchor:S.shield,g_guard:S.shield,g_fist:S.hand,g_safe:S.shield,
+        mi_decoy:S.eye,mi_wink:S.eye,mi_party:S.star,mi_bam:S.bolt,mi_holo:S.eye,mi_finger:S.hand,mi_clone:S.eye,mi_smirk:S.heart,
+        lo_diamond:S.diamond,lo_market:S.gate,lo_jump:S.portal,lo_bag:S.shield,lo_wolf:S.claw,lo_queen:S.crown,lo_vault:S.gate,lo_mine:S.heart,
+        n_shield:S.shield,n_wall:S.shield,n_drag:S.hand,n_star:S.star,n_barrier:S.shield,n_fist:S.hand,n_hold:S.shield,n_back:S.heart,
+        co_battery:S.battery,co_burst:S.shield,co_spark:S.bolt,co_wave:S.wave||S.bolt,co_grin:S.heart,co_over:S.bolt,co_radiant:S.diamond,co_lit:S.fire
       };
-      return aliases[kind] || kind;
+      return `<span class="emoji-glyph"><svg class="sticker-svg" viewBox="0 0 64 64">${table[id] || S.diamond}</svg></span>`;
     }
 
+    function rgba(hex,a){const n=parseInt(hex.slice(1),16);return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`}
     const emojiPacks = [
-      {id:"starter", name:"Starter / Universal", price:0, unlocked:true, cat:"core", glyph:"diamond", colors:["#08130f","#2ee6c8","#ff5a5f","#d7fff5"], items:packItems.starter},
-      ...legendData.map(l => ({id:l.id, name:l.name+" Pack", price:0, cat:l.cat, glyph:l.glyph, colors:l.colors, items:packItems[l.id] || [[l.glyph,l.name]]}))
+      {id:"starter", name:"Starter / Universal", cat:"core", colors:["#08130f","#2ee6c8","#ff5a5f","#d7fff5"], items:stickerDefs.starter},
+      ...legendData.map(l => ({id:l.id, name:l.name+" Pack", cat:l.cat, colors:l.colors, items:stickerDefs[l.id] || []}))
     ];
 
-    function getUnlocked(){ return new Set(emojiPacks.map(p => p.id)); }
-    function saveUnlocked(set){ localStorage.setItem("apexiq-unlocked-v10", JSON.stringify([...set])); }
-    let activePack = localStorage.getItem("apexiq-active-pack-v10") || "starter";
+    let activePack = localStorage.getItem("apexiq-active-pack-v12") || "starter";
     let shopFilter = "all";
-
-    function stickerStyle(pack){
-      return `--packA:${rgba(pack.colors[1],.26)};--packB:${rgba(pack.colors[2],.22)};--packGlow:${rgba(pack.colors[1],.55)};color:${pack.colors[3]}`;
-    }
+    function stickerStyle(pack){return `--packA:${rgba(pack.colors[1],.30)};--packB:${rgba(pack.colors[2],.24)};--packGlow:${rgba(pack.colors[1],.62)};color:${pack.colors[3]}`}
 
     function renderEmojiTabs(){
-      const tabs = emojiPacks;
       const search = document.getElementById("emojiSearch")?.value?.trim().toLowerCase() || "";
       if(search){
         const found = emojiPacks.find(p => p.name.toLowerCase().includes(search) || p.items.some(item => item[1].toLowerCase().includes(search)));
         if(found) activePack = found.id;
       }
-      document.getElementById("emojiTabs").innerHTML = tabs.map(p=>`<button type="button" class="emoji-tab ${p.id===activePack?"active":""}" data-pack="${p.id}">${p.name}</button>`).join("");
-      document.querySelectorAll(".emoji-tab").forEach(btn=>btn.addEventListener("click",()=>{activePack=btn.dataset.pack;localStorage.setItem("apexiq-active-pack-v10",activePack);renderEmojiTabs()}));
+      document.getElementById("emojiTabs").innerHTML = emojiPacks.map(p=>`<button type="button" class="emoji-tab ${p.id===activePack?"active":""}" data-pack="${p.id}">${p.name}</button>`).join("");
+      document.querySelectorAll(".emoji-tab").forEach(btn=>btn.addEventListener("click",()=>{activePack=btn.dataset.pack;localStorage.setItem("apexiq-active-pack-v12",activePack);renderEmojiTabs()}));
       renderEmojiGrid();
     }
-
     function renderEmojiGrid(){
       const pack = emojiPacks.find(p=>p.id===activePack) || emojiPacks[0];
       document.getElementById("activePackName").textContent = pack.name;
       const search = document.getElementById("emojiSearch")?.value?.trim().toLowerCase() || "";
-      const items = pack.items.filter(([kind,label]) => !search || label.toLowerCase().includes(search) || pack.name.toLowerCase().includes(search));
-      document.getElementById("emojiGrid").innerHTML = items.map(([g,label])=>`
+      const items = pack.items.filter(([id,label]) => !search || label.toLowerCase().includes(search) || pack.name.toLowerCase().includes(search));
+      document.getElementById("emojiGrid").innerHTML = items.map(([id,label])=>`
         <div class="emoji-card" data-insert="[${pack.name.replace(" Pack","")}: ${label}]" style="${stickerStyle(pack)}">
-          <div><div class="emoji-glyph">${glyph(normalizeGlyphKind(g))}</div><div class="caption">${label}</div></div>
+          <div>${art(id)}<div class="caption">${label}</div></div>
         </div>
       `).join("") || `<div class="big-empty">No stickers found.</div>`;
       document.querySelectorAll(".emoji-card").forEach(card=>card.addEventListener("click",()=>{
@@ -856,48 +786,43 @@
         box.focus();
       }));
     }
-
     function renderPackFilters(){
-      const filters = [
-        ["all","All"],["assault","Assault"],["skirmisher","Skirmisher"],["recon","Recon"],["controller","Controller"],["support","Support"]
-      ];
+      const filters = [["all","All"],["assault","Assault"],["skirmisher","Skirmisher"],["recon","Recon"],["controller","Controller"],["support","Support"]];
       const root = document.getElementById("packFilters");
       if(!root) return;
       root.innerHTML = filters.map(([id,label]) => `<button type="button" class="filter-chip ${shopFilter===id?"active":""}" data-filter="${id}">${label}</button>`).join("");
       document.querySelectorAll("[data-filter]").forEach(btn=>btn.addEventListener("click",()=>{shopFilter=btn.dataset.filter;renderPackShop()}));
     }
-
     function renderPackShop(){
       renderPackFilters();
       const packs = emojiPacks.filter(pack => shopFilter === "all" || pack.cat === shopFilter || pack.id === "starter");
       document.getElementById("packShop").innerHTML = packs.map(pack=>`
         <div class="pack-card" style="${stickerStyle(pack)}">
           <div class="pack-title-row">
-            <div class="pack-mini-icon">${glyph(normalizeGlyphKind(pack.glyph))}</div>
+            <div class="pack-mini-icon">${art(pack.items[0]?.[0] || "hot")}</div>
             <div><div class="name">${pack.name}</div><div class="sub">${pack.cat} • ${pack.items.length} custom stickers</div></div>
             <span class="pill">Ready</span>
           </div>
-          <div class="pack-stickers">${pack.items.slice(0,4).map(([g,label])=>`<div class="emoji-card" style="${stickerStyle(pack)}"><div><div class="emoji-glyph">${glyph(normalizeGlyphKind(g))}</div><div class="caption">${label}</div></div></div>`).join("")}</div>
+          <div class="pack-stickers">${pack.items.slice(0,4).map(([id,label])=>`<div class="emoji-card" style="${stickerStyle(pack)}"><div>${art(id)}<div class="caption">${label}</div></div></div>`).join("")}</div>
           <button type="button" style="width:100%;margin-top:10px" class="use-pack secondary-btn" data-pack="${pack.id}">Use in composer</button>
         </div>
       `).join("");
       document.querySelectorAll(".use-pack").forEach(btn=>btn.addEventListener("click",()=>{
         activePack = btn.dataset.pack;
-        localStorage.setItem("apexiq-active-pack-v10",activePack);
+        localStorage.setItem("apexiq-active-pack-v12",activePack);
         renderEmojiTabs();
         document.getElementById("emojiDock").open = true;
         location.hash = "#squadCreate";
       }));
     }
-
     document.getElementById("emojiSearch")?.addEventListener("input", renderEmojiTabs);
 
     const demoPosts=[
       {id:"p1",name:"IMissAnyway",cat:"Wildcard",title:"Need teammates who stay close",body:"Looking for teammates who don’t insta-leave [Starter / Universal: Hot Drop] I play aggressive entry and need people who hold hands.",react:{fire:7,skull:3,crown:4},comments:[{n:"VoltGoblin",b:"I’m down later."}]},
       {id:"p2",name:"RankedDad",cat:"Ranked",title:"Gold/Plat grind",body:"Smart comms, no ego solo pushes. Need endgame players [Newcastle: Hold Line]",react:{fire:2,skull:0,crown:1},comments:[]}
     ];
-    function loadPosts(){try{const saved=localStorage.getItem("apexiq-posts-v10");if(!saved){localStorage.setItem("apexiq-posts-v10",JSON.stringify(demoPosts));return demoPosts}return JSON.parse(saved)}catch(e){return demoPosts}}
-    function savePosts(p){localStorage.setItem("apexiq-posts-v10",JSON.stringify(p))}
+    function loadPosts(){try{const saved=localStorage.getItem("apexiq-posts-v12");if(!saved){localStorage.setItem("apexiq-posts-v12",JSON.stringify(demoPosts));return demoPosts}return JSON.parse(saved)}catch(e){return demoPosts}}
+    function savePosts(p){localStorage.setItem("apexiq-posts-v12",JSON.stringify(p))}
     function renderPosts(){
       const filter=document.getElementById("forumFilter").value;
       let posts=loadPosts().filter(p=>filter==="All"||p.cat===filter);
@@ -918,15 +843,11 @@
           </div>
         </div>
       `).join("") || `<div class="big-empty">No posts yet.</div>`;
-
       document.querySelectorAll("[data-react]").forEach(btn=>btn.addEventListener("click",()=>{
-        const [id,key]=btn.dataset.react.split(":");
-        const posts=loadPosts(); const p=posts.find(x=>x.id===id); if(!p)return;
+        const [id,key]=btn.dataset.react.split(":"); const posts=loadPosts(); const p=posts.find(x=>x.id===id); if(!p)return;
         p.react[key]=(p.react[key]||0)+1; savePosts(posts); renderPosts();
       }));
-      document.querySelectorAll("[data-delete]").forEach(btn=>btn.addEventListener("click",()=>{
-        savePosts(loadPosts().filter(p=>p.id!==btn.dataset.delete)); renderPosts();
-      }));
+      document.querySelectorAll("[data-delete]").forEach(btn=>btn.addEventListener("click",()=>{savePosts(loadPosts().filter(p=>p.id!==btn.dataset.delete)); renderPosts()}));
       document.querySelectorAll("[data-comment]").forEach(btn=>btn.addEventListener("click",()=>{
         const id=btn.dataset.comment; const inp=document.getElementById("c-"+id); if(!inp.value.trim())return;
         const posts=loadPosts(); const p=posts.find(x=>x.id===id); if(!p)return;
@@ -941,47 +862,44 @@
     });
     document.getElementById("forumFilter").addEventListener("change",renderPosts);
 
+    const legendsTop = [["Valkyrie","3,035 kills","872K damage","v_wing"],["Rampart","2,215 kills","616K damage","ra_wrench"],["Axle","1,860 kills","608K damage","ax_wheel"],["Octane","1,718 kills","517K damage","o_stim"],["Conduit","1,412 kills","405K damage","co_battery"],["Caustic","1,408 kills","423K damage","ca_hazard"]];
+    document.getElementById("legendList").innerHTML = legendsTop.map(([name,kills,dmg,g]) => `<div class="item"><div style="display:flex;gap:10px;align-items:center">${art(g)}<div><div class="name">${name}</div><div class="sub">${dmg}</div></div></div><strong>${kills}</strong></div>`).join("");
+
+    function tierOnePacks(level){const l=Math.max(1,Math.min(500,level));let packs=0;if(l>=2)packs+=Math.min(l,20)-1;if(l>=22)packs+=Math.floor((Math.min(l,300)-20)/2);if(l>=305)packs+=Math.floor((Math.min(l,500)-300)/5);return Math.max(0,packs)}
+    function prestigePacks(level){return Math.floor((Math.max(1,Math.min(500,level))/500)*115)}
+    function calcHL(){
+      const tier=Number(document.getElementById("hlTier").value),level=Number(document.getElementById("hlLevel").value||1),bought=Number(document.getElementById("hlBought").value||0),extra=Number(document.getElementById("hlExtra").value||0),resets=Number(document.getElementById("hlResets").value||0),knownRaw=document.getElementById("hlKnown").value;
+      let levelPacks=tierOnePacks(tier===1?level:500); if(tier>=2)levelPacks+=tier===2?prestigePacks(level):115; if(tier>=3)levelPacks+=tier===3?prestigePacks(level):115; if(tier>=4)levelPacks+=tier===4?prestigePacks(level):115;
+      const lifetime=levelPacks+bought+extra; let best=knownRaw===""?lifetime-resets*500:Number(knownRaw); best=Math.max(0,Math.min(499,best)); const low=Math.max(0,best-25),high=Math.min(499,best+25);
+      document.getElementById("hlMain").textContent=`${best} / 500`; document.getElementById("hlBar").style.width=`${(best/500)*100}%`; document.getElementById("hlLow").textContent=low; document.getElementById("hlBest").textContent=best; document.getElementById("hlHigh").textContent=high; document.getElementById("hlSummary").textContent=`Best estimate: ${best} packs since last shards. Guaranteed within ${500-best} more Apex Packs max.`;
+    }
+    document.getElementById("hlCalc").addEventListener("click",calcHL); ["hlTier","hlLevel","hlBought","hlExtra","hlResets","hlKnown"].forEach(id=>document.getElementById(id).addEventListener("input",calcHL)); calcHL();
+
     const defaultTheme={id:"molten",intensity:112,blur:18,motion:true,glass:true,compact:false};
     const apexThemes=[
-      {id:"molten", name:"Molten Drop", cat:"apex", glyph:"bomb", fx:"fx-fire", colors:["#090a0f","#ff3d20","#ffa22e","#ffe5a8"], desc:"ApexIQ armor orange, lava glow, drop-ship heat"},
-      {id:"pred", name:"Neon Predator", cat:"apex", glyph:"diamond", fx:"fx-electric", colors:["#070914","#ff2f7d","#8d5cff","#ff9be0"], desc:"pred badge neon, violet beam, ranked sweat"},
-      {id:"storm", name:"Storm Point", cat:"apex", glyph:"scope", fx:"fx-scan", colors:["#061018","#14d7ff","#ffcc4d","#96fff0"], desc:"teal storm, golden light, ocean scan haze"},
-      ...legendData.map(l=>({id:l.id, name:l.name, cat:l.cat, glyph:l.glyph, fx:l.fx, colors:l.colors, desc:l.desc}))
+      {id:"molten", name:"Molten Drop", cat:"apex", icon:"f_boom", fx:"fx-fire", colors:["#090a0f","#ff3d20","#ffa22e","#ffe5a8"], desc:"ApexIQ armor orange, lava glow, drop-ship heat"},
+      {id:"pred", name:"Neon Predator", cat:"apex", icon:"rank", fx:"fx-electric", colors:["#070914","#ff2f7d","#8d5cff","#ff9be0"], desc:"pred badge neon, violet beam, ranked sweat"},
+      {id:"storm", name:"Storm Point", cat:"apex", icon:"scope", fx:"fx-scan", colors:["#061018","#14d7ff","#ffcc4d","#96fff0"], desc:"teal storm, golden light, ocean scan haze"},
+      ...legendData.map(l=>({id:l.id, name:l.name, cat:l.cat, icon:(stickerDefs[l.id]||[["hot"]])[0][0], fx:l.fx, colors:l.colors, desc:l.desc}))
     ];
 
-    function getThemeState(){try{return {...defaultTheme,...JSON.parse(localStorage.getItem("apexiq-theme-v10")||"{}")}}catch(e){return {...defaultTheme}}}
-    function saveThemeState(s){localStorage.setItem("apexiq-theme-v10",JSON.stringify(s))}
+    function getThemeState(){try{return {...defaultTheme,...JSON.parse(localStorage.getItem("apexiq-theme-v12")||"{}")}}catch(e){return {...defaultTheme}}}
+    function saveThemeState(s){localStorage.setItem("apexiq-theme-v12",JSON.stringify(s))}
     function themeById(id){return apexThemes.find(t=>t.id===id)||apexThemes[0]}
     function applyTheme(s=getThemeState()){
-      const t=themeById(s.id), mult=s.intensity/100, r=document.documentElement;
-      r.style.setProperty("--bg",t.colors[0]); r.style.setProperty("--accent",t.colors[1]); r.style.setProperty("--accent2",t.colors[2]); r.style.setProperty("--accent3",t.colors[3]);
-      r.style.setProperty("--glow",rgba(t.colors[1],.35*mult)); r.style.setProperty("--bg1",rgba(t.colors[1],.34*mult)); r.style.setProperty("--bg2",rgba(t.colors[2],.28*mult)); r.style.setProperty("--bg3",rgba(t.colors[3],.10*mult)); r.style.setProperty("--blur",s.blur+"px");
-      document.body.className = "";
-      document.body.classList.toggle("no-motion",!s.motion);
-      document.body.classList.toggle("glass-off",!s.glass);
-      document.body.classList.toggle("compact-on",s.compact);
-      document.body.classList.add(t.fx);
-      currentThemePill.textContent=t.name;
-      motionToggle.textContent="Motion: "+(s.motion?"On":"Off");
-      glassToggle.textContent="Glass: "+(s.glass?"On":"Off");
-      compactToggle.textContent="Compact: "+(s.compact?"On":"Off");
-      themeIntensity.value=s.intensity; themeBlur.value=s.blur;
-      renderThemes();
+      const t=themeById(s.id),mult=s.intensity/100,r=document.documentElement;
+      r.style.setProperty("--bg",t.colors[0]);r.style.setProperty("--accent",t.colors[1]);r.style.setProperty("--accent2",t.colors[2]);r.style.setProperty("--accent3",t.colors[3]);
+      r.style.setProperty("--glow",rgba(t.colors[1],.35*mult));r.style.setProperty("--bg1",rgba(t.colors[1],.34*mult));r.style.setProperty("--bg2",rgba(t.colors[2],.28*mult));r.style.setProperty("--bg3",rgba(t.colors[3],.10*mult));r.style.setProperty("--blur",s.blur+"px");
+      document.body.className="";document.body.classList.toggle("no-motion",!s.motion);document.body.classList.toggle("glass-off",!s.glass);document.body.classList.toggle("compact-on",s.compact);document.body.classList.add(t.fx);
+      currentThemePill.textContent=t.name;motionToggle.textContent="Motion: "+(s.motion?"On":"Off");glassToggle.textContent="Glass: "+(s.glass?"On":"Off");compactToggle.textContent="Compact: "+(s.compact?"On":"Off");themeIntensity.value=s.intensity;themeBlur.value=s.blur;renderThemes();
     }
     function renderThemes(){
-      const cat=themeCategory.value, s=getThemeState();
-      themeGrid.innerHTML=apexThemes.filter(t=>cat==="all"||t.cat===cat).map(t=>`
-        <button class="theme-tile ${s.id===t.id?"active":""}" data-theme="${t.id}" style="--tile-bg:${t.colors[0]};--tile-a:${rgba(t.colors[1],.48)};--tile-b:${rgba(t.colors[2],.36)}">
-          ${glyph(normalizeGlyphKind(t.glyph))}
-          <strong>${t.name}</strong><span>${t.desc}</span>
-        </button>
-      `).join("");
-      document.querySelectorAll("[data-theme]").forEach(btn=>btn.addEventListener("click",()=>{
-        const s=getThemeState(); s.id=btn.dataset.theme; saveThemeState(s); applyTheme(s);
-      }));
+      const cat=themeCategory.value,s=getThemeState();
+      themeGrid.innerHTML=apexThemes.filter(t=>cat==="all"||t.cat===cat).map(t=>`<button class="theme-tile ${s.id===t.id?"active":""}" data-theme="${t.id}" style="--tile-bg:${t.colors[0]};--tile-a:${rgba(t.colors[1],.48)};--tile-b:${rgba(t.colors[2],.36)};--packA:${rgba(t.colors[1],.22)};--packB:${rgba(t.colors[2],.18)};--packGlow:${rgba(t.colors[1],.52)};color:${t.colors[3]}">${art(t.icon)}<strong>${t.name}</strong><span>${t.desc}</span></button>`).join("");
+      document.querySelectorAll("[data-theme]").forEach(btn=>btn.addEventListener("click",()=>{const s=getThemeState();s.id=btn.dataset.theme;saveThemeState(s);applyTheme(s)}));
     }
     themeCategory.addEventListener("change",renderThemes);
-    randomThemeBtn.addEventListener("click",()=>{const pool=apexThemes.filter(t=>themeCategory.value==="all"||t.cat===themeCategory.value); const pick=pool[Math.floor(Math.random()*pool.length)]; const s=getThemeState(); s.id=pick.id; saveThemeState(s); applyTheme(s);});
+    randomThemeBtn.addEventListener("click",()=>{const pool=apexThemes.filter(t=>themeCategory.value==="all"||t.cat===themeCategory.value);const pick=pool[Math.floor(Math.random()*pool.length)];const s=getThemeState();s.id=pick.id;saveThemeState(s);applyTheme(s)});
     themeIntensity.addEventListener("input",e=>{const s=getThemeState();s.intensity=Number(e.target.value);saveThemeState(s);applyTheme(s)});
     themeBlur.addEventListener("input",e=>{const s=getThemeState();s.blur=Number(e.target.value);saveThemeState(s);applyTheme(s)});
     motionToggle.addEventListener("click",()=>{const s=getThemeState();s.motion=!s.motion;saveThemeState(s);applyTheme(s)});
