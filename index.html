@@ -3,110 +3,108 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <meta name="theme-color" content="#0b0c10"/>
+  <meta name="theme-color" content="#090a0f"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-title" content="ApexIQ"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <link rel="manifest" href="manifest.json"/>
-  <title>ApexIQ Mobile v0.8</title>
+  <title>ApexIQ Mobile v0.9</title>
   <style>
     :root{
-      --bg:#0b0c10;
-      --bgDeep:#050508;
-      --panel:rgba(255,255,255,.08);
-      --panel2:rgba(255,255,255,.13);
-      --stroke:rgba(255,255,255,.15);
-      --text:#fff8f2;
-      --muted:#b9b2b2;
+      --bg:#090a0f;
+      --bgDeep:#040407;
+      --panel:rgba(255,255,255,.078);
+      --panel2:rgba(255,255,255,.135);
+      --stroke:rgba(255,255,255,.16);
+      --text:#fff8f1;
+      --muted:#bdb5b8;
       --accent:#ff3d20;
-      --accent2:#ffa333;
-      --accent3:#ffe0a3;
-      --good:#47e39c;
+      --accent2:#ffa22e;
+      --accent3:#ffe5a8;
+      --good:#45e59c;
       --warn:#ffd166;
       --danger:#ff5a5f;
-      --glow:rgba(255,61,32,.35);
-      --bg1:rgba(255,61,32,.35);
-      --bg2:rgba(255,163,51,.25);
-      --bg3:rgba(255,224,163,.08);
+      --glow:rgba(255,61,32,.38);
+      --bg1:rgba(255,61,32,.33);
+      --bg2:rgba(255,162,46,.25);
+      --bg3:rgba(255,229,168,.08);
       --blur:18px;
       --radius:26px;
-      --compactScale:1;
-      --motionSpeed:18s;
     }
 
     *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-    html{background:var(--bgDeep)}
+    html{background:var(--bgDeep);scroll-behavior:smooth}
     body{
       margin:0;
       min-height:100svh;
       color:var(--text);
       font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Inter,system-ui,sans-serif;
       background:
-        radial-gradient(circle at 16% 8%,var(--bg1),transparent 26%),
-        radial-gradient(circle at 90% 8%,var(--bg2),transparent 28%),
+        radial-gradient(circle at 18% 8%,var(--bg1),transparent 28%),
+        radial-gradient(circle at 90% 6%,var(--bg2),transparent 30%),
         radial-gradient(circle at 72% 96%,var(--bg3),transparent 30%),
         linear-gradient(180deg,var(--bg),var(--bgDeep));
-      padding:env(safe-area-inset-top) 0 calc(env(safe-area-inset-bottom) + 116px);
+      background-size:135% 135%;
+      padding:env(safe-area-inset-top) 0 calc(env(safe-area-inset-bottom) + 128px);
       overflow-x:hidden;
+      animation:bgDrift 18s ease-in-out infinite alternate;
     }
-
-    body.motion-on{background-size:140% 140%;animation:bgDrift var(--motionSpeed) ease-in-out infinite alternate}
     @keyframes bgDrift{from{background-position:0% 0%}to{background-position:100% 70%}}
+    body.no-motion{animation:none}
+    body.keyboard-open .tabs{display:none}
 
     body:before{
       content:"";
       position:fixed;
       inset:0;
       pointer-events:none;
-      opacity:.18;
-      background-image:
-        linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+      opacity:.15;
+      background:
+        linear-gradient(rgba(255,255,255,.042) 1px, transparent 1px),
         linear-gradient(90deg,rgba(255,255,255,.035) 1px, transparent 1px);
-      background-size:34px 34px;
-      mask-image:linear-gradient(to bottom,black,transparent 85%);
+      background-size:36px 36px;
+      mask-image:linear-gradient(to bottom,black,transparent 86%);
+      z-index:0;
     }
 
-    body.effect-fire:after,
-    body.effect-electric:after,
-    body.effect-toxic:after,
-    body.effect-void:after,
-    body.effect-smoke:after,
-    body.effect-scan:after,
-    body.effect-jet:after,
-    body.effect-shop:after{
+    body:after{
       content:"";
       position:fixed;
       inset:-25%;
       pointer-events:none;
-      opacity:.26;
+      opacity:.24;
       mix-blend-mode:screen;
+      z-index:0;
       animation:effectFloat 9s ease-in-out infinite alternate;
     }
-    body.effect-fire:after{background:conic-gradient(from 180deg at 50% 50%,transparent,var(--accent),transparent,var(--accent2),transparent)}
-    body.effect-electric:after{background:repeating-linear-gradient(128deg,transparent 0 42px,rgba(255,255,255,.28) 43px,transparent 46px)}
-    body.effect-toxic:after{background:radial-gradient(circle at 20% 70%,rgba(155,255,56,.5),transparent 18%),radial-gradient(circle at 80% 28%,rgba(221,184,62,.35),transparent 20%)}
-    body.effect-void:after{background:radial-gradient(circle at 50% 40%,transparent 0 16%,rgba(128,92,255,.45) 17%,transparent 25%),radial-gradient(circle at 20% 80%,rgba(48,217,255,.28),transparent 22%)}
-    body.effect-smoke:after{background:radial-gradient(circle at 20% 30%,rgba(200,200,200,.22),transparent 24%),radial-gradient(circle at 78% 64%,rgba(255,255,255,.16),transparent 25%)}
-    body.effect-scan:after{background:repeating-radial-gradient(circle at 50% 40%,transparent 0 22px,rgba(255,177,71,.22) 24px,transparent 28px)}
-    body.effect-jet:after{background:linear-gradient(130deg,transparent 10%,rgba(75,184,255,.16) 32%,transparent 33%,rgba(255,122,47,.28) 58%,transparent 62%)}
-    body.effect-shop:after{background:radial-gradient(circle at 70% 20%,rgba(255,78,203,.38),transparent 20%),linear-gradient(145deg,transparent,rgba(125,139,255,.25),transparent)}
+    body.fx-fire:after{background:conic-gradient(from 180deg at 50% 50%,transparent,var(--accent),transparent,var(--accent2),transparent)}
+    body.fx-electric:after{background:repeating-linear-gradient(125deg,transparent 0 40px,rgba(255,255,255,.26) 41px,transparent 45px)}
+    body.fx-toxic:after{background:radial-gradient(circle at 20% 70%,rgba(155,255,56,.45),transparent 18%),radial-gradient(circle at 80% 28%,rgba(221,184,62,.32),transparent 20%)}
+    body.fx-void:after{background:radial-gradient(circle at 50% 42%,transparent 0 15%,rgba(128,92,255,.45) 17%,transparent 26%),radial-gradient(circle at 20% 80%,rgba(48,217,255,.28),transparent 22%)}
+    body.fx-smoke:after{background:radial-gradient(circle at 20% 30%,rgba(220,220,220,.20),transparent 24%),radial-gradient(circle at 78% 64%,rgba(255,255,255,.13),transparent 25%)}
+    body.fx-scan:after{background:repeating-radial-gradient(circle at 50% 40%,transparent 0 22px,rgba(255,177,71,.22) 24px,transparent 28px)}
+    body.fx-jet:after{background:linear-gradient(130deg,transparent 10%,rgba(75,184,255,.16) 32%,transparent 33%,rgba(255,122,47,.28) 58%,transparent 62%)}
+    body.fx-shop:after{background:radial-gradient(circle at 70% 20%,rgba(255,78,203,.36),transparent 20%),linear-gradient(145deg,transparent,rgba(125,139,255,.24),transparent)}
+    body.fx-shadow:after{background:radial-gradient(circle at 60% 30%,rgba(224,24,45,.34),transparent 22%),linear-gradient(135deg,transparent,rgba(215,194,162,.18),transparent)}
+    body.fx-gravity:after{background:radial-gradient(circle at 50% 35%,rgba(65,240,219,.25),transparent 13%),repeating-radial-gradient(circle at 50% 35%,transparent 0 30px,rgba(179,108,255,.18) 32px,transparent 36px)}
     @keyframes effectFloat{from{transform:translate3d(-2%,-1%,0) rotate(-2deg)}to{transform:translate3d(2%,1%,0) rotate(3deg)}}
 
-    .app{width:min(100% - 24px,520px);margin:0 auto;padding:22px 0 24px;position:relative;z-index:1}
+    .app{width:min(100% - 24px,540px);margin:0 auto;padding:22px 0 28px;position:relative;z-index:1}
     .topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:6px 0 22px}
     .brand{display:flex;align-items:center;gap:12px;font-weight:950;font-size:25px;letter-spacing:-.015em}
     .mark{width:46px;height:46px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 16px 38px var(--glow);font-weight:950}
-    .pill{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(71,227,156,.24);background:rgba(71,227,156,.12);color:#c9ffdf;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:900}
-    .chip{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--stroke);background:rgba(255,255,255,.07);border-radius:999px;padding:7px 10px;font-size:12px;font-weight:850;color:var(--text)}
-    .chip.hot{background:rgba(255,61,32,.14);border-color:rgba(255,61,32,.28);color:#ffd2ca}
-    .chip.good{background:rgba(71,227,156,.12);border-color:rgba(71,227,156,.24);color:#c9ffdf}
+    .pill{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(69,229,156,.26);background:rgba(69,229,156,.12);color:#caffdf;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:900}
+    .chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--stroke);background:rgba(255,255,255,.07);border-radius:999px;padding:7px 10px;font-size:12px;font-weight:850;color:var(--text)}
+    .chip.hot{background:rgba(255,61,32,.14);border-color:rgba(255,61,32,.28);color:#ffd1c8}
+    .chip.good{background:rgba(69,229,156,.12);border-color:rgba(69,229,156,.24);color:#caffdf}
 
-    h1{font-size:clamp(48px,13.5vw,74px);line-height:.92;letter-spacing:-.035em;margin:16px 0 16px}
+    h1{font-size:clamp(46px,13vw,74px);line-height:.92;letter-spacing:-.035em;margin:16px 0}
     h2{font-size:28px;line-height:1;letter-spacing:-.025em;margin:0}
     h3{letter-spacing:-.018em}
     p{line-height:1.55}
-    .lead{font-size:16px;line-height:1.62;color:#d0c8cc;margin:0 0 16px}
-    .gradient{background:linear-gradient(135deg,#fff,var(--accent3) 35%,var(--accent2) 68%,var(--accent));-webkit-background-clip:text;color:transparent}
+    .lead{font-size:16px;line-height:1.62;color:#d3cbcd;margin:0 0 16px}
+    .sub{color:var(--muted);font-size:13px;line-height:1.45}
+    .gradient{background:linear-gradient(135deg,#fff,var(--accent3) 34%,var(--accent2) 65%,var(--accent));-webkit-background-clip:text;color:transparent}
 
     .card,.section,.search-card,.hero-card,.forum-card,.pack-card{
       border:1px solid var(--stroke);
@@ -115,8 +113,12 @@
       box-shadow:0 24px 70px rgba(0,0,0,.42);
       backdrop-filter:blur(var(--blur));
     }
-    body.glass-off .card,body.glass-off .section,body.glass-off .search-card,body.glass-off .hero-card{backdrop-filter:none}
+    body.glass-off .card,body.glass-off .section,body.glass-off .search-card{backdrop-filter:none}
     .section,.search-card{padding:18px;margin-top:16px;overflow:hidden}
+    .title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+    .title > div{min-width:0}
+    .list{display:grid;gap:10px}
+    .hidden{display:none!important}
 
     input,select,textarea,button{font:inherit}
     input,select,textarea{
@@ -129,11 +131,12 @@
       border-radius:16px;
       outline:none;
       padding:0 14px;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
     }
     input,select{min-height:52px}
-    textarea{min-height:92px;padding:14px;resize:vertical;line-height:1.45}
+    textarea{min-height:112px;padding:14px;resize:vertical;line-height:1.45}
     select option{color:#111}
-    button{
+    button,.jump-btn{
       min-height:48px;
       border:0;
       border-radius:16px;
@@ -142,6 +145,11 @@
       font-weight:950;
       cursor:pointer;
       box-shadow:0 12px 34px var(--glow);
+      text-align:center;
+      text-decoration:none;
+      display:grid;
+      place-items:center;
+      padding:0 12px;
     }
     .secondary-btn{background:rgba(255,255,255,.08);border:1px solid var(--stroke);box-shadow:none}
     .danger-btn{background:rgba(255,90,95,.14);border:1px solid rgba(255,90,95,.24);box-shadow:none}
@@ -156,22 +164,18 @@
       position:relative;
       overflow:hidden;
       display:grid;
-      grid-template-columns:1fr;
       gap:16px;
     }
     .hero-stat:before{
       content:"";
       position:absolute;
       inset:0;
-      background:
-        radial-gradient(circle at 78% 25%,var(--bg2),transparent 34%),
-        radial-gradient(circle at 12% 80%,var(--bg1),transparent 36%);
-      opacity:.8;
+      background:radial-gradient(circle at 78% 25%,var(--bg2),transparent 34%),radial-gradient(circle at 12% 80%,var(--bg1),transparent 36%);
+      opacity:.82;
       pointer-events:none;
     }
     .hero-stat > *{position:relative}
-    .player-row{display:grid;grid-template-columns:1fr;gap:14px}
-    .player-name{font-size:clamp(42px,10vw,58px);font-weight:950;line-height:.96;letter-spacing:-.035em;overflow-wrap:anywhere}
+    .player-name{font-size:clamp(40px,10vw,58px);font-weight:950;line-height:.96;letter-spacing:-.035em;overflow-wrap:anywhere}
     .player-sub{color:#d7d0d2;font-size:17px;font-weight:800;margin-top:10px}
     .score-panel{
       display:grid;
@@ -189,68 +193,36 @@
     .score-desc{font-size:13px;color:#ded5d2;margin-top:5px}
 
     .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
-    .stat{
-      border:1px solid var(--stroke);
-      background:rgba(255,255,255,.065);
-      border-radius:22px;
-      padding:14px;
-      min-width:0;
-    }
+    .stat{border:1px solid var(--stroke);background:rgba(255,255,255,.065);border-radius:22px;padding:14px;min-width:0}
     .label{color:var(--muted);font-size:12px;font-weight:800}
     .value{font-size:clamp(24px,8vw,34px);font-weight:950;letter-spacing:-.018em;margin-top:6px;white-space:nowrap}
-    .title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
-    .list{display:grid;gap:10px}
-    .item{
-      display:flex;align-items:center;justify-content:space-between;gap:12px;
-      border:1px solid rgba(255,255,255,.095);
-      background:rgba(255,255,255,.055);
-      border-radius:18px;
-      padding:13px;
-      min-width:0;
-    }
+    .item{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid rgba(255,255,255,.095);background:rgba(255,255,255,.055);border-radius:18px;padding:13px;min-width:0}
     .item > div{min-width:0}
     .name{font-weight:950;overflow-wrap:anywhere}
-    .sub{color:var(--muted);font-size:13px;margin-top:3px}
-    .big-empty{text-align:center;color:var(--muted);padding:20px}
 
     .tabs{
       position:fixed;
       left:50%;
       transform:translateX(-50%);
       bottom:calc(env(safe-area-inset-bottom) + 12px);
-      width:min(100% - 24px,520px);
+      width:min(100% - 24px,540px);
       z-index:20;
       display:grid;
       grid-template-columns:repeat(5,1fr);
       gap:8px;
       padding:8px;
       border-radius:28px;
-      background:rgba(7,8,14,.83);
+      background:rgba(7,8,14,.84);
       border:1px solid rgba(255,255,255,.13);
       backdrop-filter:blur(20px);
       box-shadow:0 18px 50px rgba(0,0,0,.48);
     }
-    .tab{
-      min-height:54px;
-      margin:0;
-      border-radius:20px;
-      background:rgba(255,255,255,.07);
-      box-shadow:none;
-      font-size:12px;
-      padding:0 4px;
-    }
+    .tab{min-height:54px;margin:0;border-radius:20px;background:rgba(255,255,255,.07);box-shadow:none;font-size:12px;padding:0 4px}
     .tab.active{background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 10px 24px var(--glow)}
-    .hidden{display:none!important}
 
-    .subtabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
-    .subtabs button{min-height:42px;background:rgba(255,255,255,.07);border:1px solid var(--stroke);box-shadow:none;font-size:12px}
-    .subtabs button.active{background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 10px 24px var(--glow)}
-    .forum-card{
-      padding:14px;
-      border-radius:22px;
-      border:1px solid var(--stroke);
-      background:linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.045));
-    }
+    .jump-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+    .jump-btn{min-height:46px;font-size:13px}
+    .forum-card{padding:14px;border-radius:22px;border:1px solid var(--stroke);background:linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.045))}
     .post-head{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px}
     .avatar{width:44px;height:44px;border-radius:16px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;font-weight:950;flex:0 0 auto}
     .post-meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
@@ -263,53 +235,34 @@
     .comment-form input,.comment-form button{min-height:42px}
     .comment-form button{margin:0}
 
-    .composer-actions{display:flex;gap:8px;margin-top:8px}
-    .plus-btn{
-      width:52px;
+    .composer-tools{display:flex;gap:8px;margin-top:8px}
+    .emoji-summary{
+      list-style:none;
+      width:56px;
       height:52px;
-      min-height:52px;
       border-radius:18px;
-      font-size:28px;
-      line-height:1;
-      flex:0 0 auto;
-    }
-    .emoji-panel{
-      margin-top:10px;
+      background:rgba(255,255,255,.08);
       border:1px solid var(--stroke);
-      background:rgba(0,0,0,.18);
-      border-radius:22px;
-      padding:12px;
-    }
-    .emoji-tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px}
-    .emoji-tab{
-      width:auto;
-      min-height:38px;
-      padding:0 12px;
-      margin:0;
-      white-space:nowrap;
-      background:rgba(255,255,255,.07);
-      border:1px solid var(--stroke);
-      box-shadow:none;
-      font-size:12px;
-    }
-    .emoji-tab.active{background:linear-gradient(135deg,var(--accent),var(--accent2))}
-    .emoji-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:8px}
-    .emoji{
-      min-height:78px;
-      border-radius:18px;
-      border:1px solid var(--stroke);
-      background:rgba(255,255,255,.065);
       display:grid;
       place-items:center;
-      text-align:center;
-      padding:8px 5px;
+      font-size:30px;
+      font-weight:950;
       cursor:pointer;
+      user-select:none;
     }
-    .emoji .glyph{font-size:28px;line-height:1}
-    .emoji .caption{font-size:10px;color:var(--muted);font-weight:850;margin-top:5px}
+    .emoji-summary::-webkit-details-marker{display:none}
+    .emoji-panel{margin-top:10px;border:1px solid var(--stroke);background:rgba(0,0,0,.18);border-radius:22px;padding:12px}
+    .emoji-tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px}
+    .emoji-tab{width:auto;min-height:38px;padding:0 12px;margin:0;white-space:nowrap;background:rgba(255,255,255,.07);border:1px solid var(--stroke);box-shadow:none;font-size:12px}
+    .emoji-tab.active{background:linear-gradient(135deg,var(--accent),var(--accent2))}
+    .emoji-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:8px}
+    .emoji-card{min-height:82px;border-radius:18px;border:1px solid var(--stroke);background:rgba(255,255,255,.065);display:grid;place-items:center;text-align:center;padding:7px 5px;cursor:pointer}
+    .emoji-glyph{width:38px;height:38px;margin:auto}
+    .caption{font-size:10px;color:var(--muted);font-weight:850;margin-top:5px}
+
     .pack-grid{display:grid;gap:12px;margin-top:12px}
     .pack-card{padding:14px;border-radius:22px;border:1px solid var(--stroke);background:rgba(255,255,255,.06)}
-    .pack-card.locked{opacity:.68}
+    .pack-card.locked{opacity:.76}
     .pack-stickers{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
 
     .progress-wrap{height:18px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid var(--stroke);overflow:hidden;margin:12px 0 8px}
@@ -320,77 +273,73 @@
     .mini-stat strong{display:block;font-size:20px}
 
     .theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
-    .theme-tile{
-      min-height:118px;
-      padding:11px;
-      text-align:left;
-      box-shadow:none;
-      color:white;
-      position:relative;
-      overflow:hidden;
-      border:1px solid var(--stroke);
-      background:
-        radial-gradient(circle at 18% 18%,var(--tile-a),transparent 38%),
-        radial-gradient(circle at 84% 22%,var(--tile-b),transparent 42%),
-        linear-gradient(135deg,var(--tile-bg),#090a12);
-    }
+    .theme-tile{min-height:138px;padding:11px;text-align:left;box-shadow:none;color:white;position:relative;overflow:hidden;border:1px solid var(--stroke);background:radial-gradient(circle at 18% 18%,var(--tile-a),transparent 38%),radial-gradient(circle at 84% 22%,var(--tile-b),transparent 42%),linear-gradient(135deg,var(--tile-bg),#090a12)}
     .theme-tile.active{outline:2px solid var(--accent2);box-shadow:0 14px 34px var(--glow)}
-    .theme-icon{font-size:28px;margin-bottom:6px}
+    .theme-tile .legend-glyph{margin-bottom:6px}
     .theme-tile strong{display:block;font-size:13px}
-    .theme-tile span{display:block;color:rgba(255,255,255,.72);font-size:10.5px;line-height:1.35;margin-top:5px}
+    .theme-tile span{display:block;color:rgba(255,255,255,.74);font-size:10.5px;line-height:1.35;margin-top:5px}
     .range-row{display:grid;grid-template-columns:112px 1fr;gap:10px;align-items:center;color:var(--muted);font-size:13px;font-weight:850;margin-top:10px}
     input[type=range]{accent-color:var(--accent)}
     .toggle-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+
+    .legend-glyph{width:46px;height:46px;display:inline-block}
+    .legend-glyph svg{width:100%;height:100%;overflow:visible}
+    .glyph-core{filter:drop-shadow(0 0 10px var(--accent))}
+    .anim-spin{transform-origin:center;animation:spin 7s linear infinite}
+    .anim-pulse{transform-origin:center;animation:pulse 1.8s ease-in-out infinite}
+    .anim-scan{animation:scanMove 2.3s ease-in-out infinite}
+    .anim-zap{animation:zap 1.5s steps(2) infinite}
+    .anim-float{animation:floaty 2.2s ease-in-out infinite alternate}
+    .anim-sway{transform-origin:center;animation:sway 2.6s ease-in-out infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @keyframes pulse{50%{transform:scale(1.11);opacity:.72}}
+    @keyframes scanMove{0%,100%{transform:translateY(-9px);opacity:.15}50%{transform:translateY(9px);opacity:.9}}
+    @keyframes zap{50%{opacity:.25}}
+    @keyframes floaty{to{transform:translateY(-5px)}}
+    @keyframes sway{50%{transform:rotate(8deg)}}
 
     body.compact-on .app{padding-top:12px}
     body.compact-on h1{font-size:44px}
     body.compact-on .section,body.compact-on .search-card,body.compact-on .hero-stat{padding:14px}
   </style>
 </head>
-<body class="motion-on">
+<body class="fx-fire">
   <main class="app">
     <div class="topbar">
       <div class="brand"><div class="mark">IQ</div><span>ApexIQ</span></div>
-      <span class="pill">mobile v0.8</span>
+      <span class="pill">mobile v0.9</span>
     </div>
 
     <section id="home">
-      <span class="pill">Legend Forge rebuild</span>
+      <span class="pill">Legend Forge + Emoji Dock</span>
       <h1>Stop showing stats.<br><span class="gradient">Explain them.</span></h1>
-      <p class="lead">ApexIQ is a mobile-first Apex Legends analytics and community prototype with cleaner stats, Squad Hub, Heirloom Lab, accessible emoji packs, and deeper legend-inspired themes.</p>
+      <p class="lead">Rebuilt mobile prototype with working Squad jump buttons, visible emoji dock, custom SVG-style legend glyphs, improved theme effects, and cleaner stats layout.</p>
 
       <form class="search-card" id="searchForm">
         <strong>Search demo profile</strong>
         <div class="form-grid">
           <select id="platform">
-            <option value="pc">PC</option>
-            <option value="steam">Steam</option>
-            <option value="origin">Origin</option>
-            <option value="psn">PSN</option>
-            <option value="xbl">Xbox</option>
-            <option value="switch">Switch</option>
+            <option value="pc">PC</option><option value="steam">Steam</option><option value="origin">Origin</option><option value="psn">PSN</option><option value="xbl">Xbox</option><option value="switch">Switch</option>
           </select>
           <input id="handle" value="IMissAnyway" placeholder="Player name"/>
         </div>
         <button type="submit" style="width:100%;margin-top:10px">Analyze</button>
-        <p class="sub">v0.8 fixes the stats layout and moves emojis into the Squad Hub composer.</p>
+        <p class="sub">Tip: after updating GitHub Pages, open your link with <strong>?v=9</strong> to avoid Safari cache.</p>
       </form>
     </section>
 
     <section id="stats" class="hidden">
       <div class="hero-stat card">
         <span class="pill" id="sourcePill">PC • mock</span>
-        <div class="player-row">
+        <div>
+          <div class="player-name" id="playerName">IMissAnyway</div>
+          <div class="player-sub">High-Risk Entry Carry • Rank: Gold I</div>
+        </div>
+        <div class="score-panel">
+          <div class="score-number gradient">94</div>
           <div>
-            <div class="player-name" id="playerName">IMissAnyway</div>
-            <div class="player-sub">High-Risk Entry Carry • Rank: Gold I</div>
-          </div>
-          <div class="score-panel">
-            <div class="score-number gradient">94</div>
-            <div>
-              <div class="score-label">ApexIQ Score</div>
-              <div class="score-desc">Momentum, legend growth, badges, and recent gains.</div>
-            </div>
+            <div class="score-label">ApexIQ Score</div>
+            <div class="score-desc">Momentum, legend growth, badges, and recent gains.</div>
           </div>
         </div>
       </div>
@@ -421,12 +370,7 @@
         <div class="title"><h2>Heirloom Lab</h2><span class="pill">pity estimate</span></div>
         <p class="lead">Best-possible estimate without pretending we can see Respawn’s hidden server counter.</p>
         <div class="form-grid two-col">
-          <select id="hlTier">
-            <option value="1">Tier 1 / levels 1-500</option>
-            <option value="2">Tier 2 / prestige 1</option>
-            <option value="3">Tier 3 / prestige 2</option>
-            <option value="4">Tier 4 / prestige 3</option>
-          </select>
+          <select id="hlTier"><option value="1">Tier 1 / levels 1-500</option><option value="2">Tier 2 / prestige 1</option><option value="3">Tier 3 / prestige 2</option><option value="4">Tier 4 / prestige 3</option></select>
           <input id="hlLevel" type="number" min="1" max="500" value="458" placeholder="Level"/>
         </div>
         <div class="form-grid two-col">
@@ -455,69 +399,57 @@
 
     <section id="squad" class="hidden">
       <div class="section">
-        <div class="title"><h2>Squad Hub</h2><span class="pill">forum + LFG + emojis</span></div>
-        <div class="subtabs">
-          <button id="squadTabFeed" class="active" type="button">Feed</button>
-          <button id="squadTabPost" type="button">Post</button>
-          <button id="squadTabEmoji" type="button">Emoji Shop</button>
+        <div class="title"><h2>Squad Hub</h2><span class="pill">working buttons</span></div>
+        <p class="lead">Feed, Create, and Emoji Shop are real jump buttons now. The emoji picker is directly under the post text box.</p>
+        <div class="jump-grid">
+          <a class="jump-btn" href="#squadFeed">Posts</a>
+          <a class="jump-btn" href="#squadCreate">Create</a>
+          <a class="jump-btn" href="#emojiShop">Emoji Shop</a>
         </div>
       </div>
 
-      <div id="squadPostPanel" class="section hidden">
+      <div id="squadCreate" class="section">
         <div class="title"><h2>Create post</h2><span class="pill">guest</span></div>
         <form id="forumForm">
           <div class="form-grid two-col">
             <input id="forumName" value="IMissAnyway" placeholder="Guest name"/>
-            <select id="forumCategory">
-              <option value="LFG">LFG</option>
-              <option value="Ranked">Ranked</option>
-              <option value="Wildcard">Wildcard</option>
-              <option value="Clips">Clips</option>
-              <option value="Coaching">Coaching</option>
-              <option value="Question">Question</option>
-            </select>
+            <select id="forumCategory"><option value="LFG">LFG</option><option value="Ranked">Ranked</option><option value="Wildcard">Wildcard</option><option value="Clips">Clips</option><option value="Coaching">Coaching</option><option value="Question">Question</option></select>
           </div>
           <div class="form-grid">
             <input id="forumTitle" value="Need Wildcard teammates who stay close" placeholder="Title"/>
             <textarea id="forumBody" placeholder="Write your post">Looking for teammates who don’t insta-leave. I play aggressive entry and want people who can hold hands in fights.</textarea>
           </div>
 
-          <div class="composer-actions">
-            <button class="plus-btn secondary-btn" id="emojiOpenBtn" type="button">+</button>
-            <button type="submit" style="flex:1">Post</button>
-          </div>
-
-          <div class="emoji-panel hidden" id="emojiPanel">
-            <div class="title" style="margin-bottom:8px">
-              <h2 style="font-size:20px">Apex Emoji Panel</h2>
-              <span class="pill" id="activePackName">Starter</span>
+          <details id="emojiDock">
+            <summary class="emoji-summary" aria-label="Open emoji panel">+</summary>
+            <div class="emoji-panel">
+              <div class="title" style="margin-bottom:8px">
+                <div><h2 style="font-size:20px">Emoji Dock</h2><div class="sub">Tap to insert into the post box</div></div>
+                <span class="pill" id="activePackName">Starter</span>
+              </div>
+              <div class="emoji-tabs" id="emojiTabs"></div>
+              <div class="emoji-grid" id="emojiGrid"></div>
             </div>
-            <div class="emoji-tabs" id="emojiTabs"></div>
-            <div class="emoji-grid" id="emojiGrid"></div>
-            <p class="sub">Tap an emoji/sticker to insert it into your post text, like a Kik-style picker.</p>
+          </details>
+
+          <div class="composer-tools">
+            <button type="submit" style="flex:1">Post to Feed</button>
           </div>
+          <p class="sub">Safety: keep it to gamer tags/Discord handles. Don’t post your address, phone number, school, private info, or passwords.</p>
         </form>
       </div>
 
-      <div id="squadEmojiPanel" class="section hidden">
+      <div id="emojiShop" class="section">
         <div class="title"><h2>Emoji Shop</h2><span class="pill">legend packs</span></div>
-        <p class="lead">Original Apex-inspired emoji sets for every legend. Packs unlock locally for now.</p>
+        <p class="lead">Original Apex-inspired emoji/sticker sets for every legend. No official EA/Respawn artwork copied.</p>
         <div class="pack-grid" id="packShop"></div>
       </div>
 
-      <div id="squadFeedPanel" class="section">
+      <div id="squadFeed" class="section">
         <div class="title"><h2>Forum feed</h2><span class="pill" id="postCount">0 posts</span></div>
         <div class="form-grid two-col">
-          <select id="forumFilter">
-            <option value="All">All categories</option>
-            <option value="LFG">LFG</option>
-            <option value="Ranked">Ranked</option>
-            <option value="Wildcard">Wildcard</option>
-            <option value="Clips">Clips</option>
-            <option value="Coaching">Coaching</option>
-            <option value="Question">Question</option>
-          </select>
-          <button id="quickPostBtn" class="secondary-btn" type="button">+ New Post</button>
+          <select id="forumFilter"><option value="All">All categories</option><option value="LFG">LFG</option><option value="Ranked">Ranked</option><option value="Wildcard">Wildcard</option><option value="Clips">Clips</option><option value="Coaching">Coaching</option><option value="Question">Question</option></select>
+          <a class="jump-btn secondary-btn" href="#squadCreate">+ New Post</a>
         </div>
         <div class="list" id="forumPosts" style="margin-top:12px"></div>
       </div>
@@ -525,18 +457,10 @@
 
     <section id="themes" class="hidden">
       <div class="section">
-        <div class="title"><h2>Legend Themes</h2><span class="pill" id="currentThemePill">Molten Drop</span></div>
-        <p class="lead">Deeper, more distinct legend-inspired themes with glyphs and animated overlays. Not official EA/Respawn art.</p>
+        <div class="title"><div><h2>Legend Themes</h2><div class="sub">Custom glyphs + effects</div></div><span class="pill" id="currentThemePill">Molten Drop</span></div>
+        <p class="lead">More distinct legend palettes, original SVG-style glyphs, and animated overlays. These are inspired by abilities/personality, not copied in-game icons.</p>
         <div class="form-grid two-col">
-          <select id="themeCategory">
-            <option value="all">All themes</option>
-            <option value="apex">ApexIQ originals</option>
-            <option value="assault">Assault</option>
-            <option value="skirmisher">Skirmisher</option>
-            <option value="recon">Recon</option>
-            <option value="controller">Controller</option>
-            <option value="support">Support</option>
-          </select>
+          <select id="themeCategory"><option value="all">All themes</option><option value="apex">ApexIQ originals</option><option value="assault">Assault</option><option value="skirmisher">Skirmisher</option><option value="recon">Recon</option><option value="controller">Controller</option><option value="support">Support</option></select>
           <button id="randomThemeBtn" class="secondary-btn" type="button">Random</button>
         </div>
         <div class="theme-grid" id="themeGrid"></div>
@@ -544,7 +468,7 @@
 
       <div class="section">
         <div class="title"><h2>Theme controls</h2><span class="pill">advanced</span></div>
-        <div class="range-row"><span>Intensity</span><input id="themeIntensity" type="range" min="50" max="150" value="110"/></div>
+        <div class="range-row"><span>Intensity</span><input id="themeIntensity" type="range" min="50" max="150" value="112"/></div>
         <div class="range-row"><span>Glass blur</span><input id="themeBlur" type="range" min="0" max="30" value="18"/></div>
         <div class="toggle-grid">
           <button id="motionToggle" class="secondary-btn" type="button">Motion: On</button>
@@ -572,6 +496,9 @@
       window.scrollTo({top:0,behavior:"smooth"});
     }
     document.querySelectorAll(".tab").forEach(btn => btn.addEventListener("click",()=>show(btn.dataset.tab)));
+    document.addEventListener("focusin", e => { if(["INPUT","TEXTAREA","SELECT"].includes(e.target.tagName)) document.body.classList.add("keyboard-open"); });
+    document.addEventListener("focusout", () => setTimeout(()=>document.body.classList.remove("keyboard-open"),250));
+
     document.getElementById("searchForm").addEventListener("submit", e=>{
       e.preventDefault();
       const name = document.getElementById("handle").value.trim() || "IMissAnyway";
@@ -581,16 +508,88 @@
       show("stats");
     });
 
-    const legends = [
-      ["Valkyrie","3,035 kills","872K damage","✈️"],
-      ["Rampart","2,215 kills","616K damage","🛠️"],
-      ["Axle","1,860 kills","608K damage","⚙️"],
-      ["Octane","1,718 kills","517K damage","💉"],
-      ["Conduit","1,412 kills","405K damage","🔋"],
-      ["Caustic","1,408 kills","423K damage","☣️"]
+    const legendData = [
+      {id:"bangalore", name:"Bangalore", cat:"assault", glyph:"smoke", fx:"fx-smoke", colors:["#0a0908","#d39a38","#6f757c","#f4d38a"], desc:"smoke canister, tracer gold, hard-cover soldier energy"},
+      {id:"fuse", name:"Fuse", cat:"assault", glyph:"bomb", fx:"fx-fire", colors:["#120706","#ff6a00","#d7b45f","#ffd68a"], desc:"grenade arc, brass fuse, explosive orange"},
+      {id:"ash", name:"Ash", cat:"assault", glyph:"blade", fx:"fx-void", colors:["#070711","#9e7cff","#d8e4ff","#b99cff"], desc:"phase blade, cold steel, purple tear"},
+      {id:"maggie", name:"Mad Maggie", cat:"assault", glyph:"riot", fx:"fx-fire", colors:["#120506","#ff2538","#ffb14a","#ff7f87"], desc:"riot spikes, red punk fire, shotgun chaos"},
+      {id:"ballistic", name:"Ballistic", cat:"assault", glyph:"smart", fx:"fx-scan", colors:["#0b0706","#ffbe58","#c7522a","#ffe0a0"], desc:"smart round reticle, classy gold, old-school gunrunner"},
+      {id:"sparrow", name:"Sparrow", cat:"recon", glyph:"arrow", fx:"fx-scan", colors:["#07100b","#8df06f","#4ac7ff","#d8ffb0"], desc:"arrow sweep, green scan trail, hunter-tech rhythm"},
+
+      {id:"wraith", name:"Wraith", cat:"skirmisher", glyph:"portal", fx:"fx-void", colors:["#050713","#805cff","#30d9ff","#ccbaff"], desc:"void ring, phase tear, blue rift static"},
+      {id:"pathfinder", name:"Pathfinder", cat:"skirmisher", glyph:"robot", fx:"fx-electric", colors:["#061018","#21c7ff","#ffd84b","#b8efff"], desc:"robot lens, zipline hook, friendly bright tech"},
+      {id:"octane", name:"Octane", cat:"skirmisher", glyph:"stim", fx:"fx-toxic", colors:["#061008","#7dff3a","#ff3c1f","#d6ff84"], desc:"stim vial, speed blur, danger red"},
+      {id:"valkyrie", name:"Valkyrie", cat:"skirmisher", glyph:"wing", fx:"fx-jet", colors:["#07111c","#4bb8ff","#ff7a2f","#c6e8ff"], desc:"jet wing, missile arc, sky afterburn"},
+      {id:"horizon", name:"Horizon", cat:"skirmisher", glyph:"gravity", fx:"fx-gravity", colors:["#060916","#41f0db","#b36cff","#c9fff8"], desc:"gravity ring, black hole core, star dust"},
+      {id:"revenant", name:"Revenant", cat:"skirmisher", glyph:"skull", fx:"fx-shadow", colors:["#080306","#e0182d","#d7c2a2","#ff8b8b"], desc:"shadow skull, bone slash, nightmare red"},
+      {id:"alter", name:"Alter", cat:"skirmisher", glyph:"rift", fx:"fx-void", colors:["#050512","#ff4ff0","#4b2cff","#ffd1fb"], desc:"rift mask, glitch magenta, dimensional cut"},
+      {id:"axle", name:"Axle", cat:"skirmisher", glyph:"wheel", fx:"fx-fire", colors:["#090908","#ff3020","#ffcf33","#ff8b4a"], desc:"combat wheel, nitro lane, overclocked Salvo heat"},
+
+      {id:"bloodhound", name:"Bloodhound", cat:"recon", glyph:"raven", fx:"fx-scan", colors:["#0b0706","#c61d2d","#ffb347","#ffd19a"], desc:"raven beak, scan ring, hunt trail"},
+      {id:"crypto", name:"Crypto", cat:"recon", glyph:"drone", fx:"fx-electric", colors:["#03100c","#27f59a","#37a7ff","#aaffd8"], desc:"drone eye, hacker green, EMP pulse"},
+      {id:"seer", name:"Seer", cat:"recon", glyph:"eye", fx:"fx-scan", colors:["#050817","#f2c94c","#674bff","#ffe99c"], desc:"spotlight eye, gold pulse, stage presence"},
+      {id:"vantage", name:"Vantage", cat:"recon", glyph:"scope", fx:"fx-scan", colors:["#061019","#7de3ff","#ff5364","#cbf5ff"], desc:"sniper scope, icy blue, red shot marker"},
+
+      {id:"caustic", name:"Caustic", cat:"controller", glyph:"hazard", fx:"fx-toxic", colors:["#061006","#9dff38","#d8b33e","#d9ff84"], desc:"hazard mask, toxic fog, lab yellow"},
+      {id:"wattson", name:"Wattson", cat:"controller", glyph:"bolt", fx:"fx-electric", colors:["#06101b","#3dd8ff","#ffb347","#c3f5ff"], desc:"electric fence nodes, blue arcs, warm spark"},
+      {id:"rampart", name:"Rampart", cat:"controller", glyph:"wrench", fx:"fx-shop", colors:["#100711","#ff4ecb","#7d8bff","#ffd0f3"], desc:"mod-shop wrench, metal violet, hot pink sparks"},
+      {id:"catalyst", name:"Catalyst", cat:"controller", glyph:"ferro", fx:"fx-void", colors:["#05050a","#cf4fff","#2b2438","#efc6ff"], desc:"ferrofluid drop, dark veil, witchy magenta"},
+
+      {id:"lifeline", name:"Lifeline", cat:"support", glyph:"med", fx:"fx-scan", colors:["#051210","#2ee6c8","#ff5a5f","#b9fff1"], desc:"DOC cross, revive pulse, medic teal"},
+      {id:"gibraltar", name:"Gibraltar", cat:"support", glyph:"dome", fx:"fx-jet", colors:["#061018","#ff8a2a","#3aa0ff","#ffcca3"], desc:"dome shield, island orange, blue armor"},
+      {id:"mirage", name:"Mirage", cat:"support", glyph:"decoy", fx:"fx-scan", colors:["#0b0804","#ffc247","#6b4fff","#ffe19c"], desc:"holo decoys, gold flash, trickster shimmer"},
+      {id:"loba", name:"Loba", cat:"support", glyph:"diamond", fx:"fx-shop", colors:["#0c0608","#ff2e55","#f2c94c","#ffd1d8"], desc:"boutique diamond, crimson velvet, gold loot"},
+      {id:"newcastle", name:"Newcastle", cat:"support", glyph:"castle", fx:"fx-electric", colors:["#06101a","#318bff","#ffd166","#b8d7ff"], desc:"castle wall, hero shield, armored blue"},
+      {id:"conduit", name:"Conduit", cat:"support", glyph:"battery", fx:"fx-electric", colors:["#071018","#ffe15a","#36c8ff","#fff1a6"], desc:"radiant battery, shield pulse, blue-yellow charge"}
     ];
-    document.getElementById("legendList").innerHTML = legends.map(([name,kills,dmg,icon]) => `
-      <div class="item"><div><div class="name">${icon} ${name}</div><div class="sub">${dmg}</div></div><strong>${kills}</strong></div>
+
+    function glyph(kind, size=46){
+      const common = `viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"`;
+      const c = "var(--accent)";
+      const c2 = "var(--accent2)";
+      const map = {
+        smoke:`<svg ${common}><path class="anim-sway glyph-core" d="M18 42c-8-1-10-13 1-16 1-11 17-14 23-5 9-1 15 8 10 16"/><path class="anim-float" d="M16 48h34M22 55h21" stroke="${c2}"/></svg>`,
+        bomb:`<svg ${common}><circle class="glyph-core anim-pulse" cx="31" cy="36" r="16"/><path d="M42 21l7-7M45 12l7 7" stroke="${c2}"/><path class="anim-sway" d="M24 22c5-6 12-6 18 0"/></svg>`,
+        blade:`<svg ${common}><path class="glyph-core anim-sway" d="M16 50L48 12l4 4-32 38z"/><path d="M20 46l-8 6M44 18l8-6" stroke="${c2}"/></svg>`,
+        riot:`<svg ${common}><path class="glyph-core" d="M18 14h28l6 16-20 22-20-22z"/><path class="anim-pulse" d="M22 30h20M26 39h12" stroke="${c2}"/></svg>`,
+        smart:`<svg ${common}><circle class="glyph-core" cx="32" cy="32" r="18"/><path class="anim-scan" d="M12 32h40M32 12v40" stroke="${c2}"/><circle cx="32" cy="32" r="5"/></svg>`,
+        arrow:`<svg ${common}><path class="glyph-core anim-sway" d="M12 48L45 15"/><path d="M30 14h16v16M19 46l-6 6" stroke="${c2}"/></svg>`,
+        portal:`<svg ${common}><ellipse class="glyph-core anim-spin" cx="32" cy="32" rx="20" ry="14"/><path class="anim-pulse" d="M20 32c7-8 17-8 24 0" stroke="${c2}"/></svg>`,
+        robot:`<svg ${common}><rect class="glyph-core" x="16" y="18" width="32" height="28" rx="9"/><circle cx="27" cy="32" r="4" stroke="${c2}"/><circle cx="39" cy="32" r="4" stroke="${c2}"/><path d="M32 18v-8M24 50h16"/></svg>`,
+        stim:`<svg ${common}><path class="glyph-core anim-sway" d="M24 12h16l-3 34-5 7-5-7z"/><path d="M23 24h18M26 34h12" stroke="${c2}"/></svg>`,
+        wing:`<svg ${common}><path class="glyph-core anim-float" d="M32 48V16M31 25L12 17l9 18 10 4M33 25l19-8-9 18-10 4"/><path d="M26 49h12" stroke="${c2}"/></svg>`,
+        gravity:`<svg ${common}><circle class="glyph-core anim-spin" cx="32" cy="32" r="8"/><ellipse cx="32" cy="32" rx="24" ry="10" stroke="${c2}"/><ellipse cx="32" cy="32" rx="10" ry="24"/></svg>`,
+        skull:`<svg ${common}><path class="glyph-core" d="M20 25c0-9 24-9 24 0v12c0 8-24 8-24 0z"/><circle cx="27" cy="32" r="3" stroke="${c2}"/><circle cx="37" cy="32" r="3" stroke="${c2}"/><path d="M28 44h8M22 20L15 12M42 20l7-8"/></svg>`,
+        rift:`<svg ${common}><path class="glyph-core anim-zap" d="M34 10L20 34h12l-3 20 15-27H32z"/><path d="M16 18c8-8 24-8 32 0M16 46c8 8 24 8 32 0" stroke="${c2}"/></svg>`,
+        wheel:`<svg ${common}><circle class="glyph-core anim-spin" cx="32" cy="32" r="20"/><circle cx="32" cy="32" r="7" stroke="${c2}"/><path d="M32 12v13M32 39v13M12 32h13M39 32h13M18 18l9 9M37 37l9 9"/></svg>`,
+        raven:`<svg ${common}><path class="glyph-core anim-sway" d="M12 40c13-20 30-23 42-17-13 4-20 13-22 27-5-8-11-11-20-10z"/><path d="M38 23l12-10" stroke="${c2}"/></svg>`,
+        drone:`<svg ${common}><rect class="glyph-core" x="20" y="22" width="24" height="20" rx="8"/><circle class="anim-pulse" cx="32" cy="32" r="5" stroke="${c2}"/><path d="M20 32H8M44 32h12M16 18l-7-7M48 18l7-7"/></svg>`,
+        eye:`<svg ${common}><path class="glyph-core" d="M10 32s8-14 22-14 22 14 22 14-8 14-22 14S10 32 10 32z"/><circle class="anim-pulse" cx="32" cy="32" r="7" stroke="${c2}"/></svg>`,
+        scope:`<svg ${common}><circle class="glyph-core" cx="32" cy="32" r="19"/><path class="anim-scan" d="M32 10v44M10 32h44" stroke="${c2}"/><circle cx="32" cy="32" r="4"/></svg>`,
+        hazard:`<svg ${common}><path class="glyph-core anim-spin" d="M32 12v14M32 38v14M15 42l12-7M37 29l12-7M15 22l12 7M37 35l12 7"/><circle cx="32" cy="32" r="8" stroke="${c2}"/></svg>`,
+        bolt:`<svg ${common}><path class="glyph-core anim-zap" d="M35 8L17 36h13l-2 20 20-31H35z"/><path d="M15 15h10M39 49h10" stroke="${c2}"/></svg>`,
+        wrench:`<svg ${common}><path class="glyph-core anim-sway" d="M43 10a13 13 0 0 0-15 16L12 42l10 10 16-16a13 13 0 0 0 16-15l-9 9-9-9z"/><path d="M18 44l4 4" stroke="${c2}"/></svg>`,
+        ferro:`<svg ${common}><path class="glyph-core anim-pulse" d="M32 10c13 13 20 24 20 33 0 8-8 12-20 12s-20-4-20-12c0-9 7-20 20-33z"/><path d="M22 42c7 4 13 4 20 0" stroke="${c2}"/></svg>`,
+        med:`<svg ${common}><path class="glyph-core" d="M25 12h14v13h13v14H39v13H25V39H12V25h13z"/><path class="anim-pulse" d="M32 18v28M18 32h28" stroke="${c2}"/></svg>`,
+        dome:`<svg ${common}><path class="glyph-core anim-pulse" d="M12 44c4-20 36-20 40 0z"/><path d="M18 44h28M32 16v28" stroke="${c2}"/></svg>`,
+        decoy:`<svg ${common}><circle class="glyph-core" cx="24" cy="32" r="10"/><circle class="anim-pulse" cx="40" cy="32" r="10" stroke="${c2}"/><path d="M20 50c7-5 17-5 24 0"/></svg>`,
+        diamond:`<svg ${common}><path class="glyph-core anim-pulse" d="M32 8l20 18-20 30-20-30z"/><path d="M12 26h40M24 26l8 30 8-30" stroke="${c2}"/></svg>`,
+        castle:`<svg ${common}><path class="glyph-core" d="M14 52V20h8v8h8v-8h8v8h8v-8h4v32z"/><path d="M24 52V40c0-7 16-7 16 0v12" stroke="${c2}"/></svg>`,
+        battery:`<svg ${common}><rect class="glyph-core" x="18" y="16" width="28" height="36" rx="6"/><path d="M26 10h12M25 34h14M32 24v20" stroke="${c2}" class="anim-zap"/></svg>`
+      };
+      return `<span class="legend-glyph" aria-hidden="true">${map[kind] || map.smart}</span>`;
+    }
+
+    const legendsTop = [
+      ["Valkyrie","3,035 kills","872K damage","wing"],
+      ["Rampart","2,215 kills","616K damage","wrench"],
+      ["Axle","1,860 kills","608K damage","wheel"],
+      ["Octane","1,718 kills","517K damage","stim"],
+      ["Conduit","1,412 kills","405K damage","battery"],
+      ["Caustic","1,408 kills","423K damage","hazard"]
+    ];
+    document.getElementById("legendList").innerHTML = legendsTop.map(([name,kills,dmg,g]) => `
+      <div class="item"><div style="display:flex;gap:10px;align-items:center">${glyph(g,34)}<div><div class="name">${name}</div><div class="sub">${dmg}</div></div></div><strong>${kills}</strong></div>
     `).join("");
 
     function tierOnePacks(level){
@@ -629,81 +628,63 @@
     calcHL();
 
     const emojiPacks = [
-      {id:"starter",name:"Starter",price:0,unlocked:true,cat:"core",items:[["🔥","hot drop"],["💀","cracked"],["👑","carry"],["🛡️","reset"],["🎧","comms"],["🚪","quitters"],["💎","rank"],["🧨","bomb"]]},
-      {id:"wraith",name:"Wraith Void",price:150,cat:"skirmisher",items:[["🌀","phase"],["👁️","voices"],["⚫","void"],["💨","portal"],["🔪","blade"],["🌌","rift"],["👻","ghost"],["⚡","sweat"]]},
-      {id:"pathfinder",name:"Pathfinder Zip",price:150,cat:"skirmisher",items:[["🤖","grapple"],["🪝","hook"],["🟦","zip"],["😊","friend"],["📡","beacon"],["⬆️","highground"],["🧲","pull"],["🏃","swing"]]},
-      {id:"octane",name:"Octane Stim",price:150,cat:"skirmisher",items:[["💉","stim"],["🟢","speed"],["🦵","legs"],["🚀","pad"],["😵‍💫","send it"],["⚠️","danger"],["🏃","zoom"],["🧪","juice"]]},
-      {id:"valkyrie",name:"Valk Afterburn",price:150,cat:"skirmisher",items:[["✈️","jet"],["🚀","missile"],["☁️","sky"],["🪽","wing"],["📡","scan"],["🔥","burn"],["⬆️","ult"],["🎯","lock"]]},
-      {id:"horizon",name:"Horizon Gravity",price:150,cat:"skirmisher",items:[["🪐","gravity"],["🕳️","blackhole"],["🔵","lift"],["✨","space"],["🧲","pull"],["🌙","moon"],["💫","float"],["🧪","science"]]},
-      {id:"revenant",name:"Revenant Nightmare",price:150,cat:"skirmisher",items:[["☠️","death"],["🟥","shadow"],["🦴","bone"],["👹","demon"],["🔪","silence"],["🩸","hunt"],["⚰️","totem"],["🕷️","crawl"]]},
-      {id:"bangalore",name:"Bangalore Smoke",price:150,cat:"assault",items:[["💨","smoke"],["🎖️","soldier"],["🔫","rifle"],["🏃","doubletime"],["💣","ult"],["🟧","flare"],["🪖","tactical"],["📢","comms"]]},
-      {id:"fuse",name:"Fuse Bombshell",price:150,cat:"assault",items:[["💣","nade"],["🧨","cluster"],["🔥","motherlode"],["🍻","mate"],["🦾","arm"],["🎸","chaos"],["💥","boom"],["😎","fusey"]]},
-      {id:"ash",name:"Ash Phase Steel",price:150,cat:"assault",items:[["⚔️","blade"],["🟪","phase"],["🤖","sim"],["🧠","rat"],["🕳️","tear"],["🔍","track"],["💜","arc"],["🩶","steel"]]},
-      {id:"bloodhound",name:"Bloodhound Hunt",price:150,cat:"recon",items:[["🦅","raven"],["🔴","scan"],["👁️","sight"],["🐺","hunt"],["🩸","trail"],["🏹","tracker"],["🔥","beast"],["🌲","woods"]]},
-      {id:"crypto",name:"Crypto Drone",price:150,cat:"recon",items:[["🟩","hack"],["📱","drone"],["🧊","cool"],["🔐","secure"],["📡","EMP"],["👁️","cam"],["💻","code"],["🕶️","stealth"]]},
-      {id:"seer",name:"Seer Spotlight",price:150,cat:"recon",items:[["👁️","focus"],["💛","gold"],["🦋","moth"],["🎭","stage"],["💓","heartbeat"],["🔊","silence"],["✨","flash"],["🔎","reveal"]]},
-      {id:"caustic",name:"Caustic Gas",price:150,cat:"controller",items:[["☣️","gas"],["🧪","test"],["🟩","toxic"],["😷","mask"],["🧫","lab"],["💛","hazard"],["🪤","trap"],["💀","choke"]]},
-      {id:"wattson",name:"Wattson Spark",price:150,cat:"controller",items:[["⚡","fence"],["🔌","node"],["💙","spark"],["🛡️","pylon"],["🥖","baguette"],["💡","zap"],["🔋","charge"],["🌀","arc"]]},
-      {id:"rampart",name:"Rampart Mod Shop",price:150,cat:"controller",items:[["🛠️","mod"],["💗","shop"],["🧱","wall"],["🔩","metal"],["💥","sheila"],["🎨","paint"],["⚙️","gear"],["😏","banter"]]},
-      {id:"catalyst",name:"Catalyst Ferro",price:150,cat:"controller",items:[["🖤","ferro"],["🟣","veil"],["🔮","witchy"],["🧲","fluid"],["🌑","moon"],["🧱","wall"],["💜","spike"],["✨","dark"]]},
-      {id:"lifeline",name:"Lifeline DOC",price:150,cat:"support",items:[["🩹","heal"],["🟢","DOC"],["❤️","revive"],["🎵","vibe"],["📦","care"],["🛡️","support"],["💉","med"],["🙂","safe"]]},
-      {id:"gibraltar",name:"Gibraltar Shield",price:150,cat:"support",items:[["🛡️","dome"],["🌊","island"],["💪","fortified"],["☀️","warm"],["💣","bombard"],["🤙","bruddah"],["🏔️","anchor"],["🔵","shield"]]},
-      {id:"loba",name:"Loba Boutique",price:150,cat:"support",items:[["💎","loot"],["👠","jump"],["🛍️","shop"],["❤️","red"],["✨","lux"],["🔓","vault"],["🐺","wolf"],["👑","queen"]]},
-      {id:"newcastle",name:"Newcastle Hero",price:150,cat:"support",items:[["🛡️","wall"],["⭐","hero"],["🔵","castle"],["🤝","protect"],["🏰","fort"],["💪","drag"],["💛","gold"],["🚧","cover"]]},
-      {id:"conduit",name:"Conduit Radiant",price:150,cat:"support",items:[["🔋","battery"],["💛","radiant"],["🛡️","shield"],["⚡","pulse"],["🌟","spark"],["💙","boost"],["🔆","glow"],["🏃","rush"]]}
+      {id:"starter", name:"Starter", price:0, unlocked:true, glyph:"smart", cat:"core", items:[["fire","hot drop"],["skull","cracked"],["diamond","carry"],["dome","reset"],["drone","comms"],["rift","quitters"],["scope","rank"],["bomb","bomb"]]},
+      ...legendData.map(l => ({id:l.id, name:l.name+" Pack", price:150, glyph:l.glyph, cat:l.cat, items:[
+        [l.glyph,l.name],
+        [l.glyph,l.cat],
+        [l.glyph,"main"],
+        [l.glyph,"vibe"],
+        [l.glyph,"push"],
+        [l.glyph,"clutch"],
+        [l.glyph,"reset"],
+        [l.glyph,"GG"]
+      ]}))
     ];
-    function getUnlocked(){try{return new Set(["starter",...JSON.parse(localStorage.getItem("apexiq-unlocked-packs")||"[]")])}catch(e){return new Set(["starter"])}}
-    function saveUnlocked(set){localStorage.setItem("apexiq-unlocked-packs",JSON.stringify([...set].filter(x=>x!=="starter")))}
-    let activeEmojiPack = "starter";
-    function showSquadPanel(panel){
-      ["Feed","Post","Emoji"].forEach(name=>{
-        document.getElementById("squad"+name+"Panel").classList.toggle("hidden", name.toLowerCase() !== panel);
-        document.getElementById("squadTab"+name).classList.toggle("active", name.toLowerCase() === panel);
-      });
-    }
-    document.getElementById("squadTabFeed").onclick=()=>showSquadPanel("feed");
-    document.getElementById("squadTabPost").onclick=()=>showSquadPanel("post");
-    document.getElementById("squadTabEmoji").onclick=()=>showSquadPanel("emoji");
-    document.getElementById("quickPostBtn").onclick=()=>showSquadPanel("post");
-    document.getElementById("emojiOpenBtn").onclick=()=>document.getElementById("emojiPanel").classList.toggle("hidden");
 
+    function getUnlocked(){try{return new Set(["starter",...JSON.parse(localStorage.getItem("apexiq-unlocked-v9")||"[]")])}catch(e){return new Set(["starter"])}}
+    function saveUnlocked(set){localStorage.setItem("apexiq-unlocked-v9",JSON.stringify([...set].filter(x=>x!=="starter")))}
+    let activePack = "starter";
     function renderEmojiTabs(){
       const unlocked = getUnlocked();
       const tabs = emojiPacks.filter(p=>unlocked.has(p.id));
-      document.getElementById("emojiTabs").innerHTML = tabs.map(p=>`<button type="button" class="emoji-tab ${p.id===activeEmojiPack?"active":""}" onclick="setEmojiPack('${p.id}')">${p.name}</button>`).join("");
+      document.getElementById("emojiTabs").innerHTML = tabs.map(p=>`<button type="button" class="emoji-tab ${p.id===activePack?"active":""}" data-pack="${p.id}">${p.name}</button>`).join("");
+      document.querySelectorAll(".emoji-tab").forEach(btn=>btn.addEventListener("click",()=>{activePack=btn.dataset.pack;renderEmojiTabs()}));
       renderEmojiGrid();
     }
-    window.setEmojiPack = id => { activeEmojiPack=id; renderEmojiTabs(); };
     function renderEmojiGrid(){
-      const pack = emojiPacks.find(p=>p.id===activeEmojiPack) || emojiPacks[0];
+      const pack = emojiPacks.find(p=>p.id===activePack) || emojiPacks[0];
       document.getElementById("activePackName").textContent = pack.name;
-      document.getElementById("emojiGrid").innerHTML = pack.items.map(([icon,label])=>`
-        <div class="emoji" onclick="insertEmoji('${icon}')"><div><div class="glyph">${icon}</div><div class="caption">${label}</div></div></div>
+      document.getElementById("emojiGrid").innerHTML = pack.items.map(([g,label])=>`
+        <div class="emoji-card" data-insert="[${label}]">
+          <div><div class="emoji-glyph">${glyph(g)}</div><div class="caption">${label}</div></div>
+        </div>
       `).join("");
+      document.querySelectorAll(".emoji-card").forEach(card=>card.addEventListener("click",()=>{
+        const box = document.getElementById("forumBody");
+        box.value = (box.value ? box.value + " " : "") + card.dataset.insert;
+        box.focus();
+      }));
     }
-    window.insertEmoji = icon => {
-      const box = document.getElementById("forumBody");
-      box.value = (box.value ? box.value + " " : "") + icon;
-      box.focus();
-    };
     function renderPackShop(){
       const unlocked = getUnlocked();
       document.getElementById("packShop").innerHTML = emojiPacks.map(pack=>`
         <div class="pack-card ${unlocked.has(pack.id)?"":"locked"}">
-          <div class="title"><div><div class="name">${pack.name}</div><div class="sub">${pack.cat} • ${pack.items.length} emojis</div></div><span class="pill">${unlocked.has(pack.id)?"Unlocked":pack.price+" tokens"}</span></div>
-          <div class="pack-stickers">${pack.items.slice(0,4).map(([icon,label])=>`<div class="emoji"><div><div class="glyph">${icon}</div><div class="caption">${label}</div></div></div>`).join("")}</div>
-          ${unlocked.has(pack.id)?"":`<button type="button" style="width:100%;margin-top:10px" onclick="unlockPack('${pack.id}')">Unlock pack</button>`}
+          <div class="title"><div><div class="name">${pack.name}</div><div class="sub">${pack.cat} • ${pack.items.length} glyph stickers</div></div><span class="pill">${unlocked.has(pack.id)?"Unlocked":pack.price+" tokens"}</span></div>
+          <div class="pack-stickers">${pack.items.slice(0,4).map(([g,label])=>`<div class="emoji-card"><div><div class="emoji-glyph">${glyph(g)}</div><div class="caption">${label}</div></div></div>`).join("")}</div>
+          ${unlocked.has(pack.id)?"":`<button type="button" style="width:100%;margin-top:10px" class="unlock-pack" data-pack="${pack.id}">Unlock pack</button>`}
         </div>
       `).join("");
+      document.querySelectorAll(".unlock-pack").forEach(btn=>btn.addEventListener("click",()=>{
+        const s=getUnlocked(); s.add(btn.dataset.pack); saveUnlocked(s); renderPackShop(); renderEmojiTabs();
+      }));
     }
-    window.unlockPack = id => { const s=getUnlocked(); s.add(id); saveUnlocked(s); renderPackShop(); renderEmojiTabs(); alert("Pack unlocked locally."); };
 
     const demoPosts=[
-      {id:"p1",name:"IMissAnyway",cat:"Wildcard",title:"Need teammates who stay close",body:"Looking for teammates who don’t insta-leave 🔥 I play aggressive entry and need people who hold hands.",react:{fire:7,skull:3,crown:4},comments:[{n:"VoltGoblin",b:"I’m down later."}]},
-      {id:"p2",name:"RankedDad",cat:"Ranked",title:"Gold/Plat grind",body:"Smart comms, no ego solo pushes. Need endgame players 🛡️",react:{fire:2,skull:0,crown:1},comments:[]}
+      {id:"p1",name:"IMissAnyway",cat:"Wildcard",title:"Need teammates who stay close",body:"Looking for teammates who don’t insta-leave [hot drop] I play aggressive entry and need people who hold hands.",react:{fire:7,skull:3,crown:4},comments:[{n:"VoltGoblin",b:"I’m down later."}]},
+      {id:"p2",name:"RankedDad",cat:"Ranked",title:"Gold/Plat grind",body:"Smart comms, no ego solo pushes. Need endgame players [reset]",react:{fire:2,skull:0,crown:1},comments:[]}
     ];
-    function loadPosts(){try{const saved=localStorage.getItem("apexiq-posts-v8");if(!saved){localStorage.setItem("apexiq-posts-v8",JSON.stringify(demoPosts));return demoPosts}return JSON.parse(saved)}catch(e){return demoPosts}}
-    function savePosts(p){localStorage.setItem("apexiq-posts-v8",JSON.stringify(p))}
+    function loadPosts(){try{const saved=localStorage.getItem("apexiq-posts-v9");if(!saved){localStorage.setItem("apexiq-posts-v9",JSON.stringify(demoPosts));return demoPosts}return JSON.parse(saved)}catch(e){return demoPosts}}
+    function savePosts(p){localStorage.setItem("apexiq-posts-v9",JSON.stringify(p))}
     function renderPosts(){
       const filter=document.getElementById("forumFilter").value;
       let posts=loadPosts().filter(p=>filter==="All"||p.cat===filter);
@@ -713,72 +694,62 @@
           <div class="post-head"><div class="avatar">${p.name.slice(0,2).toUpperCase()}</div><div><div class="name">${p.title}</div><div class="sub">by ${p.name}</div><div class="post-meta"><span class="chip good">${p.cat}</span></div></div></div>
           <p>${p.body}</p>
           <div class="reaction-row">
-            <button class="reaction" onclick="react('${p.id}','fire')">🔥 ${p.react.fire||0}</button>
-            <button class="reaction" onclick="react('${p.id}','skull')">💀 ${p.react.skull||0}</button>
-            <button class="reaction" onclick="react('${p.id}','crown')">👑 ${p.react.crown||0}</button>
-            <button class="reaction" onclick="delPost('${p.id}')">Delete</button>
+            <button class="reaction" data-react="${p.id}:fire">🔥 ${p.react.fire||0}</button>
+            <button class="reaction" data-react="${p.id}:skull">💀 ${p.react.skull||0}</button>
+            <button class="reaction" data-react="${p.id}:crown">👑 ${p.react.crown||0}</button>
+            <button class="reaction" data-delete="${p.id}">Delete</button>
           </div>
           <div class="comment-box">
             ${(p.comments||[]).map(c=>`<div class="comment"><strong>${c.n}:</strong> ${c.b}</div>`).join("")}
-            <div class="comment-form"><input id="c-${p.id}" placeholder="Add comment..."/><button onclick="comment('${p.id}')" type="button">Send</button></div>
+            <div class="comment-form"><input id="c-${p.id}" placeholder="Add comment..."/><button data-comment="${p.id}" type="button">Send</button></div>
           </div>
         </div>
       `).join("") || `<div class="big-empty">No posts yet.</div>`;
+
+      document.querySelectorAll("[data-react]").forEach(btn=>btn.addEventListener("click",()=>{
+        const [id,key]=btn.dataset.react.split(":");
+        const posts=loadPosts(); const p=posts.find(x=>x.id===id); if(!p)return;
+        p.react[key]=(p.react[key]||0)+1; savePosts(posts); renderPosts();
+      }));
+      document.querySelectorAll("[data-delete]").forEach(btn=>btn.addEventListener("click",()=>{
+        savePosts(loadPosts().filter(p=>p.id!==btn.dataset.delete)); renderPosts();
+      }));
+      document.querySelectorAll("[data-comment]").forEach(btn=>btn.addEventListener("click",()=>{
+        const id=btn.dataset.comment; const inp=document.getElementById("c-"+id); if(!inp.value.trim())return;
+        const posts=loadPosts(); const p=posts.find(x=>x.id===id); if(!p)return;
+        p.comments.push({n:"Guest",b:inp.value.trim()}); inp.value=""; savePosts(posts); renderPosts();
+      }));
     }
-    window.react=(id,key)=>{const posts=loadPosts();const p=posts.find(x=>x.id===id);p.react[key]=(p.react[key]||0)+1;savePosts(posts);renderPosts()};
-    window.delPost=id=>{savePosts(loadPosts().filter(p=>p.id!==id));renderPosts()};
-    window.comment=id=>{const inp=document.getElementById("c-"+id);if(!inp.value.trim())return;const posts=loadPosts();const p=posts.find(x=>x.id===id);p.comments.push({n:"Guest",b:inp.value.trim()});inp.value="";savePosts(posts);renderPosts()};
-    document.getElementById("forumForm").onsubmit=e=>{
+    document.getElementById("forumForm").addEventListener("submit", e=>{
       e.preventDefault();
       const posts=loadPosts();
       posts.unshift({id:"p"+Date.now(),name:forumName.value.trim()||"Guest",cat:forumCategory.value,title:forumTitle.value.trim()||"Untitled",body:forumBody.value.trim()||"No body.",react:{fire:0,skull:0,crown:0},comments:[]});
-      savePosts(posts);
-      renderPosts();
-      showSquadPanel("feed");
-    };
-    document.getElementById("forumFilter").onchange=renderPosts;
+      savePosts(posts); renderPosts(); location.hash="#squadFeed";
+    });
+    document.getElementById("forumFilter").addEventListener("change",renderPosts);
 
-    const themes=[
-      ["molten","Molten Drop","apex","🔥","ApexIQ orange/red armor glow","#0b0c10","#ff3d20","#ffa333","#ffe0a3","effect-fire"],
-      ["pred","Neon Pred","apex","💎","pink/purple ranked neon","#070914","#ff2f7d","#8d5cff","#ff9be0","effect-electric"],
-      ["storm","Storm Point","apex","🌴","teal surf, gold sun, storm haze","#061018","#14d7ff","#ffcc4d","#96fff0","effect-scan"],
-      ["bangalore","Bangalore Smoke","assault","💨","smoke gray, tracer gold, military fire","#090908","#d29b38","#6f757c","#f6d28b","effect-smoke"],
-      ["fuse","Fuse Bombshell","assault","💣","detonation orange, brass, burnt steel","#110706","#ff6a00","#d7b45f","#ffd68a","effect-fire"],
-      ["ash","Ash Phase Steel","assault","⚔️","phase violet, silver blade, cold steel","#070711","#a986ff","#d8e4ff","#b99cff","effect-void"],
-      ["wraith","Wraith Void","skirmisher","🌀","void purple, rift blue, phase haze","#050713","#805cff","#30d9ff","#ccbaff","effect-void"],
-      ["pathfinder","Pathfinder Zipline","skirmisher","🤖","robot blue, friendly yellow, cable shine","#061018","#21c7ff","#ffd84b","#b8efff","effect-electric"],
-      ["octane","Octane Stim","skirmisher","💉","stim green, danger red, speed blur","#061008","#7dff3a","#ff3c1f","#d6ff84","effect-toxic"],
-      ["valk","Valkyrie Afterburn","skirmisher","✈️","sky blue, jet flame, missile smoke","#07111c","#4bb8ff","#ff7a2f","#c6e8ff","effect-jet"],
-      ["horizon","Horizon Gravity","skirmisher","🕳️","space teal, gravity violet, star dust","#060916","#41f0db","#b36cff","#c9fff8","effect-void"],
-      ["revenant","Revenant Nightmare","skirmisher","☠️","shadow red, bone white, nightmare black","#080306","#e0182d","#d7c2a2","#ff8b8b","effect-smoke"],
-      ["bloodhound","Bloodhound Hunt","recon","🦅","raven red, amber scan rings, forest ash","#0b0706","#c61d2d","#ffb347","#ffd19a","effect-scan"],
-      ["crypto","Crypto Drone","recon","📡","hacker green, drone cyan, black glass","#03100c","#27f59a","#37a7ff","#aaffd8","effect-electric"],
-      ["seer","Seer Spotlight","recon","👁️","gold spotlight, indigo stage, heartbeat glow","#050817","#f2c94c","#674bff","#ffe99c","effect-scan"],
-      ["caustic","Caustic Gas","controller","☣️","toxic fog, hazard yellow, lab glass","#061006","#9dff38","#d8b33e","#d9ff84","effect-toxic"],
-      ["wattson","Wattson Spark","controller","⚡","electric fence blue, warm spark orange","#06101b","#3dd8ff","#ffb347","#c3f5ff","effect-electric"],
-      ["rampart","Rampart Mod Shop","controller","🛠️","hot pink, workshop violet, metal sparks","#100711","#ff4ecb","#7d8bff","#ffd0f3","effect-shop"],
-      ["catalyst","Catalyst Ferro","controller","🖤","ferrofluid black, magenta veil, moon haze","#05050a","#cf4fff","#2b2438","#efc6ff","effect-void"],
-      ["lifeline","Lifeline DOC","support","🩹","medic teal, revive red, DOC glow","#051210","#2ee6c8","#ff5a5f","#b9fff1","effect-scan"],
-      ["gibraltar","Gibraltar Shield","support","🛡️","shield blue, island orange, dome glow","#061018","#ff8a2a","#3aa0ff","#ffcca3","effect-jet"],
-      ["loba","Loba Boutique","support","💎","luxury crimson, gold, black velvet","#0c0608","#ff2e55","#f2c94c","#ffd1d8","effect-shop"],
-      ["newcastle","Newcastle Hero","support","🏰","hero blue, gold shield, armored steel","#06101a","#318bff","#ffd166","#b8d7ff","effect-electric"],
-      ["conduit","Conduit Radiant","support","🔋","radiant yellow, shield blue, warm pulse","#071018","#ffe15a","#36c8ff","#fff1a6","effect-electric"]
+    const defaultTheme={id:"molten",intensity:112,blur:18,motion:true,glass:true,compact:false};
+    const apexThemes=[
+      {id:"molten", name:"Molten Drop", cat:"apex", glyph:"bomb", fx:"fx-fire", colors:["#090a0f","#ff3d20","#ffa22e","#ffe5a8"], desc:"ApexIQ armor orange, lava glow, drop-ship heat"},
+      {id:"pred", name:"Neon Predator", cat:"apex", glyph:"diamond", fx:"fx-electric", colors:["#070914","#ff2f7d","#8d5cff","#ff9be0"], desc:"pred badge neon, violet beam, ranked sweat"},
+      {id:"storm", name:"Storm Point", cat:"apex", glyph:"scope", fx:"fx-scan", colors:["#061018","#14d7ff","#ffcc4d","#96fff0"], desc:"teal storm, golden light, ocean scan haze"},
+      ...legendData.map(l=>({id:l.id, name:l.name, cat:l.cat, glyph:l.glyph, fx:l.fx, colors:l.colors, desc:l.desc}))
     ];
-    const defaultState={id:"molten",intensity:110,blur:18,motion:true,glass:true,compact:false};
+
     function rgba(hex,a){const n=parseInt(hex.slice(1),16);return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`}
-    function state(){try{return {...defaultState,...JSON.parse(localStorage.getItem("apexiq-theme-v8")||"{}")}}catch(e){return {...defaultState}}}
-    function saveState(s){localStorage.setItem("apexiq-theme-v8",JSON.stringify(s))}
-    function themeById(id){return themes.find(t=>t[0]===id)||themes[0]}
-    function applyTheme(s=state()){
+    function getThemeState(){try{return {...defaultTheme,...JSON.parse(localStorage.getItem("apexiq-theme-v9")||"{}")}}catch(e){return {...defaultTheme}}}
+    function saveThemeState(s){localStorage.setItem("apexiq-theme-v9",JSON.stringify(s))}
+    function themeById(id){return apexThemes.find(t=>t.id===id)||apexThemes[0]}
+    function applyTheme(s=getThemeState()){
       const t=themeById(s.id), mult=s.intensity/100, r=document.documentElement;
-      r.style.setProperty("--bg",t[5]);r.style.setProperty("--accent",t[6]);r.style.setProperty("--accent2",t[7]);r.style.setProperty("--accent3",t[8]);
-      r.style.setProperty("--glow",rgba(t[6],.34*mult));r.style.setProperty("--bg1",rgba(t[6],.33*mult));r.style.setProperty("--bg2",rgba(t[7],.28*mult));r.style.setProperty("--bg3",rgba(t[8],.10*mult));r.style.setProperty("--blur",s.blur+"px");
+      r.style.setProperty("--bg",t.colors[0]); r.style.setProperty("--accent",t.colors[1]); r.style.setProperty("--accent2",t.colors[2]); r.style.setProperty("--accent3",t.colors[3]);
+      r.style.setProperty("--glow",rgba(t.colors[1],.35*mult)); r.style.setProperty("--bg1",rgba(t.colors[1],.34*mult)); r.style.setProperty("--bg2",rgba(t.colors[2],.28*mult)); r.style.setProperty("--bg3",rgba(t.colors[3],.10*mult)); r.style.setProperty("--blur",s.blur+"px");
       document.body.className = "";
-      document.body.classList.toggle("motion-on",s.motion);
+      document.body.classList.toggle("no-motion",!s.motion);
       document.body.classList.toggle("glass-off",!s.glass);
       document.body.classList.toggle("compact-on",s.compact);
-      document.body.classList.add(t[9]);
-      currentThemePill.textContent=t[1];
+      document.body.classList.add(t.fx);
+      currentThemePill.textContent=t.name;
       motionToggle.textContent="Motion: "+(s.motion?"On":"Off");
       glassToggle.textContent="Glass: "+(s.glass?"On":"Off");
       compactToggle.textContent="Compact: "+(s.compact?"On":"Off");
@@ -786,24 +757,28 @@
       renderThemes();
     }
     function renderThemes(){
-      const cat=themeCategory.value, s=state();
-      document.getElementById("themeGrid").innerHTML=themes.filter(t=>cat==="all"||t[2]===cat).map(t=>`
-        <button class="theme-tile ${s.id===t[0]?"active":""}" onclick="setTheme('${t[0]}')" style="--tile-bg:${t[5]};--tile-a:${rgba(t[6],.48)};--tile-b:${rgba(t[7],.36)}">
-          <div class="theme-icon">${t[3]}</div><strong>${t[1]}</strong><span>${t[4]}</span>
+      const cat=themeCategory.value, s=getThemeState();
+      themeGrid.innerHTML=apexThemes.filter(t=>cat==="all"||t.cat===cat).map(t=>`
+        <button class="theme-tile ${s.id===t.id?"active":""}" data-theme="${t.id}" style="--tile-bg:${t.colors[0]};--tile-a:${rgba(t.colors[1],.48)};--tile-b:${rgba(t.colors[2],.36)}">
+          ${glyph(t.glyph)}
+          <strong>${t.name}</strong><span>${t.desc}</span>
         </button>
       `).join("");
+      document.querySelectorAll("[data-theme]").forEach(btn=>btn.addEventListener("click",()=>{
+        const s=getThemeState(); s.id=btn.dataset.theme; saveThemeState(s); applyTheme(s);
+      }));
     }
-    window.setTheme=id=>{const s=state();s.id=id;saveState(s);applyTheme(s)};
-    themeCategory.onchange=renderThemes;
-    randomThemeBtn.onclick=()=>{const pool=themes.filter(t=>themeCategory.value==="all"||t[2]===themeCategory.value);setTheme(pool[Math.floor(Math.random()*pool.length)][0])};
-    themeIntensity.oninput=e=>{const s=state();s.intensity=Number(e.target.value);saveState(s);applyTheme(s)};
-    themeBlur.oninput=e=>{const s=state();s.blur=Number(e.target.value);saveState(s);applyTheme(s)};
-    motionToggle.onclick=()=>{const s=state();s.motion=!s.motion;saveState(s);applyTheme(s)};
-    glassToggle.onclick=()=>{const s=state();s.glass=!s.glass;saveState(s);applyTheme(s)};
-    compactToggle.onclick=()=>{const s=state();s.compact=!s.compact;saveState(s);applyTheme(s)};
-    resetThemeBtn.onclick=()=>{saveState(defaultState);applyTheme(defaultState)};
+    themeCategory.addEventListener("change",renderThemes);
+    randomThemeBtn.addEventListener("click",()=>{const pool=apexThemes.filter(t=>themeCategory.value==="all"||t.cat===themeCategory.value); const pick=pool[Math.floor(Math.random()*pool.length)]; const s=getThemeState(); s.id=pick.id; saveThemeState(s); applyTheme(s);});
+    themeIntensity.addEventListener("input",e=>{const s=getThemeState();s.intensity=Number(e.target.value);saveThemeState(s);applyTheme(s)});
+    themeBlur.addEventListener("input",e=>{const s=getThemeState();s.blur=Number(e.target.value);saveThemeState(s);applyTheme(s)});
+    motionToggle.addEventListener("click",()=>{const s=getThemeState();s.motion=!s.motion;saveThemeState(s);applyTheme(s)});
+    glassToggle.addEventListener("click",()=>{const s=getThemeState();s.glass=!s.glass;saveThemeState(s);applyTheme(s)});
+    compactToggle.addEventListener("click",()=>{const s=getThemeState();s.compact=!s.compact;saveThemeState(s);applyTheme(s)});
+    resetThemeBtn.addEventListener("click",()=>{saveThemeState(defaultTheme);applyTheme(defaultTheme)});
 
     renderEmojiTabs(); renderPackShop(); renderPosts(); applyTheme();
+
     if ("serviceWorker" in navigator && location.protocol !== "file:") navigator.serviceWorker.register("./sw.js").catch(()=>{});
   </script>
 </body>
