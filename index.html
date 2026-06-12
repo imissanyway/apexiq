@@ -388,20 +388,66 @@
       margin-top:12px;
     }
 
+
+    /* v0.7 mobile layout fixes */
+    .app{padding-bottom:145px;position:relative;z-index:1}
+    .tabs{z-index:80;box-shadow:0 18px 50px rgba(0,0,0,.5)}
+    .hero-card{overflow:hidden;padding:22px!important}
+    .score-wrap{display:grid!important;grid-template-columns:1fr!important;gap:16px;align-items:start!important}
+    .score-wrap > div:last-child{text-align:left!important;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end;background:rgba(0,0,0,.12);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:12px;max-width:100%}
+    .score-label{font-size:11px;letter-spacing:.12em;white-space:normal!important}
+    .score{font-size:52px!important;letter-spacing:-.035em!important;line-height:.85!important;justify-self:end}
+    .player{font-size:clamp(34px,12vw,48px)!important;line-height:.94!important;word-break:break-word;overflow-wrap:anywhere;max-width:100%}
+    #archetype,.hero-card .lead{font-size:16px;line-height:1.45;overflow-wrap:anywhere}
+    .stat-grid,.grid{gap:12px!important}
+    .stat{min-width:0;overflow:hidden}
+    .stat .value,.value{font-size:clamp(24px,8vw,36px)!important;overflow-wrap:anywhere}
+    .legend-row,.item{min-width:0;overflow:hidden}
+    .legend-row strong,.item strong{overflow-wrap:anywhere;text-align:right}
+    .section{scroll-margin-bottom:140px}
+    .row,.search-row{grid-template-columns:1fr!important;width:100%}
+    .search input,.search select,.search-card input,.search-card select{display:block;width:100%!important;min-width:0!important;max-width:100%!important}
+    .theme-aura{position:fixed;right:-36px;top:92px;font-size:170px;line-height:1;opacity:.13;filter:blur(.2px) drop-shadow(0 0 35px var(--glow));pointer-events:none;z-index:0;transform:rotate(-12deg);transition:all .35s ease;color:var(--accent2)}
+    body.motion-on .theme-aura{animation:legendFloat 4.5s ease-in-out infinite alternate}
+    @keyframes legendFloat{from{transform:translateY(0) rotate(-12deg) scale(1)}to{transform:translateY(18px) rotate(-8deg) scale(1.04)}}
+    body.effect-electric .theme-aura{filter:drop-shadow(0 0 18px var(--accent)) drop-shadow(0 0 46px var(--accent2));animation:electricPulse 1.7s steps(2,end) infinite}
+    body.effect-toxic .theme-aura{filter:blur(1px) drop-shadow(0 0 40px var(--accent));animation:toxicDrift 5s ease-in-out infinite alternate}
+    body.effect-void .theme-aura{filter:drop-shadow(0 0 35px var(--accent2));animation:voidSpin 7s linear infinite}
+    body.effect-smoke .theme-aura{filter:blur(2px) drop-shadow(0 0 25px var(--accent));animation:smokeFade 4s ease-in-out infinite alternate}
+    body.effect-fire .theme-aura{filter:drop-shadow(0 0 28px #ff7a2f) drop-shadow(0 0 56px var(--accent));animation:fireFlicker 1.8s ease-in-out infinite alternate}
+    @keyframes electricPulse{50%{opacity:.25;transform:translateX(-6px) rotate(-10deg) scale(1.04)}}
+    @keyframes toxicDrift{to{opacity:.2;transform:translate(-12px,24px) rotate(-16deg)}}
+    @keyframes voidSpin{to{transform:rotate(348deg)}}
+    @keyframes smokeFade{to{opacity:.08;transform:translateY(30px) rotate(-4deg) scale(1.08)}}
+    @keyframes fireFlicker{to{opacity:.24;transform:translateY(-5px) rotate(-8deg) scale(1.05)}}
+    .theme-tile{min-height:132px!important;overflow:hidden}
+    .theme-tile:before{content:attr(data-glyph);position:absolute;right:8px;bottom:-12px;font-size:64px;line-height:1;opacity:.25;filter:drop-shadow(0 0 18px rgba(255,255,255,.2))}
+    .theme-tile strong{font-size:15px!important;position:relative;z-index:1}
+    .theme-tile span{font-size:11px!important;position:relative;z-index:1}
+    .theme-detail{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px;position:relative;z-index:1}
+    .theme-detail em{font-style:normal;font-size:9px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;border:1px solid rgba(255,255,255,.16);background:rgba(0,0,0,.16);border-radius:999px;padding:4px 6px;color:rgba(255,255,255,.78)}
+    .forum-actions-top{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+    .forum-actions-top button{margin:0;min-height:46px}
+    .sticker-dock{display:flex;gap:8px;overflow-x:auto;padding:8px;border:1px solid var(--stroke);background:rgba(255,255,255,.045);border-radius:18px;margin-top:10px}
+    .mini-sticker{flex:0 0 auto;border:1px solid var(--stroke);background:rgba(255,255,255,.065);border-radius:16px;min-width:62px;padding:8px;text-align:center;cursor:pointer}
+    .mini-sticker .big{font-size:24px}.mini-sticker .caption{font-size:9px;color:var(--muted);font-weight:900}
+    @media(max-width:420px){.toggle-grid{grid-template-columns:1fr}.theme-grid{grid-template-columns:1fr}.range-grid{grid-template-columns:1fr}.score-wrap > div:last-child{grid-template-columns:1fr}.score{justify-self:start}.tabs{grid-template-columns:repeat(6,minmax(72px,1fr))}.tab{font-size:11px}}
+
     @media(max-width:370px){h1{font-size:47px}.player{font-size:36px}.score{font-size:62px}}
   </style>
 </head>
 <body>
+  <div id="themeAura" class="theme-aura" aria-hidden="true">⚔</div>
   <main class="app">
     <div class="topbar">
       <div class="brand"><div class="mark">IQ</div><span>ApexIQ</span></div>
-      <span class="pill">mobile v0.6</span>
+      <span class="pill">mobile v0.7</span>
     </div>
 
     <section id="home">
-      <div class="pill">theme forge</div>
+      <div class="pill">legend forge</div>
       <h1>Stop showing stats.<br><span class="gradient">Explain them.</span></h1>
-      <p class="lead">ApexIQ Mobile is a launchable prototype for iPhone with an Apex-styled theme system, demo stats, forum/LFG, Heirloom Lab, and future API/database support.</p>
+      <p class="lead">ApexIQ Mobile is a launchable prototype for iPhone with polished Apex-styled dashboards, Forum/LFG, Heirloom Lab, sticker packs, and legend-powered themes.</p>
 
       <form class="card search" id="searchForm">
         <strong>Search demo profile</strong>
@@ -417,7 +463,7 @@
           <input id="handle" value="IMissAnyway" placeholder="Player name" />
         </div>
         <button type="submit">Analyze</button>
-        <p class="note">This version includes Forum posts, comments, Squad Finder, Heirloom Lab, sticker packs, and advanced themes saved locally on your iPhone.</p>
+        <p class="note">This version fixes the stats layout, adds stronger legend themes, improves Forum posting, and makes stickers easier to find.</p>
       </form>
     </section>
 
@@ -617,6 +663,7 @@
             <span class="pill" id="selectedStickerLabel">none</span>
           </div>
           <div class="sticker-grid" id="forumStickerPicker"></div>
+          <div class="sticker-dock" id="activeStickerDock"></div>
 
           <button type="submit">Post to Forum</button>
           <p class="note">Keep posts safe: gamer tags/Discord handles are okay, but don’t share address, phone, school, passwords, or private info.</p>
@@ -636,6 +683,11 @@
         <div class="title">
           <h2>Forum feed</h2>
           <span class="pill" id="forumCount">0 posts</span>
+        </div>
+
+        <div class="forum-actions-top">
+          <button id="quickNewPost" type="button">New Post</button>
+          <button id="quickStickerShop" class="secondary-btn" type="button">Sticker Shop</button>
         </div>
 
         <div class="form-grid">
@@ -878,7 +930,8 @@
 
     function show(tab){
       ["home","dashboard","leaders","heirloom","community","squad","themes","data"].forEach(id => {
-        document.getElementById(id).classList.toggle("hidden", id !== tab);
+        const el = document.getElementById(id);
+        if(el) el.classList.toggle("hidden", id !== tab);
       });
       document.querySelectorAll(".tab").forEach(btn => {
         btn.classList.toggle("active", btn.dataset.tab === tab);
@@ -900,38 +953,38 @@
     /* service worker disabled in single-file preview */
   
     const themeLibrary = [
-      {id:"molten-drop",name:"Molten Drop",cat:"apex",desc:"Default ApexIQ red/orange armor glow",bg:"#08070a",a:"#ff3c1f",b:"#ff9d2e",g:"#ff3c1f",m:"#b9aeb0"},
-      {id:"neon-pred",name:"Neon Pred",cat:"apex",desc:"Ranked demon pink/purple glow",bg:"#070914",a:"#ff2f7d",b:"#8d5cff",g:"#ff2f7d",m:"#b9b4d6"},
-      {id:"storm-point",name:"Storm Point",cat:"apex",desc:"tropical blue, green, gold",bg:"#061018",a:"#16d6ff",b:"#ffcf5a",g:"#16d6ff",m:"#afd1d7"},
-      {id:"worlds-edge",name:"World's Edge",cat:"apex",desc:"lava, steel, smoke",bg:"#0d0907",a:"#ff4b21",b:"#747b86",g:"#ff4b21",m:"#c7bbb4"},
+      {id:"molten-drop",name:"Molten Drop",cat:"apex",glyph:"▲",effect:"fire",detail:["lava rim","hot drop","armor glow"],desc:"ApexIQ default: lava-orange hot drop, smoky black armor glass, high contrast UI.",bg:"#08070a",a:"#ff3219",b:"#ffb13b",g:"#ff4a1f",m:"#c8b7b0"},
+      {id:"neon-pred",name:"Neon Pred",cat:"apex",glyph:"◆",effect:"electric",detail:["rank glow","neon trim","sweat mode"],desc:"Predator-card energy with magenta neon, violet ranked glow, and hard black panels.",bg:"#060711",a:"#ff2476",b:"#8b5cff",g:"#ff2476",m:"#c7b8e6"},
+      {id:"storm-point",name:"Storm Point",cat:"apex",glyph:"◒",effect:"smoke",detail:["ocean teal","sun flare","clean HUD"],desc:"Tropical teal, warm sun highlights, and clean coast-map readability.",bg:"#051116",a:"#15d7ff",b:"#ffc64f",g:"#15d7ff",m:"#b7d4d9"},
+      {id:"worlds-edge",name:"World's Edge",cat:"apex",glyph:"▰",effect:"fire",detail:["lava seams","dark steel","ash haze"],desc:"Map-inspired lava seams, steel gray smoke, and hard-edged combat panels.",bg:"#0d0806",a:"#ff4a21",b:"#818891",g:"#ff4a21",m:"#c8bbb5"},
 
-      {id:"bangalore",name:"Bangalore Smoke",cat:"assault",desc:"charcoal, military gold, smoke",bg:"#090908",a:"#d29b38",b:"#6f757c",g:"#d29b38",m:"#c7c0ad"},
-      {id:"fuse",name:"Fuse Bombshell",cat:"assault",desc:"explosive orange and steel",bg:"#100807",a:"#ff6a00",b:"#d7b45f",g:"#ff6a00",m:"#d4c0a9"},
-      {id:"ash",name:"Ash Phase Steel",cat:"assault",desc:"cold violet blade energy",bg:"#080810",a:"#a986ff",b:"#d8e4ff",g:"#a986ff",m:"#c6c7d8"},
-      {id:"mad-maggie",name:"Maggie Riot",cat:"assault",desc:"red riot punk energy",bg:"#100509",a:"#ff2b3d",b:"#ffb14a",g:"#ff2b3d",m:"#d8b5b8"},
+      {id:"bangalore",name:"Bangalore Smoke",cat:"assault",glyph:"☁",effect:"smoke",detail:["smoke cover","brass tags","mil HUD"],desc:"Charcoal smoke layers, brass-gold callouts, and tactical military HUD contrast.",bg:"#090908",a:"#d59d38",b:"#7b8289",g:"#d59d38",m:"#cfc4ad"},
+      {id:"fuse",name:"Fuse Bombshell",cat:"assault",glyph:"✹",effect:"fire",detail:["grenade flash","steel grit","pub chaos"],desc:"Explosive orange flashes, rough metal panels, and pub-stomp chaos energy.",bg:"#100807",a:"#ff6800",b:"#e0b656",g:"#ff6800",m:"#dac4aa"},
+      {id:"ash",name:"Ash Phase Steel",cat:"assault",glyph:"◇",effect:"void",detail:["phase cut","cold steel","blade violet"],desc:"Cold steel blue, violet phase slashes, and sharp assassin-style surfaces.",bg:"#070811",a:"#9a7dff",b:"#dbe8ff",g:"#9a7dff",m:"#c9cadb"},
+      {id:"mad-maggie",name:"Maggie Riot",cat:"assault",glyph:"✸",effect:"fire",detail:["riot red","punk sparks","shotgun heat"],desc:"Riot-punk red, hot orange sparks, and aggressive shotgun-style button glow.",bg:"#100509",a:"#ff273d",b:"#ffb04d",g:"#ff273d",m:"#d9b5b8"},
 
-      {id:"wraith",name:"Wraith Void",cat:"skirmisher",desc:"deep void purple and blue",bg:"#060813",a:"#805cff",b:"#30d9ff",g:"#805cff",m:"#bcb8e6"},
-      {id:"pathfinder",name:"Pathfinder Zipline",cat:"skirmisher",desc:"bright robot blue/yellow",bg:"#061018",a:"#21c7ff",b:"#ffd84b",g:"#21c7ff",m:"#bee6ee"},
-      {id:"octane",name:"Octane Stim",cat:"skirmisher",desc:"lime speed and black tech",bg:"#071008",a:"#7dff3a",b:"#ff3c1f",g:"#7dff3a",m:"#b8dcb3"},
-      {id:"valkyrie",name:"Valkyrie Afterburn",cat:"skirmisher",desc:"sky blue and jet flame",bg:"#07111c",a:"#4bb8ff",b:"#ff7a2f",g:"#4bb8ff",m:"#c2d7e8"},
-      {id:"horizon",name:"Horizon Gravity",cat:"skirmisher",desc:"space teal and violet",bg:"#070b16",a:"#41f0db",b:"#b36cff",g:"#41f0db",m:"#bde6e3"},
-      {id:"revenant",name:"Revenant Nightmare",cat:"skirmisher",desc:"shadow red and bone",bg:"#090407",a:"#e0182d",b:"#d7c2a2",g:"#e0182d",m:"#c8aeb0"},
+      {id:"wraith",name:"Wraith Void",cat:"skirmisher",glyph:"◌",effect:"void",detail:["void ring","phase blur","blue static"],desc:"Deep void purple, blue phase static, and ghosted ring energy behind cards.",bg:"#050715",a:"#7c5cff",b:"#30d9ff",g:"#7c5cff",m:"#bdb8e8"},
+      {id:"pathfinder",name:"Pathfinder Zipline",cat:"skirmisher",glyph:"⌁",effect:"electric",detail:["zipline blue","robot yellow","happy HUD"],desc:"Bright robot blue, zipline yellow, and clean friendly sci-fi panels.",bg:"#061018",a:"#20c7ff",b:"#ffda4b",g:"#20c7ff",m:"#bfe5ee"},
+      {id:"octane",name:"Octane Stim",cat:"skirmisher",glyph:"＋",effect:"electric",detail:["stim green","speed blur","danger red"],desc:"Stim-lime acceleration, danger red boosts, and fast compact UI motion.",bg:"#061008",a:"#78ff35",b:"#ff3c1f",g:"#78ff35",m:"#b8ddb2"},
+      {id:"valkyrie",name:"Valkyrie Afterburn",cat:"skirmisher",glyph:"✈",effect:"fire",detail:["jet flame","sky blue","missile trail"],desc:"Sky blue flight HUD with orange afterburner glow and missile-trail accents.",bg:"#07111c",a:"#4ab7ff",b:"#ff7a2f",g:"#4ab7ff",m:"#c3d7e8"},
+      {id:"horizon",name:"Horizon Gravity",cat:"skirmisher",glyph:"◉",effect:"void",detail:["gravity well","space teal","violet orbit"],desc:"Space teal, violet orbit rings, and gravity-well depth on glass cards.",bg:"#070b16",a:"#41f0db",b:"#b36cff",g:"#41f0db",m:"#bde6e3"},
+      {id:"revenant",name:"Revenant Nightmare",cat:"skirmisher",glyph:"☠",effect:"smoke",detail:["shadow red","bone trim","assassin fog"],desc:"Shadow red, bone highlights, and sinister fog-like card shading.",bg:"#090407",a:"#e0182d",b:"#d7c2a2",g:"#e0182d",m:"#c8aeb0"},
 
-      {id:"bloodhound",name:"Bloodhound Hunt",cat:"recon",desc:"raven red and amber scan",bg:"#0b0706",a:"#c61d2d",b:"#ffb347",g:"#c61d2d",m:"#d2b9aa"},
-      {id:"crypto",name:"Crypto Drone",cat:"recon",desc:"hacker green and black glass",bg:"#03100c",a:"#27f59a",b:"#37a7ff",g:"#27f59a",m:"#a9d8c4"},
-      {id:"seer",name:"Seer Spotlight",cat:"recon",desc:"gold glow and deep blue",bg:"#060a16",a:"#f2c94c",b:"#674bff",g:"#f2c94c",m:"#d8cfaf"},
-      {id:"vantage",name:"Vantage Scope",cat:"recon",desc:"icy sniper blue and red",bg:"#071019",a:"#7de3ff",b:"#ff5364",g:"#7de3ff",m:"#c1dbe4"},
+      {id:"bloodhound",name:"Bloodhound Hunt",cat:"recon",glyph:"ᛟ",effect:"smoke",detail:["raven scan","amber trail","hunt mode"],desc:"Raven red, amber scan pulses, and tracker-style hunting highlights.",bg:"#0b0706",a:"#c61d2d",b:"#ffb347",g:"#c61d2d",m:"#d2b9aa"},
+      {id:"crypto",name:"Crypto Drone",cat:"recon",glyph:"▣",effect:"electric",detail:["matrix green","drone blue","hacker grid"],desc:"Hacker green, drone blue, and subtle grid-tech energy for clean intel vibes.",bg:"#03100c",a:"#27f59a",b:"#37a7ff",g:"#27f59a",m:"#a9d8c4"},
+      {id:"seer",name:"Seer Spotlight",cat:"recon",glyph:"✦",effect:"void",detail:["gold focus","deep blue","micro-drone"],desc:"Gold spotlight glow, deep blue stage, and elegant micro-drone shimmer.",bg:"#060a16",a:"#f2c94c",b:"#674bff",g:"#f2c94c",m:"#d8cfaf"},
+      {id:"vantage",name:"Vantage Scope",cat:"recon",glyph:"⌖",effect:"smoke",detail:["scope ice","red ping","sniper frost"],desc:"Icy sniper blue, red target ping, and frost-glass precision panels.",bg:"#071019",a:"#7de3ff",b:"#ff5364",g:"#7de3ff",m:"#c1dbe4"},
 
-      {id:"caustic",name:"Caustic Gas",cat:"controller",desc:"toxic green and hazard yellow",bg:"#071006",a:"#9dff38",b:"#d8b33e",g:"#9dff38",m:"#c8d4a8"},
-      {id:"wattson",name:"Wattson Spark",cat:"controller",desc:"electric blue and warm orange",bg:"#06101b",a:"#3dd8ff",b:"#ffb347",g:"#3dd8ff",m:"#b9d7e4"},
-      {id:"rampart",name:"Rampart Mod Shop",cat:"controller",desc:"hot pink, steel, workshop glow",bg:"#100711",a:"#ff4ecb",b:"#7d8bff",g:"#ff4ecb",m:"#e2b9d7"},
-      {id:"catalyst",name:"Catalyst Ferro",cat:"controller",desc:"black ferrofluid and magenta",bg:"#07060b",a:"#cf4fff",b:"#2b2438",g:"#cf4fff",m:"#d7bde2"},
+      {id:"caustic",name:"Caustic Gas",cat:"controller",glyph:"☣",effect:"toxic",detail:["toxic fog","hazard yellow","lab glass"],desc:"Toxic green fog, hazard yellow labels, and laboratory glass panels.",bg:"#071006",a:"#9dff38",b:"#d8b33e",g:"#9dff38",m:"#c8d4a8"},
+      {id:"wattson",name:"Wattson Spark",cat:"controller",glyph:"⚡",effect:"electric",detail:["electric fence","blue arcs","warm spark"],desc:"Electric fence blue, warm orange sparks, and animated arc glow.",bg:"#06101b",a:"#3dd8ff",b:"#ffb347",g:"#3dd8ff",m:"#b9d7e4"},
+      {id:"rampart",name:"Rampart Mod Shop",cat:"controller",glyph:"⚙",effect:"electric",detail:["mod bench","hot pink","metal violet"],desc:"Hot-pink mod shop energy, steel-violet surfaces, and workshop glow.",bg:"#100711",a:"#ff4ecb",b:"#7d8bff",g:"#ff4ecb",m:"#e2b9d7"},
+      {id:"catalyst",name:"Catalyst Ferro",cat:"controller",glyph:"◆",effect:"void",detail:["ferrofluid","black glass","magenta sheen"],desc:"Ferrofluid black, magenta sheen, and dark liquid-glass motion.",bg:"#07060b",a:"#cf4fff",b:"#2b2438",g:"#cf4fff",m:"#d7bde2"},
 
-      {id:"lifeline",name:"Lifeline DOC",cat:"support",desc:"medic teal and red pulse",bg:"#061311",a:"#2ee6c8",b:"#ff5a5f",g:"#2ee6c8",m:"#bddbd5"},
-      {id:"gibraltar",name:"Gibraltar Shield",cat:"support",desc:"island armor orange and blue",bg:"#081015",a:"#ff8a2a",b:"#3aa0ff",g:"#ff8a2a",m:"#cdd0c7"},
-      {id:"loba",name:"Loba Boutique",cat:"support",desc:"luxury red, gold, and black",bg:"#0c0608",a:"#ff2e55",b:"#f2c94c",g:"#ff2e55",m:"#dcc0bd"},
-      {id:"newcastle",name:"Newcastle Hero",cat:"support",desc:"hero blue and gold shield",bg:"#06101a",a:"#318bff",b:"#ffd166",g:"#318bff",m:"#c1d2e0"},
-      {id:"conduit",name:"Conduit Radiant",cat:"support",desc:"bright yellow-blue shield energy",bg:"#071018",a:"#ffe15a",b:"#36c8ff",g:"#ffe15a",m:"#dde2bd"}
+      {id:"lifeline",name:"Lifeline DOC",cat:"support",glyph:"✚",effect:"electric",detail:["med pulse","teal drone","red revive"],desc:"Medic teal, revive-red pulse, and clean support UI readability.",bg:"#061311",a:"#2ee6c8",b:"#ff5a5f",g:"#2ee6c8",m:"#bddbd5"},
+      {id:"gibraltar",name:"Gibraltar Shield",cat:"support",glyph:"⬢",effect:"fire",detail:["dome shield","island orange","armor blue"],desc:"Dome-shield blue, island orange armor, and big protective card shapes.",bg:"#081015",a:"#ff8a2a",b:"#3aa0ff",g:"#ff8a2a",m:"#cdd0c7"},
+      {id:"loba",name:"Loba Boutique",cat:"support",glyph:"♦",effect:"void",detail:["black market","ruby gold","luxury shine"],desc:"Luxury ruby, gold jewelry shine, and sleek boutique-black panels.",bg:"#0c0608",a:"#ff2e55",b:"#f2c94c",g:"#ff2e55",m:"#dcc0bd"},
+      {id:"newcastle",name:"Newcastle Hero",cat:"support",glyph:"🛡",effect:"electric",detail:["hero shield","royal blue","gold edge"],desc:"Hero blue, gold shield edges, and defensive highlight borders.",bg:"#06101a",a:"#318bff",b:"#ffd166",g:"#318bff",m:"#c1d2e0"},
+      {id:"conduit",name:"Conduit Radiant",cat:"support",glyph:"✹",effect:"electric",detail:["radiant shield","yellow charge","blue support"],desc:"Radiant yellow shields, bright blue support charge, and upbeat glow.",bg:"#071018",a:"#ffe15a",b:"#36c8ff",g:"#ffe15a",m:"#dde2bd"}
     ];
 
     const defaultThemeState = {
@@ -983,6 +1036,10 @@
       root.style.setProperty("--bg1", rgba(theme.a, 0.32 * mult));
       root.style.setProperty("--bg2", rgba(theme.b, 0.28 * mult));
       root.style.setProperty("--bg3", rgba(theme.g, 0.10 * mult));
+      document.body.classList.remove("effect-electric","effect-toxic","effect-void","effect-smoke","effect-fire");
+      if(theme.effect) document.body.classList.add(`effect-${theme.effect}`);
+      const aura = document.getElementById("themeAura");
+      if(aura) aura.textContent = theme.glyph || "◆";
       root.style.setProperty("--glassBlur", `${Number(state.blur ?? 18)}px`);
       root.style.setProperty("--radiusScale", `${Number(state.radius ?? 100) / 100}`);
       document.body.classList.toggle("motion-on", !!state.motion);
@@ -1018,10 +1075,12 @@
       root.innerHTML = themes.map(t => `
         <button type="button"
           class="theme-tile ${state.themeId === t.id ? "active" : ""}"
+          data-glyph="${t.glyph || "◆"}"
           onclick="setTheme('${t.id}')"
-          style="--tile-bg:${t.bg};--tile-a:${rgba(t.a,.42)};--tile-b:${rgba(t.b,.34)}">
-          <strong>${t.name}</strong>
+          style="--tile-bg:${t.bg};--tile-a:${rgba(t.a,.46)};--tile-b:${rgba(t.b,.38)}">
+          <strong>${t.glyph || "◆"} ${t.name}</strong>
           <span>${t.desc}</span>
+          <div class="theme-detail">${(t.detail || []).map(tag => `<em>${tag}</em>`).join("")}</div>
         </button>
       `).join("");
     }
