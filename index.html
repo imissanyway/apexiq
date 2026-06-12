@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-title" content="ApexIQ"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <link rel="manifest" href="manifest.json"/>
-  <title>ApexIQ Mobile v1.0</title>
+  <title>ApexIQ Mobile v1.1</title>
   <style>
     :root{
       --bg:#090a0f;
@@ -389,6 +389,49 @@
       box-shadow:0 10px 24px var(--glow);
     }
 
+
+    .emoji-card{
+      min-height:112px !important;
+      border-radius:22px !important;
+      background:
+        radial-gradient(circle at 26% 16%,rgba(255,255,255,.16),transparent 24%),
+        linear-gradient(145deg,rgba(255,255,255,.10),rgba(255,255,255,.035)) !important;
+    }
+    .emoji-glyph{
+      width:58px !important;
+      height:58px !important;
+      filter:drop-shadow(0 0 10px var(--packGlow,var(--glow))) drop-shadow(0 5px 8px rgba(0,0,0,.36)) !important;
+    }
+    .emoji-glyph svg{
+      width:58px !important;
+      height:58px !important;
+    }
+    .pack-mini-icon .emoji-glyph,
+    .pack-mini-icon .emoji-glyph svg{
+      width:42px !important;
+      height:42px !important;
+    }
+    .theme-tile .emoji-glyph,
+    .theme-tile .emoji-glyph svg{
+      width:48px !important;
+      height:48px !important;
+    }
+    .sticker-svg .fillA{fill:var(--accent);stroke:rgba(255,255,255,.78)}
+    .sticker-svg .fillB{fill:var(--accent2);stroke:rgba(255,255,255,.72)}
+    .sticker-svg .fillC{fill:var(--accent3);stroke:rgba(255,255,255,.65)}
+    .sticker-svg .dark{fill:#10131a;stroke:rgba(255,255,255,.55)}
+    .sticker-svg .line{fill:none;stroke:currentColor;stroke-width:4.2;stroke-linecap:round;stroke-linejoin:round}
+    .sticker-svg .thin{fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
+    .sticker-svg .glow{filter:drop-shadow(0 0 7px var(--accent))}
+    .sticker-svg .spark{animation:stickerPulse 1.5s ease-in-out infinite}
+    .sticker-svg .spin{transform-origin:32px 32px;animation:stickerSpin 6s linear infinite}
+    .sticker-svg .float{animation:stickerFloat 2.2s ease-in-out infinite alternate}
+    .sticker-svg .zap{animation:stickerZap 1.2s steps(2) infinite}
+    @keyframes stickerPulse{50%{transform:scale(1.08);opacity:.78}}
+    @keyframes stickerSpin{to{transform:rotate(360deg)}}
+    @keyframes stickerFloat{to{transform:translateY(-4px)}}
+    @keyframes stickerZap{50%{opacity:.36}}
+
     body.compact-on .app{padding-top:12px}
     body.compact-on h1{font-size:44px}
     body.compact-on .section,body.compact-on .search-card,body.compact-on .hero-stat{padding:14px}
@@ -398,7 +441,7 @@
   <main class="app">
     <div class="topbar">
       <div class="brand"><div class="mark">IQ</div><span>ApexIQ</span></div>
-      <span class="pill">mobile v1.0</span>
+      <span class="pill">mobile v1.1</span>
     </div>
 
     <section id="home">
@@ -535,7 +578,7 @@
 
       <div id="emojiShop" class="section">
         <div class="title"><h2>Emoji Shop</h2><span class="pill">legend packs</span></div>
-        <p class="lead">Custom ApexIQ-designed sticker sets for every legend. Each pack uses original SVG-style glyphs inspired by abilities, personality, and banner-tracker style motifs — not official EA/Respawn artwork.</p>
+        <p class="lead">Custom ApexIQ-designed sticker sets for every legend. These are actual mini sticker illustrations built from inline SVG — ability/personality-inspired, organized by legend, and unlocked by default.</p>
         <div class="sticker-pack-filter" id="packFilters"></div>
         <div class="pack-grid" id="packShop"></div>
       </div>
