@@ -1,0 +1,8 @@
+ApexIQ v4.9.9.27 size report
+============================
+
+HTML syntax check: PASS
+Worker syntax check: PASS
+Files: 5
+Uncompressed: 7.20 MB
+Largest file: 7.01 MB

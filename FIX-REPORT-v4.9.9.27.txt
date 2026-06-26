@@ -1,0 +1,26 @@
+ApexIQ v4.9.9.27 Readable Meta + Percent Fix
+
+Built from the frozen/stable v4.9.9.24 base.
+
+Fixed from v4.9.9.26:
+- Removed the #[object Object] stat artifact.
+- Added scalar sanitizers so objects are never rendered directly into stat rank/percent text.
+- Restored readable stat contrast on mobile.
+- Stopped converting every stat into pale unreadable blocks.
+- Percent/rank rows are only added when there is real scalar data or an exact user-provided ALS reference match.
+- Meta board now shows pick rate, trend, Avg rank, and Avg level in a readable card grid.
+- Older meta renderer is prevented from repainting over the new meta grid.
+- Does not touch the v4.9.9.24 badge parser:
+  - Owner 20B/4K visual fragments stay restored.
+  - Confirmed false Gibraltar 20B stays blocked.
+  - Regular Apex/ALS badges stay visible.
+
+Worker:
+- New Worker: apexiq-api-worker-v4.9.9.27-readable-meta-percent-fix.js
+- Improved /api/meta parsing for avg rank and level.
+- Improved rendered ALS stat parsing for Top % and #rank fields.
+- Preserves topPercent/percentile/rank fields in tracker rows.
+
+Validation:
+- HTML JavaScript syntax check passed.
+- Worker syntax check passed.
