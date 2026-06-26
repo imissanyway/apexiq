@@ -1,0 +1,23 @@
+ApexIQ v4.9.9.22 Strict Owned Fix
+
+Root cause addressed:
+- The site/Worker were still trusting rendered ALS visual badge guesses, collection image filenames, and typed badge IDs.
+- That can turn a generic badge slot into 20B/4K even when the visible ALS text only says something like Apex Gibraltar I or Shot Caller.
+- It can also make another searched player look like they own 20B/4K badges on legends where the visual parser only guessed.
+
+Fixed:
+- Frontend legend cards now only show 20B if the visible badge text contains Wake.
+- Frontend legend cards now only show 4K if the visible badge text contains Wrath.
+- Bare 20B, 20, 20 bomb, 20 kill, 4K, 4000, hammer, collection image filenames, and visual type/id guesses are blocked.
+- A DOM safety net strips any older-rendered 20B/4K chips from legend cards unless the card contains Wake/Wrath text.
+- Worker v4.9.9.22 also blocks ambiguous collection guesses at the source.
+- New searches clear prior player legend rows immediately so one player’s cards do not sit under another player while hydration runs.
+- Meta panel fallback and compact Theme Studio from v4.9.9.21 are preserved.
+
+Important behavior change:
+- This is intentionally conservative. If ALS does not provide exact Wake/Wrath text, ApexIQ will not claim 20B/4K ownership on legend cards.
+- This is better than showing false 20B/4K ownership.
+
+Validation:
+- HTML JavaScript syntax check passed.
+- Worker syntax check passed.

@@ -5665,5 +5665,220 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
 })();
 </script>
 
+
+<style id="apexiq-v49922-strict-owned-fix-css">
+.v49922Warning{margin:12px 0;padding:12px 14px;border-radius:14px;border:1px solid rgba(96,165,250,.28);background:rgba(96,165,250,.10);color:var(--muted);font-size:.88rem;line-height:1.45}
+.v49922ThemeNote{color:var(--muted);font-size:.82rem;margin:.35rem 0 .75rem}
+#themeGrid.v49921ThemeGrid .v49921ThemeCard{background:linear-gradient(180deg,var(--surface-2),var(--surface))!important}
+.legend-card .v49922FilteredBadge{display:none!important}
+</style>
+
+
+<script id="apexiq-v49922-strict-owned-fix">
+(function(){
+  "use strict";
+  function byId(id){return document.getElementById(id)}
+  function qsa(sel,root=document){return Array.from(root.querySelectorAll(sel))}
+  function safe(v){try{return(typeof esc==="function"?esc(v):String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])))}catch(_){return String(v??"")}}
+  function norm(v){return String(v||"").toLowerCase().replace(/[^a-z0-9]/g,"")}
+  function nval(v){const n=Number(String(v??"").replace(/,/g,"").replace(/[^\d.-]/g,""));return Number.isFinite(n)?n:0}
+  function fmtSafe(v){try{return typeof fmt==="function"?fmt(v):String(v??"—")}catch(_){return String(v??"—")}}
+  function fieldSafe(obj,key,fb="—"){try{return typeof field==="function"?field(obj,key,fb):(obj?.fields?.[key]?.value??obj?.[key]??fb)}catch(_){return fb}}
+  function getPacks(){return typeof PACK_DATA!=="undefined"?PACK_DATA:[]}
+  function rosterName(n){const k=norm(n);const p=getPacks().find(x=>norm(x.name)===k);return p?p.name:""}
+  function packImg(pack){try{return typeof packImage==="function"?packImage(pack):pack?.stickers?.[0]?.src||""}catch(_){return pack?.stickers?.[0]?.src||""}}
+
+  function visibleBadgeText(b){return typeof b==="string"?b:[b?.rawName,b?.visibleName,b?.name,b?.label,b?.title,b?.displayName].filter(Boolean).join(" ")}
+  function isWakeProof(text){return /\bwake\b/i.test(String(text||""))}
+  function isWrathProof(text){return /\bwrath\b/i.test(String(text||""))}
+  function isCollectionLooking(b){
+    const text=visibleBadgeText(b);
+    const src=String((b&&typeof b==="object"&&(b.src||b.url||b.icon||b.image))||"");
+    const type=String((b&&typeof b==="object"&&(b.type||b.id||b.badgeType))||"");
+    return /^(20|20b|20 bomb|20 kill|twenty kill|4k|4 k|4000|4,000|hammer)$/i.test(String(text).trim()) ||
+           /20b|20_b|20kill|20_kill|twenty|four_k|4k|4_k|4000|wrath|wake|hammer/i.test(src) ||
+           /twenty|four_k|20|4k|4000|wake|wrath/i.test(type);
+  }
+  function safeOtherBadgeName(b){
+    const text=visibleBadgeText(b).trim();
+    const src=String((b&&typeof b==="object"&&(b.src||b.url||b.icon||b.image))||"");
+    if(!text||/unknown als|visual badge slot|badge slot|undefined|null/i.test(text))return"";
+    if(isCollectionLooking(b)&&!isWakeProof(text)&&!isWrathProof(text))return"";
+    if(/^(20|20b|20 bomb|20 kill|twenty kill|4k|4 k|4000|4,000|hammer)$/i.test(text))return"";
+    if(/20b_collection|4k_collection|twenty|four_k/i.test(src)&&!isWakeProof(text)&&!isWrathProof(text))return"";
+    return text;
+  }
+  function strictBadgeGroups(row){
+    const raw=[...(Array.isArray(row?.officialBadges)?row.officialBadges:[]),...(Array.isArray(row?.badges)?row.badges:[]),...(Array.isArray(row?.badgeSlots)?row.badgeSlots:[])].filter(Boolean);
+    const collection=[],other=[],seen=new Set();
+    for(const b of raw){
+      const text=visibleBadgeText(b);
+      let obj=null;
+      if(isWakeProof(text)) obj={name:"20B",src:"assets/approved-badges/20b_collection_t4.png",type:"20b",rawName:text};
+      else if(isWrathProof(text)) obj={name:"4K",src:"assets/approved-badges/4k_collection_t4.png",type:"4k",rawName:text};
+      if(obj){if(!seen.has(obj.type)){seen.add(obj.type);collection.push(obj)}continue}
+      const label=safeOtherBadgeName(b);
+      if(label){const k="other|"+label.toLowerCase();if(!seen.has(k)){seen.add(k);other.push({name:label,src:(b&&typeof b==="object"&&!isCollectionLooking(b)?(b.src||""):"")})}}
+    }
+    return {collection:collection.slice(0,2),other:other.slice(0,5)};
+  }
+  function rowStats(row){
+    const raw=[
+      ...(Array.isArray(row?.stats)?row.stats:[]),
+      ...(Array.isArray(row?.trackers)?row.trackers.map(t=>({label:t.label||t.name||t.key,value:t.value,source:t.source||row.source})):[]),
+      ...(Array.isArray(row?.data)?row.data.map(t=>({label:t.label||t.name||t.key||t.displayName,value:t.value??t.total??t.amount,source:t.source||row.source})):[]),
+      ...(Array.isArray(row?.values)?row.values.map(t=>({label:t.label||t.name||t.key||t.displayName,value:t.value??t.total??t.amount,source:t.source||row.source})):[])
+    ];
+    const by=new Map();
+    for(const s of raw){
+      let label=String(s?.label||s?.name||s?.key||"").replace(/\s+/g," ").trim();
+      const value=s?.value??s?.displayValue??s?.total??s?.amount;
+      if(!label||value===undefined||value===null||value===""||value==="—"||value==="not returned")continue;
+      if(/badge|skin|frame|pose|banner|source|status|icon|rank icon|view|prestige cosmetic|image/i.test(label))continue;
+      if(typeof statLabel==="function")label=statLabel(label);
+      const key=label.toLowerCase();
+      if(!by.has(key))by.set(key,{label,value,source:s.source||row?.source||"tracker"});
+    }
+    const order=["BR Kills","BR Damage","BR Wins","BR Games played","BR Kills as kill leader","Alternator Kills","Alternator Damage","L-STAR Kills","Arenas Kills","Arenas Damage","Kills","Damage","Wins"];
+    return [...by.values()].sort((a,b)=>(order.indexOf(a.label)<0?99:order.indexOf(a.label))-(order.indexOf(b.label)<0?99:order.indexOf(b.label))).slice(0,7);
+  }
+  function extractRows(profile){
+    const pools=[profile?.allLegendStats,profile?.legendStats,profile?.legends,profile?.legendRows,profile?.trackerRows,profile?.profilePage?.legendStats,profile?.profile?.legendStats,profile?.rendered?.legendStats,profile?.profilePage?.allLegendStats,profile?.rendered?.legendCards].filter(Boolean);
+    const out=[];
+    const collect=(x,hint="")=>{
+      if(!x)return;
+      if(Array.isArray(x)){x.forEach(i=>collect(i,hint));return}
+      if(typeof x!=="object")return;
+      const nm=rosterName(x.legend||x.name||x.legendName||x.LegendName||x.displayName||hint);
+      const shaped=Array.isArray(x.stats)||Array.isArray(x.trackers)||Array.isArray(x.data)||Array.isArray(x.values)||Array.isArray(x.badges)||Array.isArray(x.officialBadges)||Array.isArray(x.badgeSlots);
+      if(nm&&shaped)out.push({...x,legend:nm});
+      for(const [key,child] of Object.entries(x)){if(child&&typeof child==="object")collect(child,rosterName(key)||nm||hint)}
+    };
+    pools.forEach(p=>collect(p,""));
+    const by=new Map();
+    for(const r of out){
+      const legend=rosterName(r.legend||r.name||r.legendName); const k=norm(legend); if(!k)continue;
+      const next={...r,legend},old=by.get(k);
+      const ns=rowStats(next).length,os=old?rowStats(old).length:-1;
+      const nb=strictBadgeGroups(next).collection.length+strictBadgeGroups(next).other.length;
+      const ob=old?(strictBadgeGroups(old).collection.length+strictBadgeGroups(old).other.length):-1;
+      if(!old||ns+nb>=os+ob)by.set(k,next);
+    }
+    return [...by.values()];
+  }
+  function usageScore(stats){
+    let score=0,best="No returned usage stat",bestPart=0;
+    for(const s of stats||[]){
+      const label=String(s?.label||"").toLowerCase(),v=nval(s?.value);let weight=0;
+      if(/\bbr kills\b/.test(label)||label==="kills")weight=125;
+      else if(/\bbr damage\b/.test(label)||label==="damage")weight=.32;
+      else if(/\bbr wins\b/.test(label)||label==="wins")weight=2400;
+      else if(/br games played|games played/.test(label))weight=35;
+      else if(/kills as kill leader/.test(label))weight=45;
+      else if(/arenas kills/.test(label))weight=22;
+      else if(/arenas damage/.test(label))weight=.055;
+      else if(/alternator|r-99|r99|car|l-star|spitfire|weapon/.test(label))weight=18;
+      else if(/season.*kills/.test(label))weight=18;
+      if(!weight)continue;
+      const part=v*weight;score+=part;if(part>bestPart){bestPart=part;best=`${s.label}: ${fmtSafe(s.value)}`;}
+    }
+    return{score,best};
+  }
+  function selectedLegend(profile){return fieldSafe(profile,"legend",profile?.selectedLegend||"")}
+  function badgeHTML(groups){
+    const items=[...(groups?.collection||[]),...(groups?.other||[])];
+    if(!items.length)return"";
+    return`<div class="v49919BadgeRow">${items.map(b=>`<span class="v49919BadgeChip">${b.src?`<img loading="lazy" onerror="this.remove()" src="${safe(b.src)}" alt="${safe(b.name)}">`:""}<em>${safe(b.name)}</em></span>`).join("")}</div>`;
+  }
+  function statsHTML(stats){
+    if(!stats.length)return`<div class="v49919EmptySmall">No trusted stat row returned for this legend yet.</div>`;
+    return`<div class="v49919StatChips">${stats.map(s=>`<span><em>${safe(s.label)}</em><b>${safe(fmtSafe(s.value))}</b></span>`).join("")}</div>`;
+  }
+  function legendData(){
+    const profile=state.profile||{},rows=extractRows(profile),rowMap=new Map(rows.map(r=>[norm(r.legend||r.name),r])),selected=norm(selectedLegend(profile));
+    return getPacks().map(pack=>{
+      const row=rowMap.get(norm(pack.name));
+      const stats=row?rowStats(row):[];
+      const m=usageScore(stats),groups=row?strictBadgeGroups(row):{collection:[],other:[]};
+      return{pack,row,stats,groups,selected:selected&&selected===norm(pack.name),score:m.score,best:m.best};
+    }).sort((a,b)=>(b.score-a.score)||((b.groups.collection.length+b.groups.other.length)-(a.groups.collection.length+a.groups.other.length))||a.pack.name.localeCompare(b.pack.name));
+  }
+  function legendCard(d){
+    const img=packImg(d.pack),badges=badgeHTML(d.groups);
+    return`<article class="legend-card v49919LegendCard ${d.stats.length?"has-data":"waiting"}" data-legend="${safe(d.pack.name)}"><div class="legend-visual">${img?`<img loading="lazy" src="${safe(img)}" alt="${safe(d.pack.name)}">`:`<b>${safe(d.pack.name.slice(0,2).toUpperCase())}</b>`}</div><div class="legend-body"><div class="legend-title"><div><h3>${safe(d.pack.name)}${d.selected?" · selected":""}</h3><small>${safe(d.row?.source||(d.stats.length?"tracker row":"waiting"))}</small></div><span class="badge-chip small">${safe(d.stats.length)} stats</span></div>${statsHTML(d.stats)}${d.score?`<span class="v49919TopNote">Usage metric: ${safe(d.best)}</span>`:""}${badges?`<h4 class="v49919BadgeLabel">ALS badge slots</h4>${badges}`:""}</div></article>`;
+  }
+  window.renderLegends=function(){
+    try{
+      const data=legendData();
+      const useful=data.filter(d=>d.score>0||d.stats.length||d.groups.collection.length||d.groups.other.length);
+      const prev=byId("legendsPreview"),panel=byId("legendsPanel");
+      if(prev){
+        prev.innerHTML=useful.length?useful.slice(0,4).map(legendCard).join(""):`<section class="empty"><b>Legend rows loading</b><p>Search a player or wait for full profile hydration. ApexIQ will not show fake roster-order snapshot cards.</p></section>`;
+        const p=prev.closest(".block")?.querySelector(".section-title p"); if(p)p.textContent="Top 4 by BR/usage stats. Collection badges require exact Wake/Wrath text.";
+      }
+      if(panel)panel.innerHTML=useful.length?data.map(legendCard).join(""):`<section class="empty"><b>No legend stat rows loaded yet</b><p>Search a player to hydrate full ALS legend rows.</p></section>`;
+      stripFalseCollectionBadges();
+    }catch(e){
+      const prev=byId("legendsPreview"); if(prev)prev.innerHTML=`<section class="empty"><b>Legend renderer protected</b><p>${safe(e.message||e)}</p></section>`;
+    }
+  };
+
+  function stripFalseCollectionBadges(){
+    qsa(".legend-card").forEach(card=>{
+      const allText=card.textContent||"";
+      const hasWakeWrath=/\b(wake|wrath)\b/i.test(allText);
+      qsa(".v49919BadgeChip,.v49920BadgeChip,.v49921BadgeChip,.badge-chip",card).forEach(chip=>{
+        const label=(chip.textContent||"").trim();
+        const img=chip.querySelector("img");
+        const src=img?String(img.getAttribute("src")||""):"";
+        if(!hasWakeWrath && (/^(20|20B|4K|4 K)$/i.test(label)||/20b_collection|4k_collection|twenty|four_k/i.test(src))){
+          chip.remove();
+        }
+      });
+    });
+  }
+  const mo=new MutationObserver(()=>stripFalseCollectionBadges());
+  mo.observe(document.documentElement,{subtree:true,childList:true});
+
+  const oldSearch=window.apexiqSafeSearch;
+  window.apexiqSafeSearch=function(fresh=true){
+    try{
+      const p=(byId("playerInput")?.value||"").trim();
+      if(state){state.profile=null;state.profileError="";state._lastLegendRows=[];}
+      const prev=byId("legendsPreview");
+      if(prev)prev.innerHTML=`<section class="empty"><b>Loading ${safe(p||"player")} legend rows</b><p>Cleared previous player rows before search.</p></section>`;
+      const panel=byId("legendsPanel");
+      if(panel)panel.innerHTML=`<section class="empty"><b>Loading ${safe(p||"player")} legend rows</b><p>Waiting for this player's full profile rows.</p></section>`;
+    }catch(_){}
+    if(typeof oldSearch==="function")return oldSearch(fresh);
+    if(typeof loadAll==="function")return loadAll(fresh);
+  };
+
+  const oldRenderMeta=window.renderMeta;
+  window.renderMeta=function(targetId){
+    const target=byId(targetId); if(!target)return;
+    const raw=state?.meta?.legends||state?.meta?.meta||state?.meta?.pickrates||state?.meta?.pickRates||state?.meta?.rows||[];
+    const rows=(Array.isArray(raw)&&raw.length?raw:getPacks().map((p,i)=>({legend:p.name,name:p.name,pickRate:"Live pending",rate:"Live pending",trend:"—",order:i+1,img:packImg(p)}))).map((m,i)=>{
+      const name=m.legend||m.name||"Legend"; const pack=getPacks().find(p=>norm(p.name)===norm(name));
+      return{legend:pack?.name||name,pickRate:m.pickRate??m.rate??m.value??"—",trend:m.trend||m.change||"",img:pack?packImg(pack):(m.img||""),order:i+1};
+    });
+    target.innerHTML=`<div class="v49921MetaNotice">${Array.isArray(raw)&&raw.length?"Live/fetched meta rows.":"Meta endpoint fallback: roster shown until live pick rates return."}</div><div class="v49921MetaGrid">${rows.slice(0,28).map((m,i)=>`<article class="v49921MetaCard">${m.img?`<img loading="lazy" src="${safe(m.img)}" alt="${safe(m.legend)}">`:`<b>#${i+1}</b>`}<span><b>${safe(m.legend)}</b><small>${safe(m.trend)}</small></span><strong>${safe(m.pickRate)}${String(m.pickRate).match(/^\d+(\.\d+)?$/)?"%":""}</strong></article>`).join("")}</div>`;
+  };
+
+  document.addEventListener("click",function(e){
+    if(e.target.closest('[data-go="meta"]')&&typeof apexiqLoadMeta==="function")setTimeout(()=>apexiqLoadMeta(false),80);
+  },true);
+
+  function boot(){
+    document.documentElement.dataset.v49922="strict-owned-fix";
+    if(typeof renderLegends==="function")renderLegends();
+    if(typeof renderProfile==="function")renderProfile();
+    if(typeof renderMeta==="function"){renderMeta("metaPanel");renderMeta("metaPanelFull");}
+    stripFalseCollectionBadges();
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
+})();
+</script>
+
 </body>
 </html>
