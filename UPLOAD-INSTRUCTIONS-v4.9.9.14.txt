@@ -1,0 +1,19 @@
+Recommended upload:
+1. Use ApexIQ-v4.9.9.14-CORE-PATCH-ONLY.zip.
+2. Extract it.
+3. Upload/replace these files:
+   - index.html
+   - apexiq-api-worker-v4.9.9.14-video-debug-fix.js
+   - badge-manifest.json
+   - apexiq-all-badges-asset-manifest-v4.9.9.11.json
+   - FIX-REPORT-v4.9.9.14.txt
+   - SIZE-REPORT-v4.9.9.14.txt
+4. In Cloudflare Worker, update/deploy the new worker JS if you are using this worker file there.
+5. Do not reupload assets/approved-badges if that folder is already in GitHub.
+
+Test after GitHub Pages deploy:
+https://imissanyway.github.io/apexiq/?v=49914
+
+Notes:
+- The site now starts idle and does not live-load stats/ranked until you click Search or Retry Ranked.
+- Search loads fast /bridge stats first, then hydrates deeper stats/badges.
