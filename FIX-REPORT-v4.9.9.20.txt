@@ -1,0 +1,24 @@
+ApexIQ v4.9.9.20 Theme + Badge Stable
+
+Built on v4.9.9.19.
+
+Fixed:
+- Profile mini badge display case now shows UNLOCKED ApexIQ badges only.
+- Locked badge icons are hidden from the searched profile mini case.
+- Added a hard safe legend renderer override so the '__score' string-property error cannot break snapshot/search rendering.
+- Legend Snapshot no longer intentionally shows fake roster-order cards when full rows are missing; it waits for useful rows or shows a clear loading state.
+- Badge rows still show in snapshot cards when verified ALS badge rows exist.
+- v4.9.9.17 strict 20B/4K accuracy rules remain.
+
+Theme studio:
+- Replaced simple palette list with an advanced Theme Studio.
+- Added 216 generated working themes.
+- Category tabs: competitive, ranked, maps, electric, prestige, clean, combat, minimal, soft, bright.
+- Search box filters all themes.
+- Dark, Light, Toggle controls remain.
+- Mode behavior control: keep current, use theme recommendation, force dark, force light.
+- Theme colors are applied through live CSS variables, so themes work with both dark and light mode.
+
+Validation:
+- HTML JavaScript syntax check passed.
+- Worker syntax check passed.
