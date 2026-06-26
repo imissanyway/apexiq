@@ -1,0 +1,21 @@
+ApexIQ v4.9.9.16 Recovery Fix
+
+Built from v4.9.9.14 base, not the v4.9.9.15 experimental badge/snapshot pass.
+
+Fixed:
+- Home-screen ranked leaderboard auto-load restored.
+- Ranked Retry still works and uses the fast ranked route first.
+- Clicking a leaderboard user now fills the search box and searches that user inside ApexIQ instead of only opening an external board.
+- Legend Snapshot and All Legends are sorted by strongest returned legend stats, not roster order.
+- Search still uses fast /api/player-lite first, then hydrates full profile data.
+- Auto platform option restored in the platform dropdown.
+- Unique Steam/display-name resolver path is preserved because full /api/player still uses the original Worker resolver.
+- Rank icons remain restored for leaderboard rows and searched profile rank.
+- Badge tracking made stricter: no more counting bare “20”, bare “4K”, or generic damage text as a 20 bomb / 4K badge.
+- 20B only counts Wake / 20 kill / 20 bomb text.
+- 4K only counts Wrath / 4000 / 4K badge text.
+- Badge tab tracks 20B/4K, kills, damage, wins, RP/rank, true level/prestige, weapon, and ability stats when those rows exist.
+
+Validation:
+- HTML JavaScript syntax check passed.
+- 120 badge PNGs included in the full package.

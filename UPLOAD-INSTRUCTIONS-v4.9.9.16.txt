@@ -1,0 +1,17 @@
+Upload the CORE PATCH ONLY ZIP first.
+
+Replace these files in GitHub:
+- index.html
+- apexiq-api-worker-v4.9.9.14-video-debug-fix.js
+- badge-manifest.json
+- apexiq-all-badges-asset-manifest-v4.9.9.11.json
+- FIX-REPORT-v4.9.9.16.txt
+- SIZE-REPORT-v4.9.9.16.txt
+
+Do not reupload assets/approved-badges if it is already in the repo.
+
+Cloudflare:
+Keep/update the Cloudflare Worker with apexiq-api-worker-v4.9.9.14-video-debug-fix.js so /api/player-lite exists.
+
+Test:
+https://imissanyway.github.io/apexiq/?v=49916
