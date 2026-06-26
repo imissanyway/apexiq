@@ -1,0 +1,18 @@
+Upload CORE PATCH ONLY.
+
+Replace these in GitHub:
+- index.html
+- apexiq-api-worker-v4.9.9.30-clean-meta-percent-restore.js
+- badge-manifest.json
+- apexiq-all-badges-asset-manifest-v4.9.9.11.json
+- FIX-REPORT-v4.9.9.30.txt
+- SIZE-REPORT-v4.9.9.30.txt
+
+Cloudflare:
+Deploy apexiq-api-worker-v4.9.9.30-clean-meta-percent-restore.js.
+
+Test:
+https://imissanyway.github.io/apexiq/?v=49930
+
+Rollback:
+Use the frozen v4.9.9.24 stable backup if needed.
