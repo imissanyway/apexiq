@@ -1,0 +1,21 @@
+ApexIQ v4.9.9.11 GitHub-safe size report
+==========================================
+
+Total files: 127
+Total uncompressed size: 33.02 MB
+
+Largest files:
+- index.html: 7.35 MB
+- assets/approved-badges/all_legends_conquered_t4.png: 0.36 MB
+- assets/approved-badges/all_legends_conquered_t3.png: 0.31 MB
+- assets/approved-badges/ranked_climber_t4.png: 0.29 MB
+- assets/approved-badges/pack_cracker_t4.png: 0.28 MB
+- assets/approved-badges/prestige_ascendant_t4.png: 0.28 MB
+- assets/approved-badges/sniper_deadeye_t3.png: 0.27 MB
+- assets/approved-badges/ranked_climber_t3.png: 0.27 MB
+- assets/approved-badges/badge_hunter_t4.png: 0.26 MB
+- assets/approved-badges/master_momentum_t4.png: 0.26 MB
+- assets/approved-badges/explosive_expert_t4.png: 0.26 MB
+- assets/approved-badges/ranked_climber_t1.png: 0.25 MB
+
+No single file in this package is over 10 MB.
