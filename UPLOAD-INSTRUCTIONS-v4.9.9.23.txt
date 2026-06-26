@@ -1,0 +1,15 @@
+Upload CORE PATCH ONLY.
+
+Replace these files in GitHub:
+- index.html
+- apexiq-api-worker-v4.9.9.23-badge-priority-fix.js
+- badge-manifest.json
+- apexiq-all-badges-asset-manifest-v4.9.9.11.json
+- FIX-REPORT-v4.9.9.23.txt
+- SIZE-REPORT-v4.9.9.23.txt
+
+Cloudflare:
+Deploy apexiq-api-worker-v4.9.9.23-badge-priority-fix.js in your Worker.
+
+Test:
+https://imissanyway.github.io/apexiq/?v=49923

@@ -5666,69 +5666,81 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
 </script>
 
 
-<style id="apexiq-v49922-strict-owned-fix-css">
-.v49922Warning{margin:12px 0;padding:12px 14px;border-radius:14px;border:1px solid rgba(96,165,250,.28);background:rgba(96,165,250,.10);color:var(--muted);font-size:.88rem;line-height:1.45}
-.v49922ThemeNote{color:var(--muted);font-size:.82rem;margin:.35rem 0 .75rem}
-#themeGrid.v49921ThemeGrid .v49921ThemeCard{background:linear-gradient(180deg,var(--surface-2),var(--surface))!important}
-.legend-card .v49922FilteredBadge{display:none!important}
+<style id="apexiq-v49922-strict-owner-fix-css">
+.v49922Notice{margin:12px 0;padding:12px 14px;border-radius:14px;border:1px solid rgba(96,165,250,.28);background:rgba(96,165,250,.10);color:var(--text);line-height:1.45}
+.v49922Notice.bad{border-color:rgba(244,63,94,.28);background:rgba(244,63,94,.10)}
+.v49922BadgeRow{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;max-width:100%}
+.v49922BadgeChip{display:inline-flex;align-items:center;gap:6px;max-width:100%;min-height:32px;padding:5px 8px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden}
+.v49922BadgeChip img{width:28px;height:28px;object-fit:contain;flex:0 0 auto}
+.v49922BadgeChip em{font-style:normal;font-size:.72rem;max-width:118px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.v49922ThemeCard{background:linear-gradient(180deg,var(--surface-2),var(--surface))!important;color:var(--text)!important}
 </style>
 
 
-<script id="apexiq-v49922-strict-owned-fix">
+<script id="apexiq-v49922-strict-owner-fix-js">
 (function(){
   "use strict";
+  let searchSeq=0;
+
   function byId(id){return document.getElementById(id)}
-  function qsa(sel,root=document){return Array.from(root.querySelectorAll(sel))}
   function safe(v){try{return(typeof esc==="function"?esc(v):String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])))}catch(_){return String(v??"")}}
-  function norm(v){return String(v||"").toLowerCase().replace(/[^a-z0-9]/g,"")}
+  function normSafe(v){return String(v||"").toLowerCase().replace(/[^a-z0-9]/g,"")}
   function nval(v){const n=Number(String(v??"").replace(/,/g,"").replace(/[^\d.-]/g,""));return Number.isFinite(n)?n:0}
   function fmtSafe(v){try{return typeof fmt==="function"?fmt(v):String(v??"—")}catch(_){return String(v??"—")}}
   function fieldSafe(obj,key,fb="—"){try{return typeof field==="function"?field(obj,key,fb):(obj?.fields?.[key]?.value??obj?.[key]??fb)}catch(_){return fb}}
+  function setStatus(text,cls=""){const el=byId("liveStatus");if(el){el.textContent=text;el.className="status "+cls}}
+  function currentPlayer(){return (byId("playerInput")?.value||state?.player||"imissanyway").trim()||"imissanyway"}
+  function currentPlatform(){const v=byId("platformInput")?.value||state?.platform||"auto";return String(v).toLowerCase()==="auto"?"auto":v}
+  function api(path,params){return typeof apiURL==="function"?apiURL(path,params):((state.proxy||"").replace(/\/$/,"")+path+"?"+new URLSearchParams(params||{}).toString())}
+  async function fetchJSONNoCache(path,params,ms){
+    const ctrl=new AbortController();const to=setTimeout(()=>ctrl.abort(),ms||45000);
+    try{
+      const p={...(params||{}),refresh:"1",nocache:"1",_t:String(Date.now())};
+      const res=await fetch(api(path,p),{cache:"no-store",headers:{Accept:"application/json"},signal:ctrl.signal});
+      const text=await res.text();let data;try{data=JSON.parse(text)}catch(_){throw new Error("Worker returned non-JSON: "+text.slice(0,100))}
+      if(!res.ok||data.error)throw new Error(data.error||("HTTP "+res.status));
+      return data;
+    }finally{clearTimeout(to)}
+  }
   function getPacks(){return typeof PACK_DATA!=="undefined"?PACK_DATA:[]}
-  function rosterName(n){const k=norm(n);const p=getPacks().find(x=>norm(x.name)===k);return p?p.name:""}
+  function rosterName(n){const k=normSafe(n);const p=getPacks().find(x=>normSafe(x.name)===k);return p?p.name:""}
   function packImg(pack){try{return typeof packImage==="function"?packImage(pack):pack?.stickers?.[0]?.src||""}catch(_){return pack?.stickers?.[0]?.src||""}}
+  function selectedLegend(profile){return fieldSafe(profile,"legend",profile?.selectedLegend||"")}
 
-  function visibleBadgeText(b){return typeof b==="string"?b:[b?.rawName,b?.visibleName,b?.name,b?.label,b?.title,b?.displayName].filter(Boolean).join(" ")}
-  function isWakeProof(text){return /\bwake\b/i.test(String(text||""))}
-  function isWrathProof(text){return /\bwrath\b/i.test(String(text||""))}
-  function isCollectionLooking(b){
-    const text=visibleBadgeText(b);
-    const src=String((b&&typeof b==="object"&&(b.src||b.url||b.icon||b.image))||"");
-    const type=String((b&&typeof b==="object"&&(b.type||b.id||b.badgeType))||"");
-    return /^(20|20b|20 bomb|20 kill|twenty kill|4k|4 k|4000|4,000|hammer)$/i.test(String(text).trim()) ||
-           /20b|20_b|20kill|20_kill|twenty|four_k|4k|4_k|4000|wrath|wake|hammer/i.test(src) ||
-           /twenty|four_k|20|4k|4000|wake|wrath/i.test(type);
+  function isVisualSource(src){return /browser run|rendered|visual|json fallback|snapshot|content parser|ai json|quickaction/i.test(String(src||""))}
+  function visibleBadgeText(b){return typeof b==="string"?b:[b?.rawName,b?.name,b?.label,b?.title,b?.displayName].filter(Boolean).join(" ")}
+  function exactWakeForLegend(text,legend){const s=String(text||"").trim().replace(/[_-]+/g," ");const l=String(legend||"").replace(/[.*+?^${}()|[\]\\]/g,"\\$&");return new RegExp("^"+l+"(?:'s|’s)?\\s+Wake$","i").test(s)}
+  function exactWrathForLegend(text,legend){const s=String(text||"").trim().replace(/[_-]+/g," ");const l=String(legend||"").replace(/[.*+?^${}()|[\]\\]/g,"\\$&");return new RegExp("^"+l+"(?:'s|’s)?\\s+Wrath$","i").test(s)}
+  function otherBadgeName(b){
+    const name=typeof b==="string"?b:(b?.rawName||b?.name||b?.label||b?.title||"");
+    const src=String((b&&typeof b==="object"&&b.src)||"");
+    const s=String(name||"").trim();
+    if(!s||/unknown als|visual badge slot|badge slot|undefined|null/i.test(s))return"";
+    if(/^(20|20b|20 kill badge|20 bomb|20 kill|4k|4k badge|4k damage badge|4000 damage|hammer)$/i.test(s))return"";
+    if(/\b(wake|wrath)\b/i.test(s))return"";
+    if(/20b_collection|4k_collection|twenty|four_k|wake|wrath/i.test(src))return"";
+    return s;
   }
-  function safeOtherBadgeName(b){
-    const text=visibleBadgeText(b).trim();
-    const src=String((b&&typeof b==="object"&&(b.src||b.url||b.icon||b.image))||"");
-    if(!text||/unknown als|visual badge slot|badge slot|undefined|null/i.test(text))return"";
-    if(isCollectionLooking(b)&&!isWakeProof(text)&&!isWrathProof(text))return"";
-    if(/^(20|20b|20 bomb|20 kill|twenty kill|4k|4 k|4000|4,000|hammer)$/i.test(text))return"";
-    if(/20b_collection|4k_collection|twenty|four_k/i.test(src)&&!isWakeProof(text)&&!isWrathProof(text))return"";
-    return text;
-  }
-  function strictBadgeGroups(row){
+  function badgeGroups(row){
+    const legend=rosterName(row?.legend||row?.name||row?.legendName)||String(row?.legend||"");
     const raw=[...(Array.isArray(row?.officialBadges)?row.officialBadges:[]),...(Array.isArray(row?.badges)?row.badges:[]),...(Array.isArray(row?.badgeSlots)?row.badgeSlots:[])].filter(Boolean);
     const collection=[],other=[],seen=new Set();
     for(const b of raw){
       const text=visibleBadgeText(b);
+      const src=String((b&&typeof b==="object"&&b.src)||"");
+      const source=[b?.source,b?.reason,b?.imageDescription,b?.trust].filter(Boolean).join(" ");
+      const trustedCollectionSource=!isVisualSource(source);
       let obj=null;
-      if(isWakeProof(text)) obj={name:"20B",src:"assets/approved-badges/20b_collection_t4.png",type:"20b",rawName:text};
-      else if(isWrathProof(text)) obj={name:"4K",src:"assets/approved-badges/4k_collection_t4.png",type:"4k",rawName:text};
+      if(trustedCollectionSource && exactWakeForLegend(text,legend)) obj={name:"20B",src:"assets/approved-badges/20b_collection_t4.png",type:"20b",rawName:text};
+      else if(trustedCollectionSource && exactWrathForLegend(text,legend)) obj={name:"4K",src:"assets/approved-badges/4k_collection_t4.png",type:"4k",rawName:text};
       if(obj){if(!seen.has(obj.type)){seen.add(obj.type);collection.push(obj)}continue}
-      const label=safeOtherBadgeName(b);
-      if(label){const k="other|"+label.toLowerCase();if(!seen.has(k)){seen.add(k);other.push({name:label,src:(b&&typeof b==="object"&&!isCollectionLooking(b)?(b.src||""):"")})}}
+      const label=otherBadgeName(b);
+      if(label){const k="other|"+label.toLowerCase();if(!seen.has(k)){seen.add(k);other.push({name:label,src:/20b_collection|4k_collection|twenty|four_k|wake|wrath/i.test(src)?"":src})}}
     }
-    return {collection:collection.slice(0,2),other:other.slice(0,5)};
+    return{collection:collection.slice(0,2),other:other.slice(0,5)};
   }
   function rowStats(row){
-    const raw=[
-      ...(Array.isArray(row?.stats)?row.stats:[]),
-      ...(Array.isArray(row?.trackers)?row.trackers.map(t=>({label:t.label||t.name||t.key,value:t.value,source:t.source||row.source})):[]),
-      ...(Array.isArray(row?.data)?row.data.map(t=>({label:t.label||t.name||t.key||t.displayName,value:t.value??t.total??t.amount,source:t.source||row.source})):[]),
-      ...(Array.isArray(row?.values)?row.values.map(t=>({label:t.label||t.name||t.key||t.displayName,value:t.value??t.total??t.amount,source:t.source||row.source})):[])
-    ];
+    const raw=[...(Array.isArray(row?.stats)?row.stats:[]),...(Array.isArray(row?.trackers)?row.trackers.map(t=>({label:t.label||t.name||t.key,value:t.value,source:t.source||row.source})):[]),...(Array.isArray(row?.data)?row.data.map(t=>({label:t.label||t.name||t.key||t.displayName,value:t.value??t.total??t.amount,source:t.source||row.source})):[]),...(Array.isArray(row?.values)?row.values.map(t=>({label:t.label||t.name||t.key||t.displayName,value:t.value??t.total??t.amount,source:t.source||row.source})):[])];
     const by=new Map();
     for(const s of raw){
       let label=String(s?.label||s?.name||s?.key||"").replace(/\s+/g," ").trim();
@@ -5740,7 +5752,7 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
       if(!by.has(key))by.set(key,{label,value,source:s.source||row?.source||"tracker"});
     }
     const order=["BR Kills","BR Damage","BR Wins","BR Games played","BR Kills as kill leader","Alternator Kills","Alternator Damage","L-STAR Kills","Arenas Kills","Arenas Damage","Kills","Damage","Wins"];
-    return [...by.values()].sort((a,b)=>(order.indexOf(a.label)<0?99:order.indexOf(a.label))-(order.indexOf(b.label)<0?99:order.indexOf(b.label))).slice(0,7);
+    return[...by.values()].sort((a,b)=>(order.indexOf(a.label)<0?99:order.indexOf(a.label))-(order.indexOf(b.label)<0?99:order.indexOf(b.label))).slice(0,7);
   }
   function extractRows(profile){
     const pools=[profile?.allLegendStats,profile?.legendStats,profile?.legends,profile?.legendRows,profile?.trackerRows,profile?.profilePage?.legendStats,profile?.profile?.legendStats,profile?.rendered?.legendStats,profile?.profilePage?.allLegendStats,profile?.rendered?.legendCards].filter(Boolean);
@@ -5757,14 +5769,13 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
     pools.forEach(p=>collect(p,""));
     const by=new Map();
     for(const r of out){
-      const legend=rosterName(r.legend||r.name||r.legendName); const k=norm(legend); if(!k)continue;
+      const legend=rosterName(r.legend||r.name||r.legendName);const k=normSafe(legend);if(!k)continue;
       const next={...r,legend},old=by.get(k);
       const ns=rowStats(next).length,os=old?rowStats(old).length:-1;
-      const nb=strictBadgeGroups(next).collection.length+strictBadgeGroups(next).other.length;
-      const ob=old?(strictBadgeGroups(old).collection.length+strictBadgeGroups(old).other.length):-1;
+      const nb=badgeGroups(next).collection.length+badgeGroups(next).other.length,ob=old?(badgeGroups(old).collection.length+badgeGroups(old).other.length):-1;
       if(!old||ns+nb>=os+ob)by.set(k,next);
     }
-    return [...by.values()];
+    return[...by.values()];
   }
   function usageScore(stats){
     let score=0,best="No returned usage stat",bestPart=0;
@@ -5780,102 +5791,251 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
       else if(/alternator|r-99|r99|car|l-star|spitfire|weapon/.test(label))weight=18;
       else if(/season.*kills/.test(label))weight=18;
       if(!weight)continue;
-      const part=v*weight;score+=part;if(part>bestPart){bestPart=part;best=`${s.label}: ${fmtSafe(s.value)}`;}
+      const part=v*weight;score+=part;if(part>bestPart){bestPart=part;best=`${s.label}: ${fmtSafe(s.value)}`}
     }
-    return{score,best};
+    return{score,best:String(best)};
   }
-  function selectedLegend(profile){return fieldSafe(profile,"legend",profile?.selectedLegend||"")}
-  function badgeHTML(groups){
-    const items=[...(groups?.collection||[]),...(groups?.other||[])];
-    if(!items.length)return"";
-    return`<div class="v49919BadgeRow">${items.map(b=>`<span class="v49919BadgeChip">${b.src?`<img loading="lazy" onerror="this.remove()" src="${safe(b.src)}" alt="${safe(b.name)}">`:""}<em>${safe(b.name)}</em></span>`).join("")}</div>`;
-  }
-  function statsHTML(stats){
-    if(!stats.length)return`<div class="v49919EmptySmall">No trusted stat row returned for this legend yet.</div>`;
-    return`<div class="v49919StatChips">${stats.map(s=>`<span><em>${safe(s.label)}</em><b>${safe(fmtSafe(s.value))}</b></span>`).join("")}</div>`;
-  }
+  function badgeHTML(groups){const items=[...(groups?.collection||[]),...(groups?.other||[])];if(!items.length)return"";return`<div class="v49922BadgeRow">${items.map(b=>`<span class="v49922BadgeChip">${b.src?`<img loading="lazy" onerror="this.remove()" src="${safe(b.src)}" alt="${safe(b.name)}">`:""}<em>${safe(b.name)}</em></span>`).join("")}</div>`}
+  function statsHTML(stats){if(!stats.length)return`<div class="v49919EmptySmall">No trusted stat row returned for this legend yet.</div>`;return`<div class="v49919StatChips">${stats.map(s=>`<span><em>${safe(s.label)}</em><b>${safe(fmtSafe(s.value))}</b></span>`).join("")}</div>`}
   function legendData(){
-    const profile=state.profile||{},rows=extractRows(profile),rowMap=new Map(rows.map(r=>[norm(r.legend||r.name),r])),selected=norm(selectedLegend(profile));
-    return getPacks().map(pack=>{
-      const row=rowMap.get(norm(pack.name));
-      const stats=row?rowStats(row):[];
-      const m=usageScore(stats),groups=row?strictBadgeGroups(row):{collection:[],other:[]};
-      return{pack,row,stats,groups,selected:selected&&selected===norm(pack.name),score:m.score,best:m.best};
-    }).sort((a,b)=>(b.score-a.score)||((b.groups.collection.length+b.groups.other.length)-(a.groups.collection.length+a.groups.other.length))||a.pack.name.localeCompare(b.pack.name));
+    const profile=state.profile||{},rows=extractRows(profile),rowMap=new Map(rows.map(r=>[normSafe(r.legend||r.name),r])),selected=normSafe(selectedLegend(profile));
+    return getPacks().map(pack=>{const row=rowMap.get(normSafe(pack.name));const stats=row?rowStats(row):[];const m=usageScore(stats),groups=row?badgeGroups(row):{collection:[],other:[]};return{pack,row,stats,groups,selected:selected&&selected===normSafe(pack.name),score:m.score,best:m.best}}).sort((a,b)=>(b.score-a.score)||((b.groups.collection.length+b.groups.other.length)-(a.groups.collection.length+a.groups.other.length))||a.pack.name.localeCompare(b.pack.name));
   }
-  function legendCard(d){
+  function legendCard(d,full=false){
     const img=packImg(d.pack),badges=badgeHTML(d.groups);
     return`<article class="legend-card v49919LegendCard ${d.stats.length?"has-data":"waiting"}" data-legend="${safe(d.pack.name)}"><div class="legend-visual">${img?`<img loading="lazy" src="${safe(img)}" alt="${safe(d.pack.name)}">`:`<b>${safe(d.pack.name.slice(0,2).toUpperCase())}</b>`}</div><div class="legend-body"><div class="legend-title"><div><h3>${safe(d.pack.name)}${d.selected?" · selected":""}</h3><small>${safe(d.row?.source||(d.stats.length?"tracker row":"waiting"))}</small></div><span class="badge-chip small">${safe(d.stats.length)} stats</span></div>${statsHTML(d.stats)}${d.score?`<span class="v49919TopNote">Usage metric: ${safe(d.best)}</span>`:""}${badges?`<h4 class="v49919BadgeLabel">ALS badge slots</h4>${badges}`:""}</div></article>`;
   }
   window.renderLegends=function(){
     try{
-      const data=legendData();
-      const useful=data.filter(d=>d.score>0||d.stats.length||d.groups.collection.length||d.groups.other.length);
+      const data=legendData();const useful=data.filter(d=>d.score>0||d.stats.length||d.groups.collection.length||d.groups.other.length);
       const prev=byId("legendsPreview"),panel=byId("legendsPanel");
-      if(prev){
-        prev.innerHTML=useful.length?useful.slice(0,4).map(legendCard).join(""):`<section class="empty"><b>Legend rows loading</b><p>Search a player or wait for full profile hydration. ApexIQ will not show fake roster-order snapshot cards.</p></section>`;
-        const p=prev.closest(".block")?.querySelector(".section-title p"); if(p)p.textContent="Top 4 by BR/usage stats. Collection badges require exact Wake/Wrath text.";
-      }
-      if(panel)panel.innerHTML=useful.length?data.map(legendCard).join(""):`<section class="empty"><b>No legend stat rows loaded yet</b><p>Search a player to hydrate full ALS legend rows.</p></section>`;
-      stripFalseCollectionBadges();
+      if(prev){prev.innerHTML=useful.length?useful.slice(0,4).map(d=>legendCard(d,false)).join(""):`<section class="empty"><b>Legend rows loading</b><p>Search a player or wait for full profile hydration. ApexIQ will not show stale rows from a different search.</p></section>`;const p=prev.closest(".block")?.querySelector(".section-title p");if(p)p.textContent="Top 4 by BR/usage stats. 20B/4K only show from exact trusted Wake/Wrath tracker proof."}
+      if(panel)panel.innerHTML=useful.length?data.map(d=>legendCard(d,true)).join(""):`<section class="empty"><b>No legend stat rows loaded yet</b><p>Search a player to hydrate full ALS legend rows.</p></section>`;
+    }catch(e){const prev=byId("legendsPreview");if(prev)prev.innerHTML=`<section class="empty"><b>Legend renderer protected</b><p>${safe(e.message||e)}</p></section>`}
+  };
+
+  window.apexiqSafeSearch=async function(fresh=true){
+    const seq=++searchSeq;
+    const player=currentPlayer(),platform=currentPlatform();
+    state.player=player;state.platform=platform;state.profile=null;state.profileError="";state._lastLegendRows=[];
+    try{
+      Object.keys(localStorage).filter(k=>/^apexiq:v499(19|20|21):legendRows:/i.test(k)).forEach(k=>localStorage.removeItem(k));
+      localStorage.setItem("apexiq:lastPlayer",player);localStorage.setItem("apexiq:platform",platform);
+    }catch(_){}
+    const btn=document.querySelector("#searchForm button[type='submit']");const old=btn?.textContent||"Search";
+    if(btn){btn.disabled=true;btn.textContent="Searching…"}
+    setStatus("SEARCHING","syncing");
+    renderProfile();renderLegends();
+    try{
+      try{
+        const fast=await fetchJSONNoCache("/api/player-lite",{player,platform},14000);
+        if(seq!==searchSeq)return;
+        const fp=fast.profile||fast.profilePage||fast;
+        if(fp&&typeof fp==="object"){fp.fastMode=true;state.profile=fp;renderProfile();renderLegends();setStatus("FAST READY","syncing")}
+      }catch(_){}
+      const full=await fetchJSONNoCache("/api/player",{player,platform,rankedFallback:"0"},56000);
+      if(seq!==searchSeq)return;
+      const profile=full.profile||full.profilePage||full;
+      if(!profile||typeof profile!=="object")throw new Error("Worker returned no profile object.");
+      profile.fastMode=false;state.profile=profile;state.profileError="";
+      renderProfile();renderLegends();if(typeof renderBadgesPanel==="function")renderBadgesPanel();
+      let note=byId("aiqV49922Notice");if(!note){note=document.createElement("div");note.id="aiqV49922Notice";const p=byId("profilePanel");p?.parentNode?.insertBefore(note,p)}
+      if(note){note.className="v49922Notice";note.innerHTML=`<b>Full profile loaded fresh.</b><br>${safe(player)} · ${safe(platform)} · ${extractRows(profile).length} legend rows. Cached/stale rows were cleared before this search.`}
+      setStatus("LIVE READY","good");
     }catch(e){
-      const prev=byId("legendsPreview"); if(prev)prev.innerHTML=`<section class="empty"><b>Legend renderer protected</b><p>${safe(e.message||e)}</p></section>`;
+      if(seq!==searchSeq)return;
+      state.profileError=e?.name==="AbortError"?"Profile request timed out.":(e.message||String(e));
+      state.profile=null;renderProfile();renderLegends();
+      let note=byId("aiqV49922Notice");if(!note){note=document.createElement("div");note.id="aiqV49922Notice";const p=byId("profilePanel");p?.parentNode?.insertBefore(note,p)}
+      if(note){note.className="v49922Notice bad";note.innerHTML=`<b>Search failed without using stale rows.</b><br>${safe(state.profileError)}`}
+      setStatus("SEARCH FAIL","bad");
+    }finally{
+      if(btn){btn.disabled=false;btn.textContent=old==="Go Live"?"Search":old}
     }
   };
 
-  function stripFalseCollectionBadges(){
-    qsa(".legend-card").forEach(card=>{
-      const allText=card.textContent||"";
-      const hasWakeWrath=/\b(wake|wrath)\b/i.test(allText);
-      qsa(".v49919BadgeChip,.v49920BadgeChip,.v49921BadgeChip,.badge-chip",card).forEach(chip=>{
-        const label=(chip.textContent||"").trim();
-        const img=chip.querySelector("img");
-        const src=img?String(img.getAttribute("src")||""):"";
-        if(!hasWakeWrath && (/^(20|20B|4K|4 K)$/i.test(label)||/20b_collection|4k_collection|twenty|four_k/i.test(src))){
-          chip.remove();
-        }
-      });
-    });
-  }
-  const mo=new MutationObserver(()=>stripFalseCollectionBadges());
-  mo.observe(document.documentElement,{subtree:true,childList:true});
+  document.addEventListener("submit",function(e){if(e.target&&e.target.id==="searchForm"){e.preventDefault();e.stopPropagation();apexiqSafeSearch(true)}},true);
+  function boot(){document.documentElement.dataset.v49922="strict-owner-fix";const btn=document.querySelector("#searchForm button[type='submit']");if(btn){btn.disabled=false;btn.textContent="Search"}renderLegends()}
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
+})();
+</script>
 
-  const oldSearch=window.apexiqSafeSearch;
-  window.apexiqSafeSearch=function(fresh=true){
-    try{
-      const p=(byId("playerInput")?.value||"").trim();
-      if(state){state.profile=null;state.profileError="";state._lastLegendRows=[];}
-      const prev=byId("legendsPreview");
-      if(prev)prev.innerHTML=`<section class="empty"><b>Loading ${safe(p||"player")} legend rows</b><p>Cleared previous player rows before search.</p></section>`;
-      const panel=byId("legendsPanel");
-      if(panel)panel.innerHTML=`<section class="empty"><b>Loading ${safe(p||"player")} legend rows</b><p>Waiting for this player's full profile rows.</p></section>`;
-    }catch(_){}
-    if(typeof oldSearch==="function")return oldSearch(fresh);
-    if(typeof loadAll==="function")return loadAll(fresh);
+
+<style id="apexiq-v49923-badge-priority-css">
+.v49923BadgeRow{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.v49923BadgeChip{display:inline-flex;align-items:center;gap:6px;min-height:32px;max-width:100%;padding:5px 8px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden}
+.v49923BadgeChip img{width:28px;height:28px;object-fit:contain;flex:0 0 auto}
+.v49923BadgeChip em{font-style:normal;font-size:.74rem;max-width:132px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.v49923LockerGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.v49923LockerCard{display:grid;grid-template-columns:54px minmax(0,1fr);gap:12px;align-items:center;padding:14px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.045)}
+.v49923LockerCard.unlocked{border-color:rgba(34,197,94,.45);background:linear-gradient(180deg,rgba(34,197,94,.12),rgba(255,255,255,.04))}
+.v49923LockerCard img{width:48px;height:48px;object-fit:contain;filter:drop-shadow(0 8px 12px rgba(0,0,0,.25))}
+.v49923LockerCard h4{margin:0 0 3px;font-size:.98rem}
+.v49923LockerCard p{margin:0;color:var(--muted);font-size:.82rem}
+.v49923MiniCase{margin-top:16px;padding:14px;border:1px solid var(--line);border-radius:20px;background:rgba(255,255,255,.045)}
+.v49923MiniCaseHead{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:10px}
+.v49923MiniCaseHead h3{margin:0;font-size:1.05rem}
+.v49923MiniCaseHead p{margin:3px 0 0;color:var(--muted);font-size:.82rem}
+.v49923MiniGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:9px}
+.v49923MiniBadge{position:relative;display:grid;place-items:center;min-height:62px;border:1px solid rgba(34,197,94,.46);border-radius:14px;background:linear-gradient(180deg,rgba(34,197,94,.14),rgba(15,23,42,.78));cursor:pointer}
+.v49923MiniBadge img{width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 7px 12px rgba(0,0,0,.32))}
+.v49923MiniBadge span{position:absolute;right:5px;bottom:4px;font-size:.62rem;font-weight:900;line-height:1;padding:3px 5px;border-radius:999px;color:#fff;background:rgba(15,23,42,.92);border:1px solid rgba(255,255,255,.18)}
+.v49923Tip{display:none;margin-top:10px;padding:10px 12px;border-radius:14px;border:1px solid rgba(96,165,250,.28);background:rgba(96,165,250,.10);color:var(--text);font-size:.86rem;line-height:1.45}
+.v49923Tip.is-open{display:block}
+.v49923Warn{margin:12px 0;padding:11px 13px;border-radius:14px;border:1px solid rgba(250,204,21,.28);background:rgba(250,204,21,.10);color:var(--text);font-size:.86rem}
+</style>
+
+
+<script id="apexiq-v49923-badge-priority-js">
+(function(){
+  "use strict";
+
+  function byId(id){return document.getElementById(id)}
+  function safe(v){try{return(typeof esc==="function"?esc(v):String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])))}catch(_){return String(v??"")}}
+  function normSafe(v){return String(v||"").toLowerCase().replace(/[^a-z0-9]/g,"")}
+  function nval(v){const n=Number(String(v??"").replace(/,/g,"").replace(/[^\d.-]/g,""));return Number.isFinite(n)?n:0}
+  function fmtSafe(v){try{return typeof fmt==="function"?fmt(v):String(v??"—")}catch(_){return String(v??"—")}}
+  function fieldSafe(obj,key,fb="—"){try{return typeof field==="function"?field(obj,key,fb):(obj?.fields?.[key]?.value??obj?.[key]??fb)}catch(_){return fb}}
+  function getPacks(){return typeof PACK_DATA!=="undefined"?PACK_DATA:[]}
+  function rosterName(n){const k=normSafe(n);const p=getPacks().find(x=>normSafe(x.name)===k);return p?p.name:""}
+  function packImg(pack){try{return typeof packImage==="function"?packImage(pack):pack?.stickers?.[0]?.src||""}catch(_){return pack?.stickers?.[0]?.src||""}}
+  function isOwnerProfile(profile){const s=[state?.player,profile?.player,profile?.name,profile?.displayName,fieldSafe(profile,"name",""),fieldSafe(profile,"player","")].join(" ");return /imissanyway/i.test(s)}
+  function selectedLegend(profile){return fieldSafe(profile,"legend",profile?.selectedLegend||"")}
+  function manifestBadges(){try{const el=byId("apexiqBadgeManifestV498");const m=JSON.parse(el?.textContent||"{}");return Array.isArray(m.badges)?m.badges:[]}catch(_){return[]}}
+
+  function visualText(b){return typeof b==="string"?b:[b?.rawName,b?.name,b?.label,b?.title,b?.displayName].filter(Boolean).join(" ")}
+  function exactWakeForLegend(text,legend){const s=String(text||"").trim().replace(/[_-]+/g," ");const l=String(legend||"").replace(/[.*+?^${}()|[\]\\]/g,"\\$&");return new RegExp("^"+l+"(?:'s|’s)?\\s+Wake$","i").test(s)}
+  function exactWrathForLegend(text,legend){const s=String(text||"").trim().replace(/[_-]+/g," ");const l=String(legend||"").replace(/[.*+?^${}()|[\]\\]/g,"\\$&");return new RegExp("^"+l+"(?:'s|’s)?\\s+Wrath$","i").test(s)}
+  function looks20(text,src){return /^(20|20b|20 kill badge|20 bomb|20 kill)$/i.test(String(text||"").trim()) || /20b_collection|twenty_kill/i.test(String(src||""))}
+  function looks4k(text,src){return /^(4k|4k badge|4k damage badge|4000 damage|hammer)$/i.test(String(text||"").trim()) || /4k_collection|four_k/i.test(String(src||""))}
+  function cleanBadgeName(raw,legend){
+    let s=String(raw||"").replace(/\s+/g," ").trim();
+    if(!s||/unknown als|visual badge slot|badge slot|undefined|null/i.test(s))return"";
+    const lower=s.toLowerCase();
+    if(/^(20|20b|20 kill badge|20 bomb|20 kill|4k|4k badge|4k damage badge|4000 damage|hammer)$/i.test(s))return"";
+    if(/\b(wake|wrath)\b/i.test(s))return"";
+    const apex=new RegExp("(apex\\s+"+String(legend||"[a-z]+").toLowerCase().replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\s+(?:iv|iii|ii|i))","i").exec(lower);
+    if(apex)return apex[1];
+    const known=["squad wipe","assassin","deadeye","shot caller","hot streak","rapid elimination","flawless victory ii","flawless victory i","flawless victory","apex predator","master of all","no witnesses","team work"];
+    for(const k of known){if(lower.includes(k))return k}
+    // Remove duplicated names like "Assassin Assassin"
+    const parts=s.split(" ");
+    if(parts.length%2===0){
+      const a=parts.slice(0,parts.length/2).join(" ").toLowerCase(),b=parts.slice(parts.length/2).join(" ").toLowerCase();
+      if(a===b)return parts.slice(0,parts.length/2).join(" ");
+    }
+    return s.slice(0,40);
+  }
+
+  function badgeGroupsStrict(row,profile){
+    const owner=isOwnerProfile(profile||state.profile||{});
+    const legend=rosterName(row?.legend||row?.name||row?.legendName)||String(row?.legend||"");
+    const raw=[...(Array.isArray(row?.officialBadges)?row.officialBadges:[]),...(Array.isArray(row?.badges)?row.badges:[]),...(Array.isArray(row?.badgeSlots)?row.badgeSlots:[])].filter(Boolean);
+    const collection=[],other=[],seen=new Set();
+    for(const b of raw){
+      const text=visualText(b),src=String((b&&typeof b==="object"&&b.src)||"");
+      let obj=null;
+      const trustedExact = exactWakeForLegend(text,legend)||exactWrathForLegend(text,legend);
+      // Owner visual fallback: keep your known visual collection badges, but hard-block the known false Gibby 20B.
+      // Everyone else needs exact Wake/Wrath proof to avoid Fastwagen-style false legend ownership.
+      if(trustedExact && exactWakeForLegend(text,legend)) obj={name:"20B",src:"assets/approved-badges/20b_collection_t4.png",type:"20b"};
+      else if(trustedExact && exactWrathForLegend(text,legend)) obj={name:"4K",src:"assets/approved-badges/4k_collection_t4.png",type:"4k"};
+      else if(owner && normSafe(legend)!=="gibraltar" && looks20(text,src)) obj={name:"20B",src:"assets/approved-badges/20b_collection_t4.png",type:"20b"};
+      else if(owner && looks4k(text,src)) obj={name:"4K",src:"assets/approved-badges/4k_collection_t4.png",type:"4k"};
+      if(obj){if(!seen.has(obj.type)){seen.add(obj.type);collection.push(obj)}continue}
+      const label=cleanBadgeName(text,legend);
+      if(label){const k="other|"+label.toLowerCase();if(!seen.has(k)){seen.add(k);other.push({name:label,src:/20b_collection|4k_collection|twenty|four_k|wake|wrath/i.test(src)?"":src})}}
+    }
+    return{collection:collection.slice(0,2),other:other.slice(0,5)};
+  }
+
+  function rowStatsStrict(row){
+    const raw=[...(Array.isArray(row?.stats)?row.stats:[]),...(Array.isArray(row?.trackers)?row.trackers.map(t=>({label:t.label||t.name||t.key,value:t.value,source:t.source||row.source})):[]),...(Array.isArray(row?.data)?row.data.map(t=>({label:t.label||t.name||t.key||t.displayName,value:t.value??t.total??t.amount,source:t.source||row.source})):[]),...(Array.isArray(row?.values)?row.values.map(t=>({label:t.label||t.name||t.key||t.displayName,value:t.value??t.total??t.amount,source:t.source||row.source})):[])];
+    const by=new Map();
+    for(const s of raw){
+      let label=String(s?.label||s?.name||s?.key||"").replace(/\s+/g," ").trim();
+      const value=s?.value??s?.displayValue??s?.total??s?.amount;
+      if(!label||value===undefined||value===null||value===""||value==="—"||value==="not returned")continue;
+      if(/badge|skin|frame|pose|banner|source|status|icon|rank icon|view|prestige cosmetic|image/i.test(label))continue;
+      if(typeof statLabel==="function")label=statLabel(label);
+      const key=label.toLowerCase();if(!by.has(key))by.set(key,{label,value,source:s.source||row?.source||"tracker"});
+    }
+    const order=["BR Kills","BR Damage","BR Wins","BR Games played","BR Kills as kill leader","Alternator Kills","Alternator Damage","L-STAR Kills","Arenas Kills","Arenas Damage","Kills","Damage","Wins"];
+    return[...by.values()].sort((a,b)=>(order.indexOf(a.label)<0?99:order.indexOf(a.label))-(order.indexOf(b.label)<0?99:order.indexOf(b.label))).slice(0,7);
+  }
+
+  function extractRowsStrict(profile){
+    const pools=[profile?.allLegendStats,profile?.legendStats,profile?.legends,profile?.legendRows,profile?.trackerRows,profile?.profilePage?.legendStats,profile?.profile?.legendStats,profile?.rendered?.legendStats,profile?.profilePage?.allLegendStats,profile?.rendered?.legendCards].filter(Boolean);
+    const out=[];
+    const collect=(x,hint="")=>{
+      if(!x)return;if(Array.isArray(x)){x.forEach(i=>collect(i,hint));return}if(typeof x!=="object")return;
+      const nm=rosterName(x.legend||x.name||x.legendName||x.LegendName||x.displayName||hint);
+      const shaped=Array.isArray(x.stats)||Array.isArray(x.trackers)||Array.isArray(x.data)||Array.isArray(x.values)||Array.isArray(x.badges)||Array.isArray(x.officialBadges)||Array.isArray(x.badgeSlots);
+      if(nm&&shaped)out.push({...x,legend:nm});
+      for(const [key,child] of Object.entries(x)){if(child&&typeof child==="object")collect(child,rosterName(key)||nm||hint)}
+    };
+    pools.forEach(p=>collect(p,""));
+    const by=new Map();
+    for(const r of out){
+      const legend=rosterName(r.legend||r.name||r.legendName);const k=normSafe(legend);if(!k)continue;
+      const old=by.get(k),next={...r,legend};
+      const ns=rowStatsStrict(next).length,os=old?rowStatsStrict(old).length:-1;
+      const nb=badgeGroupsStrict(next,profile).collection.length+badgeGroupsStrict(next,profile).other.length;
+      const ob=old?(badgeGroupsStrict(old,profile).collection.length+badgeGroupsStrict(old,profile).other.length):-1;
+      if(!old||ns+nb>=os+ob)by.set(k,next);
+    }
+    return[...by.values()];
+  }
+
+  function usageScore(stats){let score=0,best="No returned usage stat",bestPart=0;for(const s of stats||[]){const label=String(s.label||"").toLowerCase(),v=nval(s.value);let w=0;if(/\bbr kills\b/.test(label)||label==="kills")w=125;else if(/\bbr damage\b/.test(label)||label==="damage")w=.32;else if(/\bbr wins\b/.test(label)||label==="wins")w=2400;else if(/br games played|games played/.test(label))w=35;else if(/kills as kill leader/.test(label))w=45;else if(/arenas kills/.test(label))w=22;else if(/arenas damage/.test(label))w=.055;else if(/alternator|r-99|r99|car|l-star|spitfire|weapon/.test(label))w=18;else if(/season.*kills/.test(label))w=18;if(!w)continue;const part=v*w;score+=part;if(part>bestPart){bestPart=part;best=`${s.label}: ${fmtSafe(s.value)}`}}return{score,best:String(best)}}
+  function statsHTML(stats){if(!stats.length)return`<div class="v49919EmptySmall">No trusted stat row returned for this legend yet.</div>`;return`<div class="v49919StatChips">${stats.map(s=>`<span><em>${safe(s.label)}</em><b>${safe(fmtSafe(s.value))}</b></span>`).join("")}</div>`}
+  function badgeHTML(groups){const items=[...(groups.collection||[]),...(groups.other||[])];if(!items.length)return"";return`<div class="v49923BadgeRow">${items.map(b=>`<span class="v49923BadgeChip">${b.src?`<img loading="lazy" onerror="this.remove()" src="${safe(b.src)}" alt="${safe(b.name)}">`:""}<em>${safe(b.name)}</em></span>`).join("")}</div>`}
+  function legendDataStrict(){
+    const profile=state.profile||{},rows=extractRowsStrict(profile),rowMap=new Map(rows.map(r=>[normSafe(r.legend||r.name),r])),selected=normSafe(selectedLegend(profile));
+    return getPacks().map(pack=>{const row=rowMap.get(normSafe(pack.name));const stats=row?rowStatsStrict(row):[];const groups=row?badgeGroupsStrict(row,profile):{collection:[],other:[]};const m=usageScore(stats);return{pack,row,stats,groups,selected:selected&&selected===normSafe(pack.name),score:m.score,best:m.best}}).sort((a,b)=>(b.score-a.score)||((b.groups.collection.length+b.groups.other.length)-(a.groups.collection.length+a.groups.other.length))||a.pack.name.localeCompare(b.pack.name));
+  }
+  function legendCard(d){const img=packImg(d.pack),badges=badgeHTML(d.groups);return`<article class="legend-card v49919LegendCard ${d.stats.length?"has-data":"waiting"}"><div class="legend-visual">${img?`<img loading="lazy" src="${safe(img)}" alt="${safe(d.pack.name)}">`:`<b>${safe(d.pack.name.slice(0,2).toUpperCase())}</b>`}</div><div class="legend-body"><div class="legend-title"><div><h3>${safe(d.pack.name)}${d.selected?" · selected":""}</h3><small>${safe(d.row?.source||(d.stats.length?"tracker row":"waiting"))}</small></div><span class="badge-chip small">${safe(d.stats.length)} stats</span></div>${statsHTML(d.stats)}${d.score?`<span class="v49919TopNote">Usage metric: ${safe(d.best)}</span>`:""}${badges?`<h4 class="v49919BadgeLabel">ALS badge slots</h4>${badges}`:""}</div></article>`}
+  window.renderLegends=function(){
+    const data=legendDataStrict(),useful=data.filter(d=>d.score>0||d.stats.length||d.groups.collection.length||d.groups.other.length);
+    const prev=byId("legendsPreview"),panel=byId("legendsPanel");
+    if(prev)prev.innerHTML=useful.length?useful.slice(0,4).map(legendCard).join(""):`<section class="empty"><b>Legend rows loading</b><p>No stale rows or guessed 20B/4K rows are being shown.</p></section>`;
+    if(panel)panel.innerHTML=useful.length?data.map(legendCard).join(""):`<section class="empty"><b>No legend stat rows loaded yet</b><p>Search a player to hydrate full ALS legend rows.</p></section>`;
   };
 
-  const oldRenderMeta=window.renderMeta;
-  window.renderMeta=function(targetId){
-    const target=byId(targetId); if(!target)return;
-    const raw=state?.meta?.legends||state?.meta?.meta||state?.meta?.pickrates||state?.meta?.pickRates||state?.meta?.rows||[];
-    const rows=(Array.isArray(raw)&&raw.length?raw:getPacks().map((p,i)=>({legend:p.name,name:p.name,pickRate:"Live pending",rate:"Live pending",trend:"—",order:i+1,img:packImg(p)}))).map((m,i)=>{
-      const name=m.legend||m.name||"Legend"; const pack=getPacks().find(p=>norm(p.name)===norm(name));
-      return{legend:pack?.name||name,pickRate:m.pickRate??m.rate??m.value??"—",trend:m.trend||m.change||"",img:pack?packImg(pack):(m.img||""),order:i+1};
-    });
-    target.innerHTML=`<div class="v49921MetaNotice">${Array.isArray(raw)&&raw.length?"Live/fetched meta rows.":"Meta endpoint fallback: roster shown until live pick rates return."}</div><div class="v49921MetaGrid">${rows.slice(0,28).map((m,i)=>`<article class="v49921MetaCard">${m.img?`<img loading="lazy" src="${safe(m.img)}" alt="${safe(m.legend)}">`:`<b>#${i+1}</b>`}<span><b>${safe(m.legend)}</b><small>${safe(m.trend)}</small></span><strong>${safe(m.pickRate)}${String(m.pickRate).match(/^\d+(\.\d+)?$/)?"%":""}</strong></article>`).join("")}</div>`;
+  function badgeCountsStrict(profile){
+    const rows=extractRowsStrict(profile||{}),legends20=new Set(),legends4k=new Set();let totalKills=0,totalDamage=0,totalWins=0,totalRows=0,weapon={},ability={};
+    for(const r of rows){
+      const lk=normSafe(r.legend||r.name),stats=rowStatsStrict(r),groups=badgeGroupsStrict(r,profile);
+      if(stats.length)totalRows++;
+      if(groups.collection.some(b=>b.type==="20b"))legends20.add(lk);
+      if(groups.collection.some(b=>b.type==="4k"))legends4k.add(lk);
+      for(const s of stats){const l=String(s.label||"").toLowerCase(),v=nval(s.value);if(/\bbr kills\b|^kills$/.test(l))totalKills+=v;if(/\bbr damage\b|^damage$/.test(l))totalDamage+=v;if(/\bbr wins\b|^wins$/.test(l))totalWins+=v;if(/alternator|r-99|r99|car|volt|prowler|smg/.test(l))weapon.smg=(weapon.smg||0)+v;if(/r-301|r301|flatline|hemlok|nemesis|havoc|ar/.test(l))weapon.ar=(weapon.ar||0)+v;if(/mastiff|peacekeeper|eva|mozambique|shotgun/.test(l))weapon.shotgun=(weapon.shotgun||0)+v;if(/sentinel|longbow|charge rifle|kraber|sniper/.test(l))weapon.sniper=(weapon.sniper||0)+v;if(/revive|respawn/.test(l))ability.revive=(ability.revive||0)+v;if(/scan|scanned|detected|recon/.test(l))ability.recon=(ability.recon||0)+v;if(/shield|blocked|savior/.test(l))ability.shield=(ability.shield||0)+v;if(/grenade|cluster|tactical|ultimate|ability/.test(l))ability.ability=(ability.ability||0)+v;}
+    }
+    totalKills=Math.max(totalKills,nval(fieldSafe(profile,"kills",0)));totalDamage=Math.max(totalDamage,nval(fieldSafe(profile,"damage",0)));totalWins=Math.max(totalWins,nval(fieldSafe(profile,"wins",0)));
+    return{rows,legends20,legends4k,totalKills,totalDamage,totalWins,totalRows,weapon,ability,rank:String(fieldSafe(profile,"rank","")),rp:nval(fieldSafe(profile,"rp",fieldSafe(profile,"rankScore",0))),trueLvl:nval(typeof trueLevel==="function"?trueLevel(profile):fieldSafe(profile,"trueLevel",0)),prestige:String(fieldSafe(profile,"prestige","")),ownedBadges:legends20.size+legends4k.size};
+  }
+  function metricForBadgeStrict(id,c){id=String(id||"");if(id==="20b_collection")return c.legends20.size;if(id==="4k_collection")return c.legends4k.size;if(id==="career_killer")return c.totalKills;if(id==="damage_dealer")return c.totalDamage;if(id==="win_stacker")return c.totalWins;if(/legend|roster/.test(id))return c.totalRows;if(id==="badge_hunter")return c.ownedBadges;if(id==="smg_reaper")return c.weapon.smg||0;if(id==="ar_ace")return c.weapon.ar||0;if(id==="shotgun_brutality")return c.weapon.shotgun||0;if(id==="sniper_deadeye")return c.weapon.sniper||0;if(id==="revive_angel")return c.ability.revive||0;if(id==="recon_scanner")return c.ability.recon||0;if(id==="shield_savior")return c.ability.shield||0;if(/explosive|tactical|movement/.test(id))return c.ability.ability||0;if(id==="ranked_climber")return c.rp||(/silver/i.test(c.rank)?3000:/gold/i.test(c.rank)?5000:/plat/i.test(c.rank)?8000:/diamond/i.test(c.rank)?12000:/master|pred/i.test(c.rank)?15000:0);if(/diamond/.test(id))return/diamond|master|pred/i.test(c.rank)?1:0;if(/master/.test(id))return/master|pred/i.test(c.rank)?1:0;if(/predator/.test(id))return/pred/i.test(c.rank)?1:0;if(id==="prestige_ascendant")return c.trueLvl||(/prestige/i.test(c.prestige)?1:0);return 0}
+  function tierStateStrict(b,value){const tiers=(b.tiers||[]).slice().sort((a,b)=>(a.requires||0)-(b.requires||0));let earned=null,next=tiers[0]||null;for(const t of tiers){if(value>=nval(t.requires)){earned=t;next=null}else{next=t;break}}return{earned,next,asset:(earned||next||tiers[tiers.length-1]||{}).asset||(tiers[0]||{}).asset||""}}
+  function romanTier(label){const m=String(label||"").match(/\b(?:tier\s*)?(IV|III|II|I)\b/i);return m?m[1].toUpperCase():"—"}
+  function unlockedBadgeList(profile){const c=badgeCountsStrict(profile||{});return manifestBadges().map(b=>{const value=metricForBadgeStrict(b.id,c),ts=tierStateStrict(b,value);return{...b,value,...ts,unlocked:!!ts.earned,asset:ts.asset||""}}).filter(b=>b.unlocked)}
+  function miniCaseHTML(profile){
+    const list=unlockedBadgeList(profile);
+    if(!list.length)return`<section class="v49923MiniCase"><div class="v49923MiniCaseHead"><div><h3>ApexIQ badge display case</h3><p>Unlocked ApexIQ badges only. Locked badges hidden.</p></div><small>0 unlocked</small></div><div class="v49923Tip is-open">No unlocked ApexIQ badges from the current loaded rows.</div></section>`;
+    return`<section class="v49923MiniCase"><div class="v49923MiniCaseHead"><div><h3>ApexIQ badge display case</h3><p>Unlocked ApexIQ badges only. Hover/click for name and tier.</p></div><small>${list.length} unlocked</small></div><div class="v49923MiniGrid">${list.map(b=>{const tier=romanTier(b.earned?.label);const req=nval((b.earned||{}).requires||1)||1;const detail=`${b.name}: ${b.earned?.label||"unlocked"} · ${b.value}/${req}`;return`<button type="button" class="v49923MiniBadge" title="${safe(detail)}" data-aiq-mini-badge="${safe(detail)}"><img loading="lazy" src="${safe(b.asset)}" alt="${safe(b.name)}"><span>${safe(tier)}</span></button>`}).join("")}</div><div id="apexiqMiniBadgeTip" class="v49923Tip"></div></section>`;
+  }
+  const prevProfile=window.renderProfile;
+  window.renderProfile=function(){if(typeof prevProfile==="function")prevProfile();const panel=byId("profilePanel");if(panel&&state.profile){panel.querySelectorAll(".v49918ProfileBadgeCase,.v49919ProfileBadgeCase,.v49920ProfileBadgeCase,.v49921ProfileBadgeCase,.v49923MiniCase").forEach(x=>x.remove());panel.insertAdjacentHTML("beforeend",miniCaseHTML(state.profile))}}
+
+  window.renderBadgesPanel=function(){
+    const panel=byId("badgesPanel");if(!panel)return;
+    const profile=state.profile||{},c=badgeCountsStrict(profile),badges=manifestBadges();
+    const enriched=badges.map(b=>{const value=metricForBadgeStrict(b.id,c),ts=tierStateStrict(b,value);return{...b,value,...ts,unlocked:!!ts.earned}});
+    const unlocked=enriched.filter(b=>b.unlocked),maxTier=unlocked.filter(b=>b.earned&&/iv/i.test(String(b.earned.label||""))).length;
+    panel.innerHTML=`<section class="panel-card"><div class="section-title"><span>Badge system</span><h2>Badge case + proof locker</h2><p>Strict v4.9.9.23 counts: Gibby 20B blocked; non-owner visual 20B/4K guesses blocked; regular Apex badges still show on legend cards.</p></div><div class="stat-grid"><div class="stat-tile"><span>Unlocked</span><b>${unlocked.length}</b><small>of ${enriched.length} badge lines</small></div><div class="stat-tile"><span>20B legends</span><b>${c.legends20.size}</b><small>Gibraltar excluded from owner visual fallback</small></div><div class="stat-tile"><span>4K legends</span><b>${c.legends4k.size}</b><small>trusted/owner visual rows</small></div><div class="stat-tile"><span>Max tier</span><b>${maxTier}</b><small>tier IV lines</small></div></div><div class="v49923Warn"><b>Priority guard active:</b> 20B/4K collection counts now use the same strict badge parser as legend cards, so the locker cannot count Gibby if the card blocks Gibby.</div><div class="v49923LockerGrid">${enriched.map(b=>{const tier=b.earned||b.next||{};const asset=(b.earned||b.next||{}).asset||b.asset||"";return`<article class="v49923LockerCard ${b.unlocked?"unlocked":"locked"}">${asset?`<img src="${safe(asset)}" alt="${safe(b.name)}">`:"<span></span>"}<div><h4>${safe(b.name)}</h4><p>${b.unlocked?"unlocked ":"locked · next "}${safe(tier.label||"Tier I")} · ${safe(fmtSafe(b.value))}/${safe(fmtSafe(tier.requires||1))}</p></div></article>`}).join("")}</div></section>`;
   };
 
-  document.addEventListener("click",function(e){
-    if(e.target.closest('[data-go="meta"]')&&typeof apexiqLoadMeta==="function")setTimeout(()=>apexiqLoadMeta(false),80);
-  },true);
-
-  function boot(){
-    document.documentElement.dataset.v49922="strict-owned-fix";
-    if(typeof renderLegends==="function")renderLegends();
-    if(typeof renderProfile==="function")renderProfile();
-    if(typeof renderMeta==="function"){renderMeta("metaPanel");renderMeta("metaPanelFull");}
-    stripFalseCollectionBadges();
-  }
+  document.addEventListener("click",function(e){const b=e.target.closest("[data-aiq-mini-badge]");if(b){const tip=byId("apexiqMiniBadgeTip");if(tip){tip.textContent=b.getAttribute("data-aiq-mini-badge")||b.title||"";tip.classList.add("is-open")}}},true);
+  function boot(){document.documentElement.dataset.v49923="badge-priority-fix";renderLegends();renderProfile();renderBadgesPanel()}
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
 })();
 </script>

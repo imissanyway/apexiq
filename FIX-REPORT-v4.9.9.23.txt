@@ -1,0 +1,28 @@
+ApexIQ v4.9.9.23 Badge Priority Fix
+
+Built from v4.9.9.22.
+
+Priority fixes:
+- Badge locker now uses the same strict parser as legend cards.
+- The locker can no longer count a 20B/4K that the legend card blocks.
+- Gibraltar is hard-blocked from the owner visual 20B fallback because the user confirmed Gibby is false.
+- Owner profile still allows visual 20B/4K fallback for the user's known badge rows, so valid Apex badge icons are not wiped out.
+- Non-owner profiles require exact Wake/Wrath proof for 20B/4K, preventing Fastwagen-style false legend badge ownership.
+- Regular Apex/ALS badge slots are restored and cleaned:
+  - Apex Legend I/II/III/IV
+  - Squad Wipe
+  - Assassin
+  - Deadeye
+  - Shot Caller
+  - Flawless Victory
+  - Apex Predator
+- Duplicate concatenated labels like “Assassin Assassin” are cleaned.
+- Legend cards, Legend Snapshot, mini display case, and Badge Locker all share the v4.9.9.23 parser.
+
+Worker:
+- New Worker file: apexiq-api-worker-v4.9.9.23-badge-priority-fix.js
+- Worker keeps visual collection-looking labels as unknown badge text instead of deleting them, so the frontend can safely decide owner/non-owner behavior.
+
+Validation:
+- HTML JavaScript syntax check passed.
+- Worker syntax check passed.
