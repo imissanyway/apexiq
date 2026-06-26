@@ -6259,5 +6259,219 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
 })();
 </script>
 
+
+<style id="apexiq-v49925-meta-stat-percent-css">
+.v49925MetaGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.v49925MetaCard{position:relative;overflow:hidden;min-height:158px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.045);padding:14px}
+.v49925MetaBg{position:absolute;inset:0;opacity:.26;object-fit:cover;width:100%;height:100%;filter:saturate(1.15);transform:scale(1.05)}
+.v49925MetaShade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(2,6,23,.10),rgba(2,6,23,.90))}
+.v49925MetaContent{position:relative;z-index:1;display:grid;gap:6px;color:var(--text)}
+.v49925MetaTop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.v49925MetaTop b{font-size:1.18rem;line-height:1.05;max-width:130px;overflow:hidden;text-overflow:ellipsis}
+.v49925Pick{font-size:2rem;font-weight:950;letter-spacing:-.05em}
+.v49925Trend{font-size:.82rem;font-weight:900}
+.v49925Trend.up{color:#22c55e}.v49925Trend.down{color:#ef4444}.v49925Trend.flat{color:var(--muted)}
+.v49925MetaDetail{display:grid;gap:3px;margin-top:2px;font-size:.84rem;color:rgba(255,255,255,.90)}
+.v49925MetaDetail span{display:flex;justify-content:space-between;gap:8px}
+.v49925MetaNotice{margin-bottom:12px;padding:10px 12px;border:1px solid rgba(96,165,250,.28);border-radius:14px;background:rgba(96,165,250,.10);color:var(--muted);font-size:.86rem}
+
+.v49925StatList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.v49925StatBox{border:1px solid rgba(148,163,184,.24);border-radius:14px;background:rgba(15,23,42,.045);padding:10px 11px;min-width:0}
+.v49925StatBox em{display:block;font-style:normal;color:#9fb0c6;font-size:.76rem;font-weight:800;line-height:1.18;min-height:1.1em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v49925StatBox b{display:block;color:#030712;font-size:1.05rem;line-height:1.12;margin-top:4px}
+[data-mode="dark"] .v49925StatBox b{color:var(--text)}
+.v49925PercentRow{display:flex;align-items:center;gap:8px;margin-top:8px}
+.v49925Bar{height:5px;flex:1;border-radius:99px;background:rgba(148,163,184,.22);overflow:hidden}
+.v49925Bar i{display:block;height:100%;width:var(--w,0%);border-radius:99px;background:linear-gradient(90deg,var(--brand),var(--brand-2))}
+.v49925Top{font-size:.72rem;color:#9fb0c6;white-space:nowrap}
+.v49925Rank{font-size:.72rem;color:var(--brand-2);font-weight:900;margin-left:4px}
+.v49925CardBadges{margin-top:12px}
+.v49925CardBadges h4{margin:0 0 8px;color:#9fb0c6;letter-spacing:.14em;text-transform:uppercase;font-size:.72rem}
+.v49925FrozenNote{margin:12px 0;padding:11px 13px;border-radius:14px;border:1px solid rgba(34,197,94,.30);background:rgba(34,197,94,.10);color:var(--text);font-size:.86rem}
+@media(max-width:820px){
+  .v49925MetaGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .v49925MetaCard{min-height:170px;padding:12px}
+  .v49925Pick{font-size:1.7rem}
+  .v49925StatList{grid-template-columns:1fr}
+}
+</style>
+
+
+<script id="apexiq-v49925-meta-stat-percent-js">
+(function(){
+  "use strict";
+
+  function byId(id){return document.getElementById(id)}
+  function safe(v){try{return(typeof esc==="function"?esc(v):String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])))}catch(_){return String(v??"")}}
+  function normSafe(v){return String(v||"").toLowerCase().replace(/[^a-z0-9]/g,"")}
+  function nval(v){const n=Number(String(v??"").replace(/,/g,"").replace(/[^\d.-]/g,""));return Number.isFinite(n)?n:0}
+  function fmtSafe(v){try{return typeof fmt==="function"?fmt(v):String(v??"—")}catch(_){return String(v??"—")}}
+  function getPacks(){return typeof PACK_DATA!=="undefined"?PACK_DATA:[]}
+  function rosterName(n){const k=normSafe(n);const p=getPacks().find(x=>normSafe(x.name)===k);return p?p.name:""}
+  function packImg(pack){try{return typeof packImage==="function"?packImage(pack):pack?.stickers?.[0]?.src||""}catch(_){return pack?.stickers?.[0]?.src||""}}
+  function fieldSafe(obj,key,fb="—"){try{return typeof field==="function"?field(obj,key,fb):(obj?.fields?.[key]?.value??obj?.[key]??fb)}catch(_){return fb}}
+  function selectedLegend(profile){return fieldSafe(profile,"legend",profile?.selectedLegend||"")}
+
+  function trendClass(v){const s=String(v||"");return /▼|down|-/i.test(s)?"down":(/▲|up|\+/i.test(s)?"up":"flat")}
+  function percentLabel(v){
+    if(v===undefined||v===null||v==="")return"";
+    let n=Number(String(v).replace("%","").trim());
+    if(!Number.isFinite(n))return"";
+    if(n>100)n=100;
+    if(n<0)n=0;
+    return n.toFixed(n<10?1:0).replace(/\.0$/,"");
+  }
+  function statPercent(s){
+    const raw=s?.topPercent??s?.percentile??s?.rankPercentile??s?.rankPercent??s?.percent;
+    const label=percentLabel(raw);
+    if(!label)return {label:"", width:0};
+    const n=Number(label);
+    // If data means "Top X%", lower is better. Bar uses closeness to #1 while label stays Top X%.
+    const width=Math.max(4, Math.min(100, 100-n));
+    return {label:`Top ${label}%`, width};
+  }
+  function statRank(s){
+    const r=s?.rank??s?.globalRank??s?.rankPosition??s?.position??s?.leaderboardRank;
+    if(r===undefined||r===null||r==="")return"";
+    return `#${String(r).replace(/[^\d,]/g,"")||r}`;
+  }
+
+  function normalizeMetaRows(data){
+    const raw=data?.legends||data?.meta||data?.pickrates||data?.pickRates||data?.rows||[];
+    const packs=getPacks();
+    if(!Array.isArray(raw)||!raw.length){
+      return packs.map((p,i)=>({legend:p.name,name:p.name,pickRate:"—",trend:"—",avgRank:"Waiting for ALS meta",avgLevel:"",img:packImg(p),order:i+1,source:"client roster fallback"}));
+    }
+    return raw.map((m,i)=>{
+      const name=m.legend||m.name||m.character||"Legend";
+      const pack=packs.find(p=>normSafe(p.name)===normSafe(name));
+      const pick=m.pickRate??m.rate??m.value??m.percent??"—";
+      const avgRank=m.avgRank||m.averageRank||m.rankAvg||m.rank||"";
+      const avgLevel=m.avgLevel||m.level||m.averageLevel||m.avgLvl||"";
+      return {
+        legend:pack?.name||name,
+        name:pack?.name||name,
+        pickRate:pick,
+        trend:m.trend||m.change||"—",
+        avgRank,
+        avgLevel,
+        img:pack?packImg(pack):"",
+        order:i+1,
+        source:m.source||data?.source||"meta"
+      };
+    }).sort((a,b)=>nval(b.pickRate)-nval(a.pickRate));
+  }
+
+  window.renderMeta=function(targetId){
+    const target=byId(targetId); if(!target)return;
+    const rows=normalizeMetaRows(state.meta);
+    const live=!!(state.meta&&(state.meta.legends||state.meta.meta||state.meta.pickrates||state.meta.pickRates||state.meta.rows));
+    target.innerHTML=`<div class="v49925MetaNotice">${live?"Live ALS pick-rate data loaded. Showing pick-rate, trend, average rank, and average account level when ALS returns it.":"Meta endpoint pending; roster fallback shown without fake percentages."}</div><div class="v49925MetaGrid">${rows.slice(0,28).map((m,i)=>{
+      const rate=String(m.pickRate||"—");
+      const pct=rate==="—"?"—":`${rate}${/^\d+(\.\d+)?$/.test(rate)?"%":""}`;
+      const avgRank=String(m.avgRank||"").replace(/^Avg rank\s*/i,"").trim();
+      const avgLevel=m.avgLevel||"";
+      return `<article class="v49925MetaCard">${m.img?`<img class="v49925MetaBg" loading="lazy" src="${safe(m.img)}" alt="${safe(m.legend)}">`:""}<div class="v49925MetaShade"></div><div class="v49925MetaContent"><div class="v49925MetaTop"><b>${safe(m.legend)}</b><span>#${safe(i+1)}</span></div><div class="v49925Pick">${safe(pct)}</div><div class="v49925Trend ${trendClass(m.trend)}">${safe(m.trend||"—")}</div><div class="v49925MetaDetail"><span><em>Avg rank</em><strong>${safe(avgRank||"—")}</strong></span><span><em>Avg level</em><strong>${safe(avgLevel||"—")}</strong></span></div></div></article>`;
+    }).join("")}</div>`;
+  };
+
+  // Build a local row extractor that preserves percentile/rank metadata if the Worker returns it.
+  function rowStatsV25(row){
+    const raw=[...(Array.isArray(row?.stats)?row.stats:[]),...(Array.isArray(row?.trackers)?row.trackers.map(t=>({label:t.label||t.name||t.key,value:t.value,source:t.source||row.source,percentile:t.percentile,topPercent:t.topPercent,rank:t.rank,total:t.total})):[]),...(Array.isArray(row?.data)?row.data.map(t=>({label:t.label||t.name||t.key||t.displayName,value:t.value??t.total??t.amount,source:t.source||row.source,percentile:t.percentile,topPercent:t.topPercent,rank:t.rank,total:t.total})):[]),...(Array.isArray(row?.values)?row.values.map(t=>({label:t.label||t.name||t.key||t.displayName,value:t.value??t.total??t.amount,source:t.source||row.source,percentile:t.percentile,topPercent:t.topPercent,rank:t.rank,total:t.total})):[])];
+    const by=new Map();
+    for(const s of raw){
+      let label=String(s?.label||s?.name||s?.key||"").replace(/\s+/g," ").trim();
+      const value=s?.value??s?.displayValue??s?.total??s?.amount;
+      if(!label||value===undefined||value===null||value===""||value==="—"||value==="not returned")continue;
+      if(/badge|skin|frame|pose|banner|source|status|icon|rank icon|view|prestige cosmetic|image/i.test(label))continue;
+      if(typeof statLabel==="function")label=statLabel(label);
+      const key=label.toLowerCase();
+      if(!by.has(key))by.set(key,{label,value,source:s.source||row?.source||"tracker",percentile:s.percentile,topPercent:s.topPercent,rank:s.rank,total:s.total});
+    }
+    const order=["BR Kills","BR Damage","BR Wins","BR Games played","BR Kills as kill leader","Alternator Kills","Alternator Damage","L-STAR Kills","Arenas Kills","Arenas Damage","Kills","Damage","Wins"];
+    return[...by.values()].sort((a,b)=>(order.indexOf(a.label)<0?99:order.indexOf(a.label))-(order.indexOf(b.label)<0?99:order.indexOf(b.label))).slice(0,7);
+  }
+  function extractRowsV25(profile){
+    const pools=[profile?.allLegendStats,profile?.legendStats,profile?.legends,profile?.legendRows,profile?.trackerRows,profile?.profilePage?.legendStats,profile?.profile?.legendStats,profile?.rendered?.legendStats,profile?.profilePage?.allLegendStats,profile?.rendered?.legendCards].filter(Boolean);
+    const out=[];
+    const collect=(x,hint="")=>{
+      if(!x)return;if(Array.isArray(x)){x.forEach(i=>collect(i,hint));return}if(typeof x!=="object")return;
+      const nm=rosterName(x.legend||x.name||x.legendName||x.LegendName||x.displayName||hint);
+      const shaped=Array.isArray(x.stats)||Array.isArray(x.trackers)||Array.isArray(x.data)||Array.isArray(x.values)||Array.isArray(x.badges)||Array.isArray(x.officialBadges)||Array.isArray(x.badgeSlots);
+      if(nm&&shaped)out.push({...x,legend:nm});
+      for(const [key,child] of Object.entries(x)){if(child&&typeof child==="object")collect(child,rosterName(key)||nm||hint)}
+    };
+    pools.forEach(p=>collect(p,""));
+    const by=new Map();
+    for(const r of out){
+      const legend=rosterName(r.legend||r.name||r.legendName);const k=normSafe(legend);if(!k)continue;
+      const old=by.get(k),next={...r,legend};
+      const ns=rowStatsV25(next).length,os=old?rowStatsV25(old).length:-1;
+      const nb=(window.__apexiqV24BadgeGroups?window.__apexiqV24BadgeGroups(next,profile):0);
+      if(!old||ns>=os)by.set(k,next);
+    }
+    return[...by.values()];
+  }
+
+  // Non-invasive badge call: use the active v4.9.9.24 rendered output when available by calling the already installed parser indirectly.
+  // If v24 function names are not exported, duplicate badge renderer remains provided by v4.9.9.24 below this patch via existing render override.
+  function usageScore(stats){let score=0,best="No returned usage stat",bestPart=0;for(const s of stats||[]){const label=String(s.label||"").toLowerCase(),v=nval(s.value);let w=0;if(/\bbr kills\b/.test(label)||label==="kills")w=125;else if(/\bbr damage\b/.test(label)||label==="damage")w=.32;else if(/\bbr wins\b/.test(label)||label==="wins")w=2400;else if(/br games played|games played/.test(label))w=35;else if(/kills as kill leader/.test(label))w=45;else if(/arenas kills/.test(label))w=22;else if(/arenas damage/.test(label))w=.055;else if(/alternator|r-99|r99|car|l-star|spitfire|weapon/.test(label))w=18;else if(/season.*kills/.test(label))w=18;if(!w)continue;const part=v*w;score+=part;if(part>bestPart){bestPart=part;best=`${s.label}: ${fmtSafe(s.value)}`}}return{score,best:String(best)}}
+  function statsHTML(stats){
+    if(!stats.length)return`<div class="v49919EmptySmall">No trusted stat row returned for this legend yet.</div>`;
+    return`<div class="v49925StatList">${stats.map(s=>{
+      const pct=statPercent(s),rank=statRank(s);
+      return `<div class="v49925StatBox"><em>${safe(s.label)}</em><b>${safe(fmtSafe(s.value))}</b>${pct.label||rank?`<div class="v49925PercentRow"><span class="v49925Bar"><i style="--w:${pct.width||0}%"></i></span>${pct.label?`<small class="v49925Top">${safe(pct.label)}</small>`:""}${rank?`<small class="v49925Rank">${safe(rank)}</small>`:""}</div>`:""}</div>`;
+    }).join("")}</div>`;
+  }
+
+  // Wrap v4.9.9.24 legend renderer only if its badge parser exists through current render output.
+  // This patch intentionally does not touch Badge Locker, mini display case, or v24 collection parsing.
+  const prevRenderLegends = window.renderLegends;
+  window.renderLegends=function(){
+    // Use v4.9.9.24 renderer first to keep badges exactly as approved.
+    if(typeof prevRenderLegends==="function") prevRenderLegends();
+
+    // Then enhance only visible stat chips with percent/rank if the Worker returned it.
+    // Full card rebuild would risk badge parser regressions, so this is a safe visual enhancement.
+    const profile=state.profile||{};
+    const rows=extractRowsV25(profile);
+    const rowMap=new Map(rows.map(r=>[normSafe(r.legend||r.name),r]));
+    document.querySelectorAll(".v49919LegendCard,.legend-card").forEach(card=>{
+      const title=card.querySelector("h3")?.textContent||"";
+      const legend=rosterName(title.replace(/·.*$/,"").trim());
+      const row=rowMap.get(normSafe(legend));
+      if(!row)return;
+      const stats=rowStatsV25(row);
+      const oldStats=card.querySelector(".v49919StatChips");
+      if(oldStats && !card.querySelector(".v49925StatList")){
+        oldStats.outerHTML=statsHTML(stats);
+      }
+    });
+  };
+
+  const oldLoadMeta = window.apexiqLoadMeta;
+  window.apexiqLoadMeta=async function(fresh=false){
+    if(typeof oldLoadMeta==="function") await oldLoadMeta(fresh);
+    renderMeta("metaPanel"); renderMeta("metaPanelFull");
+  };
+
+  function boot(){
+    document.documentElement.dataset.v49925="meta-stat-percent-additive";
+    const profilePanel=byId("profilePanel");
+    if(profilePanel && !byId("v49925FrozenNote")){
+      const note=document.createElement("div");
+      note.id="v49925FrozenNote";
+      note.className="v49925FrozenNote";
+      note.textContent="v4.9.9.24 is frozen as rollback. v4.9.9.25 only adds Meta rank/level display and stat percent/rank display when ALS returns those fields.";
+      profilePanel.parentNode?.insertBefore(note, profilePanel);
+    }
+    renderMeta("metaPanel"); renderMeta("metaPanelFull");
+    if(typeof window.renderLegends==="function") window.renderLegends();
+    if(typeof window.apexiqLoadMeta==="function") setTimeout(()=>window.apexiqLoadMeta(false),350);
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
+})();
+</script>
+
 </body>
 </html>
