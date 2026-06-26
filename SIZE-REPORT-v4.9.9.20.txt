@@ -1,9 +1,0 @@
-ApexIQ v4.9.9.20 size report
-============================
-
-HTML syntax check: PASS
-Worker syntax check: PASS
-Files: 126
-Badge PNG files: 120
-Uncompressed: 25.50 MB
-Largest file: 6.93 MB
