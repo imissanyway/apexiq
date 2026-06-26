@@ -5141,176 +5141,246 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
 
 
 
-<style id="apexiq-v49920-theme-badge-patch-css">
-.v49920ThemeStudio{display:grid;gap:14px}
-.v49920ThemeToolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-.v49920ThemeToolbar input,.v49920ThemeToolbar select{min-height:42px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);color:var(--text);padding:0 12px}
-.v49920ThemeToolbar input{min-width:220px;flex:1}
-.v49920ThemeTabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
-.v49920ThemeTabs button{flex:0 0 auto;min-height:38px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);padding:0 12px;font-weight:900}
-.v49920ThemeTabs button.active{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;border-color:transparent}
-.v49920ThemeGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;max-height:520px;overflow:auto;padding:2px}
-.v49920ThemeCard{text-align:left;display:grid;gap:8px;padding:12px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.045);color:var(--text);cursor:pointer}
-.v49920ThemeCard.active{border-color:var(--brand-2);box-shadow:0 0 0 2px color-mix(in srgb,var(--brand-2) 30%, transparent)}
-.v49920ThemeCard b{font-size:.9rem;line-height:1.15}
-.v49920ThemeCard small{color:var(--muted);font-size:.74rem}
-.v49920ThemeSwatch{display:flex;gap:5px;align-items:center}
-.v49920ThemeSwatch i{display:block;width:22px;height:22px;border-radius:999px;border:1px solid rgba(255,255,255,.24)}
-.v49920ThemePreview{min-height:92px;padding:13px;border:1px solid var(--line);border-radius:18px;background:radial-gradient(circle at 15% 10%, color-mix(in srgb,var(--brand) 22%, transparent), transparent 32%),radial-gradient(circle at 85% 15%, color-mix(in srgb,var(--brand-2) 20%, transparent), transparent 34%),linear-gradient(135deg,var(--surface),var(--surface-2))}
-.v49920ThemePreview h4{margin:0 0 6px}
-.v49920ThemePreview p{margin:0;color:var(--muted);font-size:.85rem}
-.v49920OnlyUnlockedNote{display:inline-flex;align-items:center;gap:6px;margin-top:6px;color:var(--muted);font-size:.8rem}
-.v49920UnlockedOnlyCase .v49920MiniBadge.is-locked,.v49920UnlockedOnlyCase .v49919MiniBadge.is-locked,.v49920UnlockedOnlyCase .v49918MiniBadge.is-locked{display:none!important}
-.v49920UnlockedOnlyCase .v49920MiniBadgeGrid,.v49920UnlockedOnlyCase .v49919MiniBadgeGrid,.v49920UnlockedOnlyCase .v49918MiniBadgeGrid{grid-template-columns:repeat(auto-fill,minmax(58px,1fr))}
-.v49920ProfileBadgeCase{margin-top:16px;padding:14px;border:1px solid var(--line);border-radius:20px;background:rgba(255,255,255,.045)}
-.v49920ProfileBadgeCaseHead{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:10px}
-.v49920ProfileBadgeCaseHead h3{margin:0;font-size:1.05rem}
-.v49920ProfileBadgeCaseHead p{margin:3px 0 0;color:var(--muted);font-size:.82rem}
-.v49920ProfileBadgeCaseHead small{color:var(--muted);white-space:nowrap}
-.v49920MiniBadgeGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:9px}
-.v49920MiniBadge{position:relative;display:grid;place-items:center;min-height:62px;border:1px solid rgba(34,197,94,.46);border-radius:14px;background:linear-gradient(180deg,rgba(34,197,94,.14),rgba(15,23,42,.78));cursor:pointer;transition:transform .14s ease,border-color .14s ease,background .14s ease}
-.v49920MiniBadge:hover,.v49920MiniBadge:focus{transform:translateY(-1px);border-color:rgba(255,255,255,.38);outline:none}
-.v49920MiniBadge img{width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 7px 12px rgba(0,0,0,.32))}
-.v49920MiniTier{position:absolute;right:5px;bottom:4px;font-size:.62rem;font-weight:900;line-height:1;padding:3px 5px;border-radius:999px;color:#fff;background:rgba(15,23,42,.92);border:1px solid rgba(255,255,255,.18)}
-.v49920MiniTip{display:none;margin-top:10px;padding:10px 12px;border-radius:14px;border:1px solid rgba(96,165,250,.28);background:rgba(96,165,250,.10);color:var(--text);font-size:.86rem;line-height:1.45}
-.v49920MiniTip.is-open{display:block}
-.v49920SafeNotice{margin:12px 0;padding:12px 14px;border-radius:14px;border:1px solid rgba(14,165,233,.28);background:rgba(14,165,233,.10);color:var(--text);line-height:1.45}
-@media(max-width:900px){.v49920ThemeGrid{grid-template-columns:repeat(auto-fill,minmax(145px,1fr))}.v49920ProfileBadgeCaseHead{align-items:start;flex-direction:column}}
+<style id="apexiq-v49921-mobile-theme-meta-fix-css">
+/* v4.9.9.21: remove locked badges from profile mini case */
+.v49921ProfileBadgeCase{
+  margin-top:16px;
+  padding:14px;
+  border:1px solid var(--line);
+  border-radius:20px;
+  background:rgba(255,255,255,.045);
+}
+.v49921ProfileBadgeCaseHead{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:10px}
+.v49921ProfileBadgeCaseHead h3{margin:0;font-size:1.05rem}
+.v49921ProfileBadgeCaseHead p{margin:3px 0 0;color:var(--muted);font-size:.82rem}
+.v49921ProfileBadgeCaseHead small{color:var(--muted);white-space:nowrap}
+.v49921MiniBadgeGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(56px,1fr));gap:9px}
+.v49921MiniBadge{
+  position:relative;
+  display:grid!important;
+  place-items:center;
+  min-height:60px!important;
+  border:1px solid rgba(34,197,94,.46)!important;
+  border-radius:14px!important;
+  background:linear-gradient(180deg,rgba(34,197,94,.14),rgba(15,23,42,.78))!important;
+  cursor:pointer;
+  padding:6px!important;
+  color:var(--text)!important;
+}
+.v49921MiniBadge img{width:42px;height:42px;object-fit:contain;filter:drop-shadow(0 7px 12px rgba(0,0,0,.32))}
+.v49921MiniTier{position:absolute;right:5px;bottom:4px;font-size:.62rem;font-weight:900;line-height:1;padding:3px 5px;border-radius:999px;color:#fff;background:rgba(15,23,42,.92);border:1px solid rgba(255,255,255,.18)}
+.v49921MiniTip{display:none;margin-top:10px;padding:10px 12px;border-radius:14px;border:1px solid rgba(96,165,250,.28);background:rgba(96,165,250,.10);color:var(--text);font-size:.86rem;line-height:1.45}
+.v49921MiniTip.is-open{display:block}
+
+/* v4.9.9.21: clean, compact theme studio */
+.v49921ThemeStudio{display:grid;gap:14px;max-width:100%;overflow:hidden}
+.v49921ThemePreview{
+  min-height:86px;
+  padding:13px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:
+    radial-gradient(circle at 15% 10%, color-mix(in srgb,var(--brand) 22%, transparent), transparent 32%),
+    radial-gradient(circle at 85% 15%, color-mix(in srgb,var(--brand-2) 20%, transparent), transparent 34%),
+    linear-gradient(135deg,var(--surface),var(--surface-2));
+}
+.v49921ThemePreview h4{margin:0 0 6px}
+.v49921ThemePreview p{margin:0;color:var(--muted);font-size:.85rem}
+.v49921ThemeToolbar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:center}
+.v49921ThemeToolbar input,.v49921ThemeToolbar select{
+  min-height:42px!important;
+  width:100%!important;
+  border:1px solid var(--line)!important;
+  border-radius:12px!important;
+  background:var(--surface-2)!important;
+  color:var(--text)!important;
+  padding:0 12px!important;
+}
+.v49921ThemeToolbar input{grid-column:1/-1}
+.v49921ThemeToolbar button{
+  min-height:42px!important;
+  border-radius:12px!important;
+  border:1px solid var(--line)!important;
+  color:#fff!important;
+  background:linear-gradient(135deg,var(--brand),var(--brand-2))!important;
+  padding:0 12px!important;
+  font-size:.9rem!important;
+}
+.v49921ThemeToolbar select{grid-column:1/-1}
+.v49921ThemeTabs{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 6px;-webkit-overflow-scrolling:touch}
+.v49921ThemeTabs button{
+  flex:0 0 auto!important;
+  min-height:36px!important;
+  border-radius:999px!important;
+  border:1px solid var(--line)!important;
+  background:var(--surface-2)!important;
+  color:var(--text)!important;
+  padding:0 12px!important;
+  font-size:.82rem!important;
+}
+.v49921ThemeTabs button.active{
+  background:linear-gradient(135deg,var(--brand),var(--brand-2))!important;
+  color:#fff!important;
+  border-color:transparent!important;
+}
+.v49921ThemeCount{color:var(--muted);font-size:.82rem}
+#themeGrid.v49921ThemeGrid{
+  display:grid!important;
+  grid-template-columns:repeat(auto-fill,minmax(148px,1fr))!important;
+  gap:10px!important;
+  max-height:470px!important;
+  overflow:auto!important;
+  padding:2px 2px 86px!important;
+  -webkit-overflow-scrolling:touch;
+}
+#themeGrid .v49921ThemeCard{
+  width:100%!important;
+  min-width:0!important;
+  min-height:98px!important;
+  height:auto!important;
+  overflow:hidden!important;
+  display:grid!important;
+  grid-template-rows:auto auto 1fr!important;
+  align-content:start!important;
+  gap:7px!important;
+  text-align:left!important;
+  padding:11px!important;
+  border:1px solid var(--line)!important;
+  border-radius:15px!important;
+  background:linear-gradient(180deg,var(--surface-2),var(--surface))!important;
+  color:var(--text)!important;
+  box-shadow:none!important;
+  transform:none!important;
+}
+#themeGrid .v49921ThemeCard.active{border-color:var(--brand-2)!important;box-shadow:0 0 0 2px color-mix(in srgb,var(--brand-2) 25%, transparent)!important}
+#themeGrid .v49921ThemeCard b{
+  color:var(--text)!important;
+  font-size:.88rem!important;
+  line-height:1.12!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+#themeGrid .v49921ThemeCard small{
+  color:var(--muted)!important;
+  font-size:.72rem!important;
+  line-height:1.1!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+.v49921ThemeSwatch{display:flex!important;gap:5px!important;align-items:center!important;margin-top:3px!important}
+.v49921ThemeSwatch i{display:block!important;width:22px!important;height:22px!important;border-radius:999px!important;border:1px solid rgba(255,255,255,.24)!important;flex:0 0 auto!important}
+
+/* v4.9.9.21: meta pick-rate cards */
+.v49921MetaGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.v49921MetaCard{display:grid;grid-template-columns:54px minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.045)}
+.v49921MetaCard img{width:50px;height:50px;object-fit:contain;filter:drop-shadow(0 8px 14px rgba(0,0,0,.28))}
+.v49921MetaCard b{display:block;line-height:1.1}
+.v49921MetaCard small{color:var(--muted);font-size:.72rem}
+.v49921MetaCard strong{font-size:1.02rem;color:var(--text)}
+.v49921MetaNotice{margin-bottom:12px;padding:10px 12px;border:1px solid rgba(96,165,250,.28);border-radius:14px;background:rgba(96,165,250,.10);color:var(--muted);font-size:.86rem}
+
+@media(max-width:820px){
+  .v49921ProfileBadgeCaseHead{align-items:start;flex-direction:column}
+  .v49921ThemeToolbar{grid-template-columns:1fr 1fr 1fr}
+  #themeGrid.v49921ThemeGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;max-height:430px!important}
+  #themeGrid .v49921ThemeCard{min-height:86px!important;padding:10px!important}
+  .v49921MetaGrid{grid-template-columns:1fr}
+}
 </style>
 
 
-<script id="apexiq-v49920-theme-badge-patch">
+<script id="apexiq-v49921-mobile-theme-meta-fix">
 (function(){
   "use strict";
 
-  const THEME_VERSION = "v4.9.9.20-theme-badge-patch";
-
+  const BUILD="v4.9.9.21-mobile-theme-meta-fix";
   function byId(id){return document.getElementById(id)}
   function qsa(sel,root=document){return Array.from(root.querySelectorAll(sel))}
   function safe(v){try{return(typeof esc==="function"?esc(v):String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])))}catch(_){return String(v??"")}}
   function normSafe(v){return String(v||"").toLowerCase().replace(/[^a-z0-9]/g,"")}
   function nval(v){const n=Number(String(v??"").replace(/,/g,"").replace(/[^\d.-]/g,""));return Number.isFinite(n)?n:0}
-  function fieldSafe(obj,key,fb="—"){try{return typeof field==="function"?field(obj,key,fb):(obj?.fields?.[key]?.value??obj?.[key]??fb)}catch(_){return fb}}
   function fmtSafe(v){try{return typeof fmt==="function"?fmt(v):String(v??"—")}catch(_){return String(v??"—")}}
+  function fieldSafe(obj,key,fb="—"){try{return typeof field==="function"?field(obj,key,fb):(obj?.fields?.[key]?.value??obj?.[key]??fb)}catch(_){return fb}}
 
-  const APEXIQ_THEME_CATALOG = (() => {
-    const bases = [
-      ["Apex","competitive",["#ff264a","#235bff","#f5c542"]],["Predator","ranked",["#ef233c","#7f1d1d","#f59e0b"]],
-      ["Storm Point","maps",["#00aaff","#10b981","#facc15"]],["Olympus","maps",["#60a5fa","#f472b6","#fde68a"]],
-      ["Worlds Edge","maps",["#f97316","#dc2626","#facc15"]],["Kings Canyon","maps",["#22c55e","#a3e635","#f59e0b"]],
-      ["Neon","electric",["#22d3ee","#a855f7","#fb7185"]],["Void","electric",["#8b5cf6","#0ea5e9","#e879f9"]],
-      ["Heirloom","prestige",["#a855f7","#06b6d4","#facc15"]],["Gold","prestige",["#f59e0b","#facc15","#ef4444"]],
-      ["Emerald","clean",["#10b981","#22c55e","#a3e635"]],["Crimson","combat",["#dc2626","#f43f5e","#fb923c"]],
-      ["Frost","clean",["#38bdf8","#e0f2fe","#818cf8"]],["Carbon","minimal",["#64748b","#94a3b8","#22d3ee"]],
-      ["Rose","soft",["#fb7185","#f472b6","#f9a8d4"]],["Solar","bright",["#f97316","#facc15","#fde047"]],
-      ["Toxic","combat",["#84cc16","#22c55e","#eab308"]],["Royal","prestige",["#7c3aed","#2563eb","#facc15"]]
-    ];
-    const moods = [
-      ["Broadcast",0,0],["Night",-10,-8],["Light",22,26],["OLED",-24,-16],["Glass",8,4],["Arcade",0,10],
-      ["Pro",-6,0],["Holo",14,8],["Chrome",4,-4],["Dawn",18,12],["Dusk",-14,3],["Blitz",0,18]
-    ];
-    function hexToRgb(h){h=String(h).replace("#","");return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]}
-    function rgbToHex(r,g,b){return "#"+[r,g,b].map(x=>Math.max(0,Math.min(255,Math.round(x))).toString(16).padStart(2,"0")).join("")}
-    function shift(hex,amt){let [r,g,b]=hexToRgb(hex);return rgbToHex(r+amt,g+amt,b+amt)}
-    function sat(hex,amt){let [r,g,b]=hexToRgb(hex);const avg=(r+g+b)/3;return rgbToHex(avg+(r-avg)*(1+amt/100),avg+(g-avg)*(1+amt/100),avg+(b-avg)*(1+amt/100))}
-    const out=[];
-    for(const [baseName,cat,colors] of bases){
-      for(const [mood,light,saturation] of moods){
-        const key=(baseName+" "+mood).toLowerCase().replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,"");
-        const c=colors.map((x,i)=>sat(shift(x,light+i*2),saturation));
-        const mode=/light|dawn|solar/i.test(mood)?"light":(/oled|night|dusk/i.test(mood)?"dark":"auto");
-        out.push({key,name:`${baseName} ${mood}`,category:cat,mode,colors:c});
-      }
-    }
-    return out;
-  })();
-  window.APEXIQ_THEME_CATALOG = APEXIQ_THEME_CATALOG;
+  function getPacks(){return typeof PACK_DATA!=="undefined" ? PACK_DATA : []}
+  function packImg(pack){try{return typeof packImage==="function"?packImage(pack):pack?.stickers?.[0]?.src||""}catch(_){return pack?.stickers?.[0]?.src||""}}
+  function rosterName(n){const k=normSafe(n);const p=getPacks().find(x=>normSafe(x.name)===k);return p?p.name:""}
 
-  function themeByKey(key){return APEXIQ_THEME_CATALOG.find(t=>t.key===key)||APEXIQ_THEME_CATALOG.find(t=>t.key==="apex_broadcast")||APEXIQ_THEME_CATALOG[0]}
-  function applyThemeVars(theme){
-    const t=themeByKey(theme||state.palette);
-    const root=document.documentElement;
-    root.style.setProperty("--brand",t.colors[0]);
-    root.style.setProperty("--brand-2",t.colors[1]);
-    root.style.setProperty("--brand-3",t.colors[2]);
-    root.dataset.themeKey=t.key;
-    root.dataset.palette=t.key;
-    state.palette=t.key;
-    localStorage.setItem("apexiqThemePalette",t.key);
-  }
-  window.apexiqApplyTheme = function(key,intent){
-    const t=themeByKey(key);
-    applyThemeVars(t.key);
-    const modeIntent=intent||localStorage.getItem("apexiqThemeModeIntent")||"keep";
-    if(modeIntent==="theme"&&t.mode!=="auto") setMode(t.mode);
-    else if(modeIntent==="dark"||modeIntent==="light") setMode(modeIntent);
-    else {
-      document.documentElement.dataset.mode=state.mode;
-      localStorage.setItem("apexiqThemeMode",state.mode);
-    }
-    if(typeof renderSettings==="function") renderSettings();
-  };
-  window.apexiqThemeModeIntent = function(value){
-    localStorage.setItem("apexiqThemeModeIntent",value||"keep");
-    if(value==="dark"||value==="light") setMode(value);
-    if(value==="theme"){ const t=themeByKey(state.palette); if(t.mode!=="auto") setMode(t.mode); }
-    renderSettings();
-  };
-  window.setThemeCategory = function(cat){
-    localStorage.setItem("apexiqThemeCategory",cat||"all");
-    qsa("[data-theme-cat]").forEach(b=>b.classList.toggle("active",b.dataset.themeCat===(cat||"all")));
-    renderThemeGrid();
-  };
-  window.renderThemeGrid = function(){
-    const grid=byId("themeGrid"); if(!grid)return;
-    const q=String(byId("themeSearchInput")?.value||"").toLowerCase().trim();
-    const cat=localStorage.getItem("apexiqThemeCategory")||"all";
-    const filtered=APEXIQ_THEME_CATALOG.filter(t=>(cat==="all"||t.category===cat)&&(!q||t.name.toLowerCase().includes(q)||t.category.toLowerCase().includes(q)||t.mode.includes(q)));
-    const count=byId("themeCount"); if(count) count.textContent=`${filtered.length} / ${APEXIQ_THEME_CATALOG.length} themes shown`;
-    grid.innerHTML=filtered.map(t=>`<button class="v49920ThemeCard ${t.key===state.palette?"active":""}" onclick="apexiqApplyTheme('${safe(t.key)}')"><b>${safe(t.name)}</b><small>${safe(t.category)} · ${safe(t.mode)}</small><span class="v49920ThemeSwatch">${t.colors.map(c=>`<i style="background:${c}"></i>`).join("")}</span></button>`).join("");
-  };
-
-  function manifestBadges(){try{const el=byId("apexiqBadgeManifestV498");const m=JSON.parse(el?.textContent||"{}");return Array.isArray(m.badges)?m.badges:[]}catch(_){return[]}}
-  function rowStats(row){
-    const raw=[...(Array.isArray(row?.stats)?row.stats:[]),...(Array.isArray(row?.trackers)?row.trackers.map(t=>({label:t.label||t.name||t.key,value:t.value,source:t.source||row.source})):[])];
-    const by=new Map();
-    for(const s of raw){
-      let label=String(s?.label||s?.name||s?.key||"").replace(/\s+/g," ").trim();
-      const value=s?.value??s?.displayValue;
-      if(!label||value===undefined||value===null||value===""||value==="—"||value==="not returned")continue;
-      if(/badge|skin|frame|pose|banner|source|status|icon|rank icon|view|prestige cosmetic|image/i.test(label))continue;
-      if(typeof statLabel==="function")label=statLabel(label);
-      const key=label.toLowerCase(); if(!by.has(key))by.set(key,{label,value,source:s.source||row?.source||"tracker"});
-    }
-    const order=["BR Kills","BR Damage","BR Wins","BR Games played","BR Kills as kill leader","Alternator Kills","Alternator Damage","L-STAR Kills","Arenas Kills","Arenas Damage","Kills","Damage","Wins"];
-    return[...by.values()].sort((a,b)=>(order.indexOf(a.label)<0?99:order.indexOf(a.label))-(order.indexOf(b.label)<0?99:order.indexOf(b.label))).slice(0,7);
-  }
+  /* strict badge parsing: block fake 20B/4K labels unless visible text proves Wake/Wrath */
   function strong20(text){const s=String(text||"").toLowerCase().replace(/[_-]+/g," ");return /\bwake\b|20\s*(kill|bomb)|twenty\s*kill/.test(s)}
   function strong4k(text){const s=String(text||"").toLowerCase().replace(/[_-]+/g," ");return /\bwrath\b|4\s*k\s*damage|4\s*k\s*badge|4000\s*damage|4,000\s*damage|four\s*thousand\s*damage|hammer/.test(s)}
-  function otherBadgeName(b){const name=typeof b==="string"?b:(b?.rawName||b?.name||b?.label||b?.title||"");if(!name||/unknown als|visual badge slot|badge slot|undefined|null/i.test(name))return"";if(/^20$|^4k$/i.test(name.trim()))return"";return String(name).trim()}
+  function badgeVisibleText(b){return typeof b==="string"?b:[b?.rawName,b?.name,b?.label,b?.title,b?.displayName].filter(Boolean).join(" ")}
+  function otherBadgeName(b){
+    const name=typeof b==="string"?b:(b?.rawName||b?.name||b?.label||b?.title||"");
+    const src=String((b&&typeof b==="object"&&b.src)||"");
+    if(!name||/unknown als|visual badge slot|badge slot|undefined|null/i.test(name))return"";
+    const s=String(name).trim();
+    if(/^(20|20b|20 bomb|20 kill|4k|4k badge|4000 damage)$/i.test(s))return"";
+    if(/20b_collection|4k_collection|twenty|four_k|wake|wrath/i.test(src))return"";
+    return s;
+  }
   function badgeGroups(row){
     const raw=[...(Array.isArray(row?.officialBadges)?row.officialBadges:[]),...(Array.isArray(row?.badges)?row.badges:[]),...(Array.isArray(row?.badgeSlots)?row.badgeSlots:[])].filter(Boolean);
     const collection=[],other=[],seen=new Set();
     for(const b of raw){
-      const names=typeof b==="string"?b:[b?.rawName,b?.name,b?.label,b?.title,b?.displayName].filter(Boolean).join(" ");
+      const text=badgeVisibleText(b);
       let obj=null;
-      if(strong20(names))obj={name:"20B",src:"assets/approved-badges/20b_collection_t4.png",type:"20b",rawName:names};
-      else if(strong4k(names))obj={name:"4K",src:"assets/approved-badges/4k_collection_t4.png",type:"4k",rawName:names};
-      if(obj){if(!seen.has(obj.type)){seen.add(obj.type);collection.push(obj)}continue}
-      const label=otherBadgeName(b); if(label){const k="other|"+label.toLowerCase();if(!seen.has(k)){seen.add(k);other.push({name:label,src:(b&&typeof b==="object"?b.src||"":"")})}}
+      if(strong20(text)) obj={name:"20B",src:"assets/approved-badges/20b_collection_t4.png",type:"20b",rawName:text};
+      else if(strong4k(text)) obj={name:"4K",src:"assets/approved-badges/4k_collection_t4.png",type:"4k",rawName:text};
+      if(obj){if(!seen.has(obj.type)){seen.add(obj.type);collection.push(obj)}continue;}
+      const label=otherBadgeName(b);
+      if(label){const k="other|"+label.toLowerCase();if(!seen.has(k)){seen.add(k);other.push({name:label,src:(b&&typeof b==="object"?b.src||"":"")})}}
     }
-    return{collection:collection.slice(0,2),other:other.slice(0,5)};
+    return {collection:collection.slice(0,2),other:other.slice(0,5)};
+  }
+
+  function rowStats(row){
+    const raw=[
+      ...(Array.isArray(row?.stats)?row.stats:[]),
+      ...(Array.isArray(row?.trackers)?row.trackers.map(t=>({label:t.label||t.name||t.key,value:t.value,source:t.source||row.source})):[]),
+      ...(Array.isArray(row?.data)?row.data.map(t=>({label:t.label||t.name||t.key||t.displayName,value:t.value??t.total??t.amount,source:t.source||row.source})):[]),
+      ...(Array.isArray(row?.values)?row.values.map(t=>({label:t.label||t.name||t.key||t.displayName,value:t.value??t.total??t.amount,source:t.source||row.source})):[])
+    ];
+    const by=new Map();
+    for(const s of raw){
+      let label=String(s?.label||s?.name||s?.key||"").replace(/\s+/g," ").trim();
+      const value=s?.value??s?.displayValue??s?.total??s?.amount;
+      if(!label||value===undefined||value===null||value===""||value==="—"||value==="not returned")continue;
+      if(/badge|skin|frame|pose|banner|source|status|icon|rank icon|view|prestige cosmetic|image/i.test(label))continue;
+      if(typeof statLabel==="function")label=statLabel(label);
+      const key=label.toLowerCase();
+      if(!by.has(key))by.set(key,{label,value,source:s.source||row?.source||"tracker"});
+    }
+    const order=["BR Kills","BR Damage","BR Wins","BR Games played","BR Kills as kill leader","Alternator Kills","Alternator Damage","L-STAR Kills","Arenas Kills","Arenas Damage","Kills","Damage","Wins"];
+    return [...by.values()].sort((a,b)=>(order.indexOf(a.label)<0?99:order.indexOf(a.label))-(order.indexOf(b.label)<0?99:order.indexOf(b.label))).slice(0,7);
   }
   function extractRows(profile){
     const pools=[profile?.allLegendStats,profile?.legendStats,profile?.legends,profile?.legendRows,profile?.trackerRows,profile?.profilePage?.legendStats,profile?.profile?.legendStats,profile?.rendered?.legendStats,profile?.profilePage?.allLegendStats,profile?.rendered?.legendCards].filter(Boolean);
-    const out=[]; const roster=n=>{const k=normSafe(n);const p=(typeof PACK_DATA!=="undefined"?PACK_DATA:[]).find(x=>normSafe(x.name)===k);return p?p.name:""};
-    const collect=(x,hint="")=>{if(!x)return;if(Array.isArray(x)){x.forEach(i=>collect(i,hint));return}if(typeof x!=="object")return;const nm=roster(x.legend||x.name||x.legendName||x.LegendName||x.displayName||hint);const shaped=Array.isArray(x.stats)||Array.isArray(x.trackers)||Array.isArray(x.badges)||Array.isArray(x.officialBadges)||Array.isArray(x.badgeSlots);if(nm&&shaped)out.push({...x,legend:nm});for(const [key,child] of Object.entries(x)){if(child&&typeof child==="object")collect(child,roster(key)||nm||hint)}};
+    const out=[];
+    const collect=(x,hint="")=>{
+      if(!x)return;
+      if(Array.isArray(x)){x.forEach(i=>collect(i,hint));return;}
+      if(typeof x!=="object")return;
+      const nm=rosterName(x.legend||x.name||x.legendName||x.LegendName||x.displayName||hint);
+      const shaped=Array.isArray(x.stats)||Array.isArray(x.trackers)||Array.isArray(x.data)||Array.isArray(x.values)||Array.isArray(x.badges)||Array.isArray(x.officialBadges)||Array.isArray(x.badgeSlots);
+      if(nm&&shaped)out.push({...x,legend:nm});
+      for(const [key,child] of Object.entries(x)){if(child&&typeof child==="object")collect(child,rosterName(key)||nm||hint)}
+    };
     pools.forEach(p=>collect(p,""));
     const by=new Map();
-    for(const r of out){const k=normSafe(r.legend);if(!k)continue;const old=by.get(k);const ns=rowStats(r).length,os=old?rowStats(old).length:-1;const nb=badgeGroups(r).collection.length+badgeGroups(r).other.length,ob=old?(badgeGroups(old).collection.length+badgeGroups(old).other.length):-1;if(!old||ns+nb>=os+ob)by.set(k,r)}
-    return[...by.values()];
+    for(const r of out){
+      const legend=rosterName(r.legend||r.name||r.legendName);
+      const k=normSafe(legend); if(!k)continue;
+      const next={...r,legend},old=by.get(k);
+      const ns=rowStats(next).length,os=old?rowStats(old).length:-1;
+      const nb=badgeGroups(next).collection.length+badgeGroups(next).other.length;
+      const ob=old?(badgeGroups(old).collection.length+badgeGroups(old).other.length):-1;
+      if(!old||ns+nb>=os+ob)by.set(k,next);
+    }
+    return [...by.values()];
   }
-  function rowsFor(profile){return extractRows(profile||{});}
   function usageScore(stats){
     try{
       let score=0,best="No returned usage stat",bestPart=0;
@@ -5326,65 +5396,123 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
         else if(/alternator|r-99|r99|car|l-star|spitfire|weapon/.test(label))weight=18;
         else if(/season.*kills/.test(label))weight=18;
         if(!weight)continue;
-        const part=v*weight;score+=part;if(part>bestPart){bestPart=part;best=`${s.label}: ${fmtSafe(s.value)}`;}
+        const part=v*weight;score+=part;
+        if(part>bestPart){bestPart=part;best=`${s.label}: ${fmtSafe(s.value)}`;}
       }
       return{score,best:String(best)};
-    }catch(_){return{score:0,best:"Usage scorer safe fallback"};}
+    }catch(_){return{score:0,best:"Usage scorer safe fallback"}}
   }
-  function packImg(pack){try{return typeof packImage==="function"?packImage(pack):pack?.stickers?.[0]?.src||""}catch(_){return pack?.stickers?.[0]?.src||""}}
   function selectedLegend(profile){return fieldSafe(profile,"legend",profile?.selectedLegend||"")}
-  function badgeHTML(groups){const items=[...(groups?.collection||[]),...(groups?.other||[])];if(!items.length)return"";return`<div class="v49920BadgeRow v49919BadgeRow">${items.map(b=>`<span class="v49920BadgeChip v49919BadgeChip">${b.src?`<img loading="lazy" onerror="this.remove()" src="${safe(b.src)}" alt="${safe(b.name)}">`:""}<em>${safe(b.name)}</em></span>`).join("")}</div>`}
-  function statsHTML(stats){if(!stats.length)return`<div class="v49920EmptySmall v49919EmptySmall">No trusted stat row returned for this legend yet.</div>`;return`<div class="v49920StatChips v49919StatChips">${stats.map(s=>`<span><em>${safe(s.label)}</em><b>${safe(fmtSafe(s.value))}</b></span>`).join("")}</div>`}
-  function legendData(profile=state.profile||{}){
-    const rows=rowsFor(profile), rowMap=new Map(rows.map(r=>[normSafe(r.legend||r.name),r])), selected=normSafe(selectedLegend(profile));
-    return (typeof PACK_DATA!=="undefined"?PACK_DATA:[]).map(pack=>{
-      const row=rowMap.get(normSafe(pack.name));let stats=row?rowStats(row):[];
-      if(!stats.length&&selected&&selected===normSafe(pack.name)&&!rows.length){stats=[["BR Kills",fieldSafe(profile,"kills","")],["BR Damage",fieldSafe(profile,"damage","")],["BR Wins",fieldSafe(profile,"wins","")]].filter(x=>x[1]&&x[1]!=="—").map(([label,value])=>({label,value}))}
-      const score=usageScore(stats),groups=row?badgeGroups(row):{collection:[],other:[]};
-      return{pack,row,stats,score:score.score,best:score.best,groups,selected:selected&&selected===normSafe(pack.name)};
+  function badgeHTML(groups){
+    const items=[...(groups?.collection||[]),...(groups?.other||[])];
+    if(!items.length)return"";
+    return `<div class="v49919BadgeRow">${items.map(b=>`<span class="v49919BadgeChip">${b.src?`<img loading="lazy" onerror="this.remove()" src="${safe(b.src)}" alt="${safe(b.name)}">`:""}<em>${safe(b.name)}</em></span>`).join("")}</div>`;
+  }
+  function statsHTML(stats){
+    if(!stats.length)return`<div class="v49919EmptySmall">No trusted stat row returned for this legend yet.</div>`;
+    return`<div class="v49919StatChips">${stats.map(s=>`<span><em>${safe(s.label)}</em><b>${safe(fmtSafe(s.value))}</b></span>`).join("")}</div>`;
+  }
+  function legendData(){
+    const profile=state.profile||{},rows=extractRows(profile),rowMap=new Map(rows.map(r=>[normSafe(r.legend||r.name),r])),selected=normSafe(selectedLegend(profile));
+    return getPacks().map(pack=>{
+      const row=rowMap.get(normSafe(pack.name));
+      let stats=row?rowStats(row):[];
+      const m=usageScore(stats),groups=row?badgeGroups(row):{collection:[],other:[]};
+      return{pack,row,stats,groups,selected:selected&&selected===normSafe(pack.name),score:m.score,best:m.best};
     }).sort((a,b)=>(b.score-a.score)||((b.groups.collection.length+b.groups.other.length)-(a.groups.collection.length+a.groups.other.length))||a.pack.name.localeCompare(b.pack.name));
   }
   function legendCard(d,full=false){
     const img=packImg(d.pack),badges=badgeHTML(d.groups);
-    return`<article class="legend-card v49920LegendCard v49919LegendCard ${d.stats.length?"has-data":"waiting"}" data-legend="${safe(d.pack.name)}"><div class="legend-visual">${img?`<img loading="lazy" src="${safe(img)}" alt="${safe(d.pack.name)}">`:`<b>${safe(d.pack.name.slice(0,2).toUpperCase())}</b>`}</div><div class="legend-body"><div class="legend-title"><div><h3>${safe(d.pack.name)}${d.selected?" · selected":""}</h3><small>${safe(d.row?.source||(d.stats.length?"tracker row":"waiting"))}</small></div><span class="badge-chip small">${safe(d.stats.length)} stats</span></div>${statsHTML(d.stats)}${d.score?`<span class="v49920TopNote v49919TopNote">Usage metric: ${safe(d.best)}</span>`:""}${badges?`<h4 class="v49920BadgeLabel v49919BadgeLabel">ALS badge slots</h4>${badges}`:""}</div></article>`;
+    return`<article class="legend-card v49919LegendCard ${d.stats.length?"has-data":"waiting"}" data-legend="${safe(d.pack.name)}"><div class="legend-visual">${img?`<img loading="lazy" src="${safe(img)}" alt="${safe(d.pack.name)}">`:`<b>${safe(d.pack.name.slice(0,2).toUpperCase())}</b>`}</div><div class="legend-body"><div class="legend-title"><div><h3>${safe(d.pack.name)}${d.selected?" · selected":""}</h3><small>${safe(d.row?.source||(d.stats.length?"tracker row":"waiting"))}</small></div><span class="badge-chip small">${safe(d.stats.length)} stats</span></div>${statsHTML(d.stats)}${d.score?`<span class="v49919TopNote">Usage metric: ${safe(d.best)}</span>`:""}${badges?`<h4 class="v49919BadgeLabel">ALS badge slots</h4>${badges}`:""}</div></article>`;
   }
-
-  window.renderLegends = function(){
+  window.renderLegends=function(){
     try{
       const data=legendData();
       const useful=data.filter(d=>d.score>0||d.stats.length||d.groups.collection.length||d.groups.other.length);
-      const prev=byId("legendsPreview"), panel=byId("legendsPanel");
-      if(prev){prev.innerHTML=useful.length?useful.slice(0,4).map(d=>legendCard(d,false)).join(""):`<section class="empty"><b>Legend rows loading</b><p>Run Search or wait for full profile hydration. ApexIQ will not show fake roster-order snapshot cards.</p></section>`;const p=prev.closest(".block")?.querySelector(".section-title p");if(p)p.textContent="Top 4 by BR/usage stats only. Badge rows show when verified by ALS."}
-      if(panel){panel.innerHTML=useful.length?data.map(d=>legendCard(d,true)).join(""):`<section class="empty"><b>No legend stat rows loaded yet</b><p>Search a player to hydrate the full ALS legend rows.</p></section>`}
+      const prev=byId("legendsPreview"),panel=byId("legendsPanel");
+      if(prev){
+        prev.innerHTML=useful.length?useful.slice(0,4).map(d=>legendCard(d,false)).join(""):`<section class="empty"><b>Legend rows loading</b><p>Search a player or wait for full profile hydration. ApexIQ will not show fake roster-order snapshot cards.</p></section>`;
+        const p=prev.closest(".block")?.querySelector(".section-title p"); if(p)p.textContent="Top 4 by BR/usage stats. Badge rows show only when ALS text proves them.";
+      }
+      if(panel) panel.innerHTML=useful.length?data.map(d=>legendCard(d,true)).join(""):`<section class="empty"><b>No legend stat rows loaded yet</b><p>Search a player to hydrate full ALS legend rows.</p></section>`;
     }catch(e){
       const prev=byId("legendsPreview"); if(prev)prev.innerHTML=`<section class="empty"><b>Legend renderer protected</b><p>${safe(e.message||e)}</p></section>`;
     }
   };
 
+  /* unlocked-only profile badge case */
+  function manifestBadges(){try{const el=byId("apexiqBadgeManifestV498");const m=JSON.parse(el?.textContent||"{}");return Array.isArray(m.badges)?m.badges:[]}catch(_){return[]}}
   function badgeCounts(profile){
-    const rows=rowsFor(profile||{}),legends20=new Set(),legends4k=new Set();let totalKills=0,totalDamage=0,totalWins=0,totalRows=0,weapon={},ability={};
-    for(const r of rows){const lk=normSafe(r.legend||r.name),stats=rowStats(r),groups=badgeGroups(r);if(stats.length)totalRows++;if(groups.collection.some(b=>b.type==="20b"))legends20.add(lk);if(groups.collection.some(b=>b.type==="4k"))legends4k.add(lk);for(const s of stats){const l=String(s.label||"").toLowerCase(),v=nval(s.value);if(/\bbr kills\b|^kills$/.test(l))totalKills+=v;if(/\bbr damage\b|^damage$/.test(l))totalDamage+=v;if(/\bbr wins\b|^wins$/.test(l))totalWins+=v;if(/alternator|r-99|r99|car|volt|prowler|smg/.test(l))weapon.smg=(weapon.smg||0)+v;if(/r-301|r301|flatline|hemlok|nemesis|havoc|ar/.test(l))weapon.ar=(weapon.ar||0)+v;if(/mastiff|peacekeeper|eva|mozambique|shotgun/.test(l))weapon.shotgun=(weapon.shotgun||0)+v;if(/sentinel|longbow|charge rifle|kraber|sniper/.test(l))weapon.sniper=(weapon.sniper||0)+v;if(/revive|respawn/.test(l))ability.revive=(ability.revive||0)+v;if(/scan|scanned|detected|recon/.test(l))ability.recon=(ability.recon||0)+v;if(/shield|blocked|savior/.test(l))ability.shield=(ability.shield||0)+v;if(/grenade|cluster|tactical|ultimate|ability/.test(l))ability.ability=(ability.ability||0)+v;}}
-    totalKills=Math.max(totalKills,nval(fieldSafe(profile,"kills",0)));totalDamage=Math.max(totalDamage,nval(fieldSafe(profile,"damage",0)));totalWins=Math.max(totalWins,nval(fieldSafe(profile,"wins",0)));
+    const rows=extractRows(profile||{}),legends20=new Set(),legends4k=new Set();let totalKills=0,totalDamage=0,totalWins=0,totalRows=0,weapon={},ability={};
+    for(const r of rows){
+      const lk=normSafe(r.legend||r.name),stats=rowStats(r),groups=badgeGroups(r);
+      if(stats.length)totalRows++;
+      if(groups.collection.some(b=>b.type==="20b"))legends20.add(lk);
+      if(groups.collection.some(b=>b.type==="4k"))legends4k.add(lk);
+      for(const s of stats){
+        const l=String(s.label||"").toLowerCase(),v=nval(s.value);
+        if(/\bbr kills\b|^kills$/.test(l))totalKills+=v;
+        if(/\bbr damage\b|^damage$/.test(l))totalDamage+=v;
+        if(/\bbr wins\b|^wins$/.test(l))totalWins+=v;
+        if(/alternator|r-99|r99|car|volt|prowler|smg/.test(l))weapon.smg=(weapon.smg||0)+v;
+        if(/r-301|r301|flatline|hemlok|nemesis|havoc|ar/.test(l))weapon.ar=(weapon.ar||0)+v;
+        if(/mastiff|peacekeeper|eva|mozambique|shotgun/.test(l))weapon.shotgun=(weapon.shotgun||0)+v;
+        if(/sentinel|longbow|charge rifle|kraber|sniper/.test(l))weapon.sniper=(weapon.sniper||0)+v;
+        if(/revive|respawn/.test(l))ability.revive=(ability.revive||0)+v;
+        if(/scan|scanned|detected|recon/.test(l))ability.recon=(ability.recon||0)+v;
+        if(/shield|blocked|savior/.test(l))ability.shield=(ability.shield||0)+v;
+        if(/grenade|cluster|tactical|ultimate|ability/.test(l))ability.ability=(ability.ability||0)+v;
+      }
+    }
+    totalKills=Math.max(totalKills,nval(fieldSafe(profile,"kills",0)));
+    totalDamage=Math.max(totalDamage,nval(fieldSafe(profile,"damage",0)));
+    totalWins=Math.max(totalWins,nval(fieldSafe(profile,"wins",0)));
     return{rows,legends20,legends4k,totalKills,totalDamage,totalWins,totalRows,weapon,ability,rank:String(fieldSafe(profile,"rank","")),rp:nval(fieldSafe(profile,"rp",fieldSafe(profile,"rankScore",0))),trueLvl:nval(typeof trueLevel==="function"?trueLevel(profile):fieldSafe(profile,"trueLevel",0)),prestige:String(fieldSafe(profile,"prestige","")),ownedBadges:legends20.size+legends4k.size};
   }
-  function metricForBadge(id,c){id=String(id||"");if(id==="20b_collection")return c.legends20.size;if(id==="4k_collection")return c.legends4k.size;if(id==="career_killer")return c.totalKills;if(id==="damage_dealer")return c.totalDamage;if(id==="win_stacker")return c.totalWins;if(/legend|roster/.test(id))return c.totalRows;if(id==="badge_hunter")return c.ownedBadges;if(id==="smg_reaper")return c.weapon.smg||0;if(id==="ar_ace")return c.weapon.ar||0;if(id==="shotgun_brutality")return c.weapon.shotgun||0;if(id==="sniper_deadeye")return c.weapon.sniper||0;if(id==="revive_angel")return c.ability.revive||0;if(id==="recon_scanner")return c.ability.recon||0;if(id==="shield_savior")return c.ability.shield||0;if(/explosive|tactical|movement/.test(id))return c.ability.ability||0;if(id==="ranked_climber")return c.rp||(/silver/i.test(c.rank)?3000:/gold/i.test(c.rank)?5000:/plat/i.test(c.rank)?8000:/diamond/i.test(c.rank)?12000:/master|pred/i.test(c.rank)?15000:0);if(/diamond/.test(id))return/diamond|master|pred/i.test(c.rank)?1:0;if(/master/.test(id))return/master|pred/i.test(c.rank)?1:0;if(/predator/.test(id))return/pred/i.test(c.rank)?1:0;if(id==="prestige_ascendant")return c.trueLvl||(/prestige/i.test(c.prestige)?1:0);return 0}
-  function tierState(b,value){const tiers=(b.tiers||[]).slice().sort((a,b)=>(a.requires||0)-(b.requires||0));let earned=null,next=tiers[0]||null;for(const t of tiers){if(value>=nval(t.requires)){earned=t;next=null}else{next=t;break}}return{earned,next,asset:(earned||next||tiers[tiers.length-1]||{}).asset||(tiers[0]||{}).asset||""}}
+  function metricForBadge(id,c){
+    id=String(id||"");
+    if(id==="20b_collection")return c.legends20.size;
+    if(id==="4k_collection")return c.legends4k.size;
+    if(id==="career_killer")return c.totalKills;
+    if(id==="damage_dealer")return c.totalDamage;
+    if(id==="win_stacker")return c.totalWins;
+    if(/legend|roster/.test(id))return c.totalRows;
+    if(id==="badge_hunter")return c.ownedBadges;
+    if(id==="smg_reaper")return c.weapon.smg||0;
+    if(id==="ar_ace")return c.weapon.ar||0;
+    if(id==="shotgun_brutality")return c.weapon.shotgun||0;
+    if(id==="sniper_deadeye")return c.weapon.sniper||0;
+    if(id==="revive_angel")return c.ability.revive||0;
+    if(id==="recon_scanner")return c.ability.recon||0;
+    if(id==="shield_savior")return c.ability.shield||0;
+    if(/explosive|tactical|movement/.test(id))return c.ability.ability||0;
+    if(id==="ranked_climber")return c.rp||(/silver/i.test(c.rank)?3000:/gold/i.test(c.rank)?5000:/plat/i.test(c.rank)?8000:/diamond/i.test(c.rank)?12000:/master|pred/i.test(c.rank)?15000:0);
+    if(/diamond/.test(id))return/diamond|master|pred/i.test(c.rank)?1:0;
+    if(/master/.test(id))return/master|pred/i.test(c.rank)?1:0;
+    if(/predator/.test(id))return/pred/i.test(c.rank)?1:0;
+    if(id==="prestige_ascendant")return c.trueLvl||(/prestige/i.test(c.prestige)?1:0);
+    return 0;
+  }
+  function tierState(b,value){
+    const tiers=(b.tiers||[]).slice().sort((a,b)=>(a.requires||0)-(b.requires||0));let earned=null,next=tiers[0]||null;
+    for(const t of tiers){if(value>=nval(t.requires)){earned=t;next=null}else{next=t;break}}
+    return{earned,next,asset:(earned||next||tiers[tiers.length-1]||{}).asset||(tiers[0]||{}).asset||""};
+  }
   function romanTier(label){const m=String(label||"").match(/\b(?:tier\s*)?(IV|III|II|I)\b/i);return m?m[1].toUpperCase():"—"}
   function unlockedBadgeCase(profile){
     const c=badgeCounts(profile||{});
     const list=manifestBadges().map(b=>{const value=metricForBadge(b.id,c),ts=tierState(b,value);return{...b,value,...ts,unlocked:!!ts.earned,asset:ts.asset||""}}).filter(b=>b.unlocked);
-    if(!list.length)return`<section class="v49920ProfileBadgeCase v49920UnlockedOnlyCase"><div class="v49920ProfileBadgeCaseHead"><div><h3>ApexIQ badge display case</h3><p>Unlocked ApexIQ badges only. Locked badges are hidden.</p></div><small>0 unlocked</small></div><div class="v49920SafeNotice">No ApexIQ badges are unlocked from the currently loaded profile rows yet.</div></section>`;
-    const cells=list.sort((a,b)=>nval(b.value)-nval(a.value)).map(b=>{const tier=romanTier(b.earned?.label);const req=nval((b.earned||{}).requires||1)||1;const detail=`${b.name}: Unlocked ${b.earned?.label||""}. Progress ${b.value}/${req}. ${b.description||""}`;return`<button type="button" class="v49920MiniBadge" title="${safe(detail)}" aria-label="${safe(detail)}" data-aiq-mini-badge="${safe(detail)}"><img loading="lazy" src="${safe(b.asset)}" alt="${safe(b.name)}"><span class="v49920MiniTier">${safe(tier)}</span></button>`}).join("");
-    return`<section class="v49920ProfileBadgeCase v49920UnlockedOnlyCase"><div class="v49920ProfileBadgeCaseHead"><div><h3>ApexIQ badge display case</h3><p>Unlocked ApexIQ badges only. Hover/click for badge name, tier, and progress.</p></div><small>${list.length} unlocked</small></div><div class="v49920MiniBadgeGrid">${cells}</div><div id="apexiqMiniBadgeTip" class="v49920MiniTip" role="status"></div></section>`;
+    if(!list.length)return`<section class="v49921ProfileBadgeCase"><div class="v49921ProfileBadgeCaseHead"><div><h3>ApexIQ badge display case</h3><p>Unlocked ApexIQ badges only. Locked badges are hidden.</p></div><small>0 unlocked</small></div><div class="v49921MiniTip is-open">No ApexIQ badges are unlocked from the currently loaded profile rows yet.</div></section>`;
+    const cells=list.sort((a,b)=>nval(b.value)-nval(a.value)).map(b=>{const tier=romanTier(b.earned?.label);const req=nval((b.earned||{}).requires||1)||1;const detail=`${b.name}: Unlocked ${b.earned?.label||""}. Progress ${b.value}/${req}. ${b.description||""}`;return`<button type="button" class="v49921MiniBadge" title="${safe(detail)}" aria-label="${safe(detail)}" data-aiq-mini-badge="${safe(detail)}"><img loading="lazy" src="${safe(b.asset)}" alt="${safe(b.name)}"><span class="v49921MiniTier">${safe(tier)}</span></button>`}).join("");
+    return`<section class="v49921ProfileBadgeCase"><div class="v49921ProfileBadgeCaseHead"><div><h3>ApexIQ badge display case</h3><p>Unlocked ApexIQ badges only. Hover/click for name, tier, and progress.</p></div><small>${list.length} unlocked</small></div><div class="v49921MiniBadgeGrid">${cells}</div><div id="apexiqMiniBadgeTip" class="v49921MiniTip" role="status"></div></section>`;
   }
-
-  const prevRenderProfile = window.renderProfile;
-  window.renderProfile = function(){
+  const prevRenderProfile=window.renderProfile;
+  window.renderProfile=function(){
     try{
-      if(typeof prevRenderProfile==="function") prevRenderProfile();
+      if(typeof prevRenderProfile==="function")prevRenderProfile();
       const panel=byId("profilePanel");
-      if(panel && state?.profile){
-        qsa(".v49918ProfileBadgeCase,.v49919ProfileBadgeCase,.v49920ProfileBadgeCase",panel).forEach(x=>x.remove());
+      if(panel&&state?.profile){
+        qsa(".v49918ProfileBadgeCase,.v49919ProfileBadgeCase,.v49920ProfileBadgeCase,.v49921ProfileBadgeCase",panel).forEach(x=>x.remove());
         panel.insertAdjacentHTML("beforeend",unlockedBadgeCase(state.profile));
       }
     }catch(e){
@@ -5392,16 +5520,95 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
     }
   };
 
-  const prevBadgesPanel = window.renderBadgesPanel;
-  window.renderBadgesPanel = function(){
-    if(typeof prevBadgesPanel==="function") prevBadgesPanel();
-    // Badge tab remains full catalogue; profile mini case is unlocked-only per user request.
+  /* Meta / pick-rate fix */
+  function fallbackMetaRows(){
+    return getPacks().map((p,i)=>({legend:p.name,name:p.name,pickRate:"Live pending",rate:"Live pending",trend:"—",source:"ApexIQ roster fallback",order:i+1,img:packImg(p)}));
+  }
+  function normalizeMetaRows(data){
+    const raw=data?.legends||data?.meta||data?.pickrates||data?.pickRates||data?.rows||[];
+    if(!Array.isArray(raw)||!raw.length)return fallbackMetaRows();
+    return raw.map((m,i)=>{
+      const name=m.legend||m.name||m.character||"Legend";
+      const pack=getPacks().find(p=>normSafe(p.name)===normSafe(name));
+      return{legend:pack?.name||name,name:pack?.name||name,pickRate:m.pickRate??m.rate??m.value??m.percent??"—",rate:m.rate??m.pickRate??m.value??"—",trend:m.trend||m.change||"—",source:m.source||data.source||"meta",order:i+1,img:pack?packImg(pack):""};
+    });
+  }
+  window.renderMeta=function(targetId){
+    const target=byId(targetId); if(!target)return;
+    const rows=normalizeMetaRows(state.meta);
+    const live=!!(state.meta&&(state.meta.legends||state.meta.meta||state.meta.pickrates||state.meta.pickRates||state.meta.rows));
+    target.innerHTML=`<div class="v49921MetaNotice">${live?"Live pick-rate data loaded.":"Live meta endpoint pending; showing roster fallback so the panel never appears broken."}</div><div class="v49921MetaGrid">${rows.slice(0,28).map((m,i)=>`<article class="v49921MetaCard">${m.img?`<img loading="lazy" src="${safe(m.img)}" alt="${safe(m.legend)}">`:`<b>#${i+1}</b>`}<span><b>${safe(m.legend)}</b><small>${safe(m.trend||m.source||"")}</small></span><strong>${safe(m.pickRate||m.rate||"—")}${String(m.pickRate||m.rate||"").match(/^\d+(\.\d+)?$/)?"%":""}</strong></article>`).join("")}</div>`;
+  };
+  window.apexiqLoadMeta=async function(fresh=false){
+    try{
+      const url=typeof apiURL==="function"?apiURL("/api/meta",fresh?{refresh:"1"}:{}):((state.proxy||"").replace(/\/$/,"")+"/api/meta"+(fresh?"?refresh=1":""));
+      const res=await fetch(url,{cache:"no-store",headers:{Accept:"application/json"}});
+      const data=await res.json();
+      state.meta=data; state.metaError="";
+    }catch(e){
+      state.meta={ok:false,error:e.message,legends:fallbackMetaRows(),source:"client fallback"};
+      state.metaError=e.message;
+    }
+    renderMeta("metaPanel"); renderMeta("metaPanelFull");
   };
 
-  window.renderSettings = function(){
+  /* Theme studio: 224 unique themes, compact layout, not a giant duplicate pink list */
+  const LEGEND_THEMES=["Alter","Ash","Axle","Ballistic","Bangalore","Bloodhound","Catalyst","Caustic","Conduit","Crypto","Fuse","Gibraltar","Horizon","Lifeline","Loba","Mad Maggie","Mirage","Newcastle","Octane","Pathfinder","Rampart","Revenant","Seer","Sparrow","Valkyrie","Vantage","Wattson","Wraith"];
+  const MOODS=[
+    ["Broadcast","featured","auto",0,72,144],["Night","dark","dark",0,52,104],["Light","light","light",18,88,158],["Neon","neon","auto",300,28,170],
+    ["Prime","ranked","auto",36,220,288],["Frost","cool","light",190,220,250],["Ember","warm","dark",12,32,48],["Void","prestige","dark",260,292,326]
+  ];
+  function hsl(h,s,l){return`hsl(${((h%360)+360)%360} ${s}% ${l}%)`}
+  const APEXIQ_THEME_CATALOG=LEGEND_THEMES.flatMap((name,i)=>MOODS.map(([mood,cat,mode,a,b,c],j)=>{
+    const h=(i*37+j*11)%360;
+    return{key:(name+" "+mood).toLowerCase().replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,""),name:`${name} ${mood}`,category:cat,mode,colors:[hsl(h+a,92,58),hsl(h+b,88,55),hsl(h+c,90,64)]};
+  }));
+  window.APEXIQ_THEME_CATALOG=APEXIQ_THEME_CATALOG;
+  function themeByKey(key){return APEXIQ_THEME_CATALOG.find(t=>t.key===key)||APEXIQ_THEME_CATALOG[0]}
+  function applyThemeVars(key){
+    const t=themeByKey(key);
+    const root=document.documentElement;
+    root.style.setProperty("--brand",t.colors[0]);
+    root.style.setProperty("--brand-2",t.colors[1]);
+    root.style.setProperty("--brand-3",t.colors[2]);
+    root.dataset.themeKey=t.key;
+    root.dataset.palette=t.key;
+    state.palette=t.key;
+    localStorage.setItem("apexiqThemePalette",t.key);
+  }
+  window.apexiqApplyTheme=function(key,intent){
+    const t=themeByKey(key);
+    applyThemeVars(t.key);
+    const modeIntent=intent||localStorage.getItem("apexiqThemeModeIntent")||"keep";
+    if(modeIntent==="theme"&&t.mode!=="auto")setMode(t.mode);
+    else if(modeIntent==="dark"||modeIntent==="light")setMode(modeIntent);
+    else document.documentElement.dataset.mode=state.mode;
+    renderSettings();
+  };
+  window.apexiqThemeModeIntent=function(value){
+    localStorage.setItem("apexiqThemeModeIntent",value||"keep");
+    if(value==="dark"||value==="light")setMode(value);
+    if(value==="theme"){const t=themeByKey(state.palette);if(t.mode!=="auto")setMode(t.mode)}
+    renderSettings();
+  };
+  window.setThemeCategory=function(cat){
+    localStorage.setItem("apexiqThemeCategory",cat||"featured");
+    qsa("[data-theme-cat]").forEach(b=>b.classList.toggle("active",b.dataset.themeCat===(cat||"featured")));
+    renderThemeGrid();
+  };
+  window.renderThemeGrid=function(){
+    const grid=byId("themeGrid"); if(!grid)return;
+    const q=String(byId("themeSearchInput")?.value||"").toLowerCase().trim();
+    const cat=localStorage.getItem("apexiqThemeCategory")||"featured";
+    const filtered=APEXIQ_THEME_CATALOG.filter(t=>(cat==="all"||t.category===cat)&&(!q||t.name.toLowerCase().includes(q)||t.category.toLowerCase().includes(q)||t.mode.includes(q)||t.key.includes(q)));
+    const count=byId("themeCount"); if(count)count.textContent=`${filtered.length} / ${APEXIQ_THEME_CATALOG.length} unique themes shown`;
+    grid.innerHTML=filtered.map(t=>`<button type="button" class="v49921ThemeCard ${t.key===state.palette?"active":""}" onclick="apexiqApplyTheme('${safe(t.key)}')"><b>${safe(t.name)}</b><small>${safe(t.category)} · ${safe(t.mode)}</small><span class="v49921ThemeSwatch">${t.colors.map(c=>`<i style="background:${c}"></i>`).join("")}</span></button>`).join("");
+  };
+  window.renderSettings=function(){
     const panel=byId("settingsPanel"); if(!panel)return;
     const current=themeByKey(state.palette);
-    const cats=["all",...Array.from(new Set(APEXIQ_THEME_CATALOG.map(t=>t.category))).sort()];
+    const cats=["featured","ranked","prestige","neon","cool","warm","dark","light","all"];
+    const activeCat=localStorage.getItem("apexiqThemeCategory")||"featured";
     const modeIntent=localStorage.getItem("apexiqThemeModeIntent")||"keep";
     panel.innerHTML=`<div class="settings-grid">
       <section class="settings-card">
@@ -5414,21 +5621,21 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
       </section>
       <section class="settings-card">
         <h3>Theme studio</h3>
-        <div class="v49920ThemeStudio">
-          <div class="v49920ThemePreview"><h4>${safe(current.name)}</h4><p>216 working themes with category search, dark/light/auto mode behavior, and live CSS variable preview.</p></div>
-          <div class="v49920ThemeToolbar">
-            <button onclick="setMode('dark')">Dark</button><button onclick="setMode('light')">Light</button><button onclick="toggleMode()">Toggle</button>
+        <div class="v49921ThemeStudio">
+          <div class="v49921ThemePreview"><h4>${safe(current.name)}</h4><p>224 unique themes. Compact cards, no duplicate pink wall, dark/light aware.</p></div>
+          <div class="v49921ThemeToolbar">
+            <button type="button" onclick="setMode('dark')">Dark</button><button type="button" onclick="setMode('light')">Light</button><button type="button" onclick="toggleMode()">Toggle</button>
             <select id="themeModeIntent" onchange="apexiqThemeModeIntent(this.value)">
               <option value="keep" ${modeIntent==="keep"?"selected":""}>Keep current mode</option>
               <option value="theme" ${modeIntent==="theme"?"selected":""}>Use theme recommendation</option>
               <option value="dark" ${modeIntent==="dark"?"selected":""}>Force dark</option>
               <option value="light" ${modeIntent==="light"?"selected":""}>Force light</option>
             </select>
-            <input id="themeSearchInput" placeholder="Search 216 themes..." oninput="renderThemeGrid()">
+            <input id="themeSearchInput" placeholder="Search 224 themes..." oninput="renderThemeGrid()">
           </div>
-          <div class="v49920ThemeTabs">${cats.map((c,i)=>`<button class="${(localStorage.getItem("apexiqThemeCategory")||"all")===c?"active":""}" data-theme-cat="${safe(c)}" onclick="setThemeCategory('${safe(c)}')">${safe(c)}</button>`).join("")}</div>
-          <div id="themeCount" class="v49920OnlyUnlockedNote"></div>
-          <div id="themeGrid" class="v49920ThemeGrid"></div>
+          <div class="v49921ThemeTabs">${cats.map(c=>`<button type="button" class="${activeCat===c?"active":""}" data-theme-cat="${safe(c)}" onclick="setThemeCategory('${safe(c)}')">${safe(c)}</button>`).join("")}</div>
+          <div id="themeCount" class="v49921ThemeCount"></div>
+          <div id="themeGrid" class="v49921ThemeGrid"></div>
         </div>
       </section>
       <section class="settings-card">
@@ -5443,14 +5650,16 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
   document.addEventListener("click",function(e){
     const mini=e.target.closest("[data-aiq-mini-badge]");
     if(mini){const tip=byId("apexiqMiniBadgeTip");if(tip){tip.textContent=mini.getAttribute("data-aiq-mini-badge")||mini.title||"";tip.classList.add("is-open")}}
+    const metaBtn=e.target.closest('[data-go="meta"]'); if(metaBtn)setTimeout(()=>apexiqLoadMeta(false),60);
   },true);
 
   function bootPatch(){
-    document.documentElement.dataset.v49920="theme-badge-stable";
-    applyThemeVars(localStorage.getItem("apexiqThemePalette")||state.palette||"apex_broadcast");
-    if(typeof renderProfile==="function") renderProfile();
-    if(typeof renderLegends==="function") renderLegends();
-    if(typeof renderSettings==="function") renderSettings();
+    document.documentElement.dataset.v49921="mobile-theme-meta-fix";
+    applyThemeVars(localStorage.getItem("apexiqThemePalette")||state.palette||"alter_broadcast");
+    if(typeof renderProfile==="function")renderProfile();
+    if(typeof renderLegends==="function")renderLegends();
+    if(typeof renderSettings==="function")renderSettings();
+    setTimeout(()=>apexiqLoadMeta(false),500);
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",bootPatch,{once:true});else bootPatch();
 })();
