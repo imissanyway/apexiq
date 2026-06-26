@@ -1,0 +1,17 @@
+ApexIQ v4.9.9.15 Final Debug Fix
+
+Fixed from latest screenshots:
+- Legend Snapshot now sorts by highest returned legend stat strength, not roster order.
+- Full Legends page also sorts high-stat legends first, with empty/no-data legends pushed down.
+- Searched user rank now displays the matching rank icon in the profile hero and rank stat tile.
+- Rank display no longer duplicates RP text in the hero.
+- ApexIQ badge system now calculates live progress from the loaded profile/legend rows.
+- Badge system counts 20B/Wake and 4K/Wrath rows and updates Unlocked / 20B legends / 4K legends.
+- Badge system also tracks kills, damage, wins, prestige/true level, rank/RP, weapon stats, revive/recon/shield/ability stats when returned.
+- Legend badge display maps 20B/Wake and 4K/Wrath to local approved badge PNGs.
+- Dashboard and Legends refresh badge tracking after search.
+- Existing v4.9.9.14 fast stat loading path is preserved.
+
+Validation:
+- HTML JavaScript syntax check passed.
+- Existing worker from v4.9.9.14 is included for /api/player-lite support.
