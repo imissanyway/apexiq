@@ -1,0 +1,21 @@
+Upload CORE PATCH ONLY.
+
+Replace these files in GitHub:
+- index.html
+- apexiq-api-worker-v4.9.9.24-collection-badge-restore.js
+- badge-manifest.json
+- apexiq-all-badges-asset-manifest-v4.9.9.11.json
+- FIX-REPORT-v4.9.9.24.txt
+- SIZE-REPORT-v4.9.9.24.txt
+
+Cloudflare:
+Deploy apexiq-api-worker-v4.9.9.24-collection-badge-restore.js in your Worker.
+
+Test:
+https://imissanyway.github.io/apexiq/?v=49924
+
+Expected:
+- Owner 20B/4K badges return on valid legends.
+- Gibraltar 20B remains blocked.
+- Badge Locker 20B count should not include Gibraltar.
+- Regular Apex badges remain visible.

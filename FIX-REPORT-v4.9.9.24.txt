@@ -1,0 +1,31 @@
+ApexIQ v4.9.9.24 Collection Badge Restore
+
+Built from v4.9.9.23.
+
+What went wrong in v4.9.9.23:
+- I over-tightened the collection-badge parser.
+- It blocked false Gibraltar 20B, but also blocked valid owner 20B/4K rows because Browser Run returns them as messy fragments like “20 Kill Badge 20 Kill ...” instead of clean “Legend Wake/Wrath” text.
+
+Fixed:
+- Owner profile collection badges are restored from visual/text fragments.
+- Confirmed false Gibraltar 20B remains hard-blocked.
+- Non-owner profiles still require exact Wake/Wrath proof, so Fastwagen-style false badge ownership stays blocked.
+- Collection fragments are now detected anywhere in the text, not only exact whole-string matches.
+- Regular ALS badges remain visible and cleaned:
+  - apex legend i/ii/iii/iv
+  - squad wipe
+  - assassin
+  - deadeye
+  - shot caller
+  - flawless victory
+  - apex predator
+- Badge Locker, mini display case, Legend cards, and Legend Snapshot all use the same v4.9.9.24 parser.
+- Locker 20B count should no longer include Gibraltar but should restore the valid owner 20B/4K rows.
+
+Worker:
+- New Worker file: apexiq-api-worker-v4.9.9.24-collection-badge-restore.js
+- Worker version updated to 4.9.9.24.
+
+Validation:
+- HTML JavaScript syntax check passed.
+- Worker syntax check passed.
