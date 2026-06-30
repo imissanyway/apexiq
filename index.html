@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ApexIQ — v4.9.9.56 Real Logo Image Theme Safe</title>
+<title>ApexIQ — v4.9.9.58 Mobile Nav Restore + Portrait Fix</title>
 <link id="apexiq-v49956-favicon" rel="icon" type="image/png" href="assets/apexiq-logo.png">
 <!-- ApexIQ Predator Broadcast v4.9.9.10 Source Re-Extract + Edge Fix: artifact-cleanup-only badge asset refresh on top of the stable full badge system. -->
 <style>
@@ -8372,254 +8372,271 @@ html[data-aiq-beta="locked"] body{overflow:hidden;}
 
 
 
-<!-- === ApexIQ v4.9.9.57 Logo + nav comfort polish === -->
-<style id="apexiq-v49957-logo-nav-comfort-css">
-/* v4.9.9.57: UI/layout polish only. Keeps the real selected PNG logo; no SVG remake and no logo recolor. */
+<!-- === ApexIQ v4.9.9.58 Mobile nav restore + portrait fix === -->
+<style id="apexiq-v49958-mobile-nav-portrait-fix-css">
+/* v4.9.9.58 regression fix. Built from the last good v4.9.9.56 baseline. No search, Worker, badge, LFG, support-data, beta, meta, or theme logic changes. */
 :root{
-  --logo-chip-bg-comfort: linear-gradient(135deg, rgba(248,251,255,.96), rgba(226,233,245,.88));
-  --logo-chip-border-comfort: color-mix(in srgb, var(--brand, #235bff) 42%, rgba(255,255,255,.52));
-  --logo-chip-shadow-comfort: 0 12px 30px color-mix(in srgb, var(--brand, #235bff) 18%, transparent), inset 0 0 0 1px rgba(255,255,255,.38);
-  --utility-chip-bg: color-mix(in srgb, var(--surface-2) 72%, transparent);
+  --aiq-v49958-mobile-nav-height: 68px;
+  --aiq-v49958-mobile-nav-bottom: calc(10px + env(safe-area-inset-bottom,0px));
 }
-:root[data-mode="dark"]{
-  --logo-chip-bg-comfort: linear-gradient(135deg, rgba(255,255,255,.95), rgba(218,229,244,.88));
-  --logo-chip-border-comfort: color-mix(in srgb, var(--brand, #235bff) 46%, rgba(255,255,255,.36));
-  --logo-chip-shadow-comfort: 0 14px 34px color-mix(in srgb, var(--brand, #235bff) 24%, transparent), 0 0 0 1px color-mix(in srgb, var(--brand-2, #ff264a) 16%, transparent) inset;
-  --utility-chip-bg: color-mix(in srgb, var(--surface) 74%, transparent);
-}
-.broadcast-nav{
-  grid-template-columns:auto minmax(0,1fr) auto !important;
-  gap:10px !important;
-  padding:9px !important;
-  align-items:center !important;
-}
-.tab-strip{
-  grid-template-columns:repeat(8,minmax(78px,1fr)) !important;
-  gap:7px !important;
-  min-width:0 !important;
-}
-.tab-button{
-  min-height:42px !important;
-  padding:0 10px !important;
-  font-size:.86rem !important;
-  border-radius:13px !important;
-}
-.nav-actions{
-  display:flex !important;
-  align-items:center !important;
-  justify-content:flex-end !important;
-  gap:6px !important;
-  padding:4px !important;
-  border:1px solid color-mix(in srgb, var(--line) 80%, transparent) !important;
-  background:var(--utility-chip-bg) !important;
-  border-radius:16px !important;
-  backdrop-filter:blur(12px) !important;
-  box-shadow:0 8px 22px rgba(0,0,0,.08) !important;
-}
-.nav-actions .icon-button{
-  width:39px !important;
-  height:39px !important;
-  min-width:39px !important;
-  border-radius:12px !important;
-  font-size:1rem !important;
-  opacity:.86 !important;
-}
-.nav-actions .icon-button:hover{opacity:1 !important;transform:translateY(-1px) !important;}
+
+/* Keep the real PNG logo readable on desktop without letting it control mobile nav height. */
 .brand-bug.apexiq-v49956-brand{
-  min-height:48px !important;
-  min-width:212px !important;
-  max-width:264px !important;
-  padding:4px 9px !important;
-  border-radius:16px !important;
-  background:var(--logo-chip-bg-comfort) !important;
-  border:1px solid var(--logo-chip-border-comfort) !important;
-  box-shadow:var(--logo-chip-shadow-comfort) !important;
-  position:relative !important;
-}
-.brand-bug.apexiq-v49956-brand::after{
-  content:"" !important;
-  position:absolute !important;
-  left:12px !important;
-  right:12px !important;
-  bottom:4px !important;
-  height:2px !important;
-  border-radius:999px !important;
-  background:linear-gradient(90deg, transparent, var(--brand, #235bff), var(--brand-2, #ff264a), transparent) !important;
-  opacity:.58 !important;
-  pointer-events:none !important;
+  min-width: 198px !important;
+  max-width: 246px !important;
+  min-height: 44px !important;
+  padding: 5px 12px !important;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.94), rgba(235,242,252,.90)) !important;
+  border-color: color-mix(in srgb, var(--brand) 32%, rgba(255,255,255,.58)) !important;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--brand-2) 10%, transparent) inset,
+    0 12px 28px color-mix(in srgb, var(--brand) 18%, transparent) !important;
 }
 .apexiq-v49956-logo-img{
-  width:clamp(154px, 12vw, 214px) !important;
-  max-height:34px !important;
-  filter:drop-shadow(0 1px 0 rgba(255,255,255,.36)) drop-shadow(0 0 10px color-mix(in srgb, var(--brand, #235bff) 16%, transparent)) !important;
+  width: clamp(144px, 11.2vw, 196px) !important;
+  max-height: 30px !important;
+  display: block !important;
+  object-fit: contain !important;
+  object-position: center !important;
 }
-.aiq-v49950-support-toggle{
-  z-index:9400 !important;
-  width:48px !important;
-  height:48px !important;
-  border-radius:16px !important;
-  right:18px !important;
-  bottom:calc(env(safe-area-inset-bottom,0px) + 118px) !important;
-  box-shadow:0 18px 48px rgba(0,0,0,.30) !important;
+
+/* Portrait regression guard: scope image recovery only to legend portrait slots, not all images. */
+.legend-card .legend-visual,
+.v49919LegendCard .legend-visual,
+.aiqLegendCard497 .legend-visual{
+  display: grid !important;
+  place-items: center !important;
+  align-self: center !important;
+  min-width: 88px !important;
+  min-height: 98px !important;
+  overflow: visible !important;
 }
-.aiq-v49950-support-panel{
-  z-index:9401 !important;
-  bottom:calc(env(safe-area-inset-bottom,0px) + 180px) !important;
-  max-height:min(660px,calc(100vh - 218px)) !important;
+.legend-card .legend-visual > img,
+.v49919LegendCard .legend-visual > img,
+.aiqLegendCard497 .legend-visual > img{
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  width: 94px !important;
+  height: 94px !important;
+  max-width: 100% !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  filter: drop-shadow(0 14px 24px rgba(0,0,0,.32)) !important;
 }
-.aiq-v49944-dock-toggle{
-  z-index:9300 !important;
-  width:52px !important;
-  height:52px !important;
-  right:18px !important;
-  bottom:calc(env(safe-area-inset-bottom,0px) + 44px) !important;
-  border-radius:17px !important;
+.legend-card .legend-visual > b,
+.v49919LegendCard .legend-visual > b{
+  display: grid !important;
+  place-items: center !important;
+  width: 72px !important;
+  height: 72px !important;
+  border-radius: 18px !important;
+  background: color-mix(in srgb, var(--brand) 16%, var(--surface-2)) !important;
+  color: var(--text) !important;
 }
-.aiq-v49944-dock{
-  z-index:9301 !important;
-  bottom:calc(env(safe-area-inset-bottom,0px) + 112px) !important;
-  max-height:min(690px,calc(100vh - 146px)) !important;
-}
-html:not([data-aiq-active-panel="squad"]) #aiqV49944DockToggle{display:none !important;}
-html:not([data-aiq-active-panel="squad"]) #aiqV49944Dock{display:none !important;}
-@media(max-width:1180px){
-  .broadcast-nav{gap:8px !important;}
-  .brand-bug.apexiq-v49956-brand{min-width:176px !important;max-width:210px !important;min-height:46px !important;padding:4px 8px !important;}
-  .apexiq-v49956-logo-img{width:160px !important;max-height:31px !important;}
-  .tab-button{font-size:.82rem !important;padding:0 8px !important;}
-  .nav-actions .icon-button{width:38px !important;height:38px !important;min-width:38px !important;}
-}
-@media(max-width:860px){
+
+@media (max-width: 820px){
+  html{scroll-padding-bottom: calc(var(--aiq-v49958-mobile-nav-height) + 24px + env(safe-area-inset-bottom,0px));}
+  body{padding-bottom: calc(var(--aiq-v49958-mobile-nav-height) + 18px + env(safe-area-inset-bottom,0px)) !important;}
+  .app{
+    padding: 12px 10px calc(var(--aiq-v49958-mobile-nav-height) + 32px + env(safe-area-inset-bottom,0px)) !important;
+  }
   .broadcast-nav{
-    top:8px !important;
-    grid-template-columns:auto minmax(0,1fr) !important;
-    gap:7px !important;
-    padding:8px !important;
-    border-radius:18px !important;
+    position: fixed !important;
+    left: 10px !important;
+    right: 10px !important;
+    bottom: var(--aiq-v49958-mobile-nav-bottom) !important;
+    top: auto !important;
+    z-index: 9200 !important;
+    display: flex !important;
+    grid-template-columns: none !important;
+    align-items: center !important;
+    gap: 8px !important;
+    min-height: 0 !important;
+    height: auto !important;
+    max-height: var(--aiq-v49958-mobile-nav-height) !important;
+    padding: 8px !important;
+    overflow: hidden !important;
+    border-radius: 22px !important;
+    background: color-mix(in srgb, var(--surface) 94%, transparent) !important;
+    box-shadow: 0 18px 55px rgba(0,0,0,.38) !important;
+    backdrop-filter: blur(18px) !important;
   }
-  .brand-bug.apexiq-v49956-brand{
-    min-width:148px !important;
-    max-width:168px !important;
-    min-height:43px !important;
-    padding:4px 7px !important;
-    border-radius:14px !important;
+  .broadcast-nav .brand-bug,
+  .brand-bug.apexiq-v49956-brand,
+  #aiqV49950PrivateLabel,
+  .broadcast-nav .nav-actions{
+    display: none !important;
   }
-  .brand-bug.apexiq-v49956-brand::after{left:10px !important;right:10px !important;bottom:3px !important;opacity:.50 !important;}
-  .apexiq-v49956-logo-img{width:138px !important;max-height:28px !important;}
-  .tab-strip{
-    grid-column:1 / -1 !important;
-    display:flex !important;
-    overflow-x:auto !important;
-    gap:6px !important;
-    padding:2px 2px 5px !important;
-    scrollbar-width:none !important;
-    -webkit-overflow-scrolling:touch !important;
+  .broadcast-nav .tab-strip{
+    display: flex !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 52px !important;
+    max-height: 52px !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 0 2px 2px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    white-space: nowrap !important;
+    grid-template-columns: none !important;
+    scrollbar-width: none !important;
+    overscroll-behavior-x: contain !important;
+    -webkit-overflow-scrolling: touch !important;
   }
-  .tab-strip::-webkit-scrollbar{display:none !important;}
-  .tab-button{
-    min-width:88px !important;
-    min-height:39px !important;
-    font-size:.78rem !important;
-    border-radius:12px !important;
-    flex:0 0 auto !important;
+  .broadcast-nav .tab-strip::-webkit-scrollbar{display:none !important;}
+  .broadcast-nav .tab-button{
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: 104px !important;
+    max-width: none !important;
+    min-height: 48px !important;
+    height: 48px !important;
+    padding: 0 16px !important;
+    border-radius: 17px !important;
+    white-space: nowrap !important;
+    font-size: .95rem !important;
+    line-height: 1 !important;
   }
-  .nav-actions{
-    justify-self:end !important;
-    padding:0 !important;
-    gap:5px !important;
-    border:0 !important;
-    background:transparent !important;
-    box-shadow:none !important;
-    backdrop-filter:none !important;
+  .broadcast-nav .tab-button.active{
+    transform: none !important;
   }
-  #gearButton{display:none !important;}
-  #themeToggle{width:38px !important;height:38px !important;min-width:38px !important;border-radius:12px !important;opacity:.70 !important;}
-  #aiqV49950PrivateLabel{display:none !important;}
+  .broadcast-header{
+    clip-path: none !important;
+    border-radius: 22px !important;
+    padding: 22px !important;
+  }
+  .legend-grid{
+    grid-template-columns: 1fr !important;
+  }
+  .legend-card,
+  .v49919LegendCard{
+    grid-template-columns: 88px minmax(0,1fr) !important;
+    gap: 12px !important;
+    padding: 14px !important;
+    clip-path: none !important;
+    border-radius: 20px !important;
+  }
+  .legend-card .legend-visual,
+  .v49919LegendCard .legend-visual{
+    min-width: 78px !important;
+    min-height: 88px !important;
+  }
+  .legend-card .legend-visual > img,
+  .v49919LegendCard .legend-visual > img{
+    width: 78px !important;
+    height: 78px !important;
+  }
   .aiq-v49950-support-toggle{
-    left:calc(env(safe-area-inset-left,0px) + 12px) !important;
-    right:auto !important;
-    bottom:calc(env(safe-area-inset-bottom,0px) + 92px) !important;
-    width:42px !important;
-    height:42px !important;
-    border-radius:14px !important;
-    font-size:.95rem !important;
-    opacity:.92 !important;
+    left: calc(env(safe-area-inset-left,0px) + 14px) !important;
+    right: auto !important;
+    bottom: calc(var(--aiq-v49958-mobile-nav-height) + 28px + env(safe-area-inset-bottom,0px)) !important;
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 16px !important;
+    font-size: .95rem !important;
+    z-index: 9180 !important;
+    opacity: .92 !important;
   }
   .aiq-v49950-support-panel{
-    left:10px !important;
-    right:10px !important;
-    bottom:calc(env(safe-area-inset-bottom,0px) + 144px) !important;
-    width:auto !important;
-    max-height:calc(100vh - 188px) !important;
-    border-radius:22px !important;
-    padding:14px !important;
+    left: 10px !important;
+    right: 10px !important;
+    bottom: calc(var(--aiq-v49958-mobile-nav-height) + 82px + env(safe-area-inset-bottom,0px)) !important;
+    width: auto !important;
+    max-height: calc(100vh - 220px) !important;
+    padding: 14px !important;
+    z-index: 9301 !important;
+  }
+  .dock-toggle,
+  .ios-dock-toggle,
+  .emoji-fab{
+    bottom: calc(var(--aiq-v49958-mobile-nav-height) + 28px + env(safe-area-inset-bottom,0px)) !important;
   }
   .aiq-v49944-dock-toggle{
-    right:calc(env(safe-area-inset-right,0px) + 12px) !important;
-    bottom:calc(env(safe-area-inset-bottom,0px) + 92px) !important;
-    width:42px !important;
-    height:42px !important;
-    border-radius:14px !important;
-    font-size:1rem !important;
+    right: calc(env(safe-area-inset-right,0px) + 14px) !important;
+    bottom: calc(var(--aiq-v49958-mobile-nav-height) + 28px + env(safe-area-inset-bottom,0px)) !important;
+    width: 46px !important;
+    height: 46px !important;
+    border-radius: 16px !important;
+    font-size: 1rem !important;
   }
   .aiq-v49944-dock{
-    left:10px !important;
-    right:10px !important;
-    bottom:calc(env(safe-area-inset-bottom,0px) + 144px) !important;
-    width:auto !important;
-    max-height:calc(100vh - 188px) !important;
-    border-radius:22px !important;
+    left: 10px !important;
+    right: 10px !important;
+    bottom: calc(var(--aiq-v49958-mobile-nav-height) + 86px + env(safe-area-inset-bottom,0px)) !important;
+    width: auto !important;
+    max-height: calc(100vh - 220px) !important;
   }
 }
-@media(max-width:520px){
-  .broadcast-nav{grid-template-columns:minmax(0,1fr) !important;}
-  .brand-bug.apexiq-v49956-brand{justify-self:start !important;min-width:136px !important;max-width:154px !important;min-height:42px !important;}
-  .apexiq-v49956-logo-img{width:128px !important;max-height:26px !important;}
-  .nav-actions{display:none !important;}
-  .tab-button{min-width:82px !important;}
+
+@media (max-width: 430px){
+  .broadcast-nav .tab-button{
+    min-width: 96px !important;
+    padding: 0 14px !important;
+    font-size: .92rem !important;
+  }
+}
+
+/* Keep the emoji/sticker dock available, but reduce visual clutter by showing its floating button only while the Squad workspace is active. */
+html:not([data-aiq-v49958-panel="squad"]) #aiqV49944DockToggle{
+  display: none !important;
+}
+html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
+  display: inline-grid !important;
+  place-items: center !important;
 }
 </style>
-<script id="apexiq-v49957-logo-nav-comfort-js">
+<script id="apexiq-v49958-mobile-nav-portrait-fix-js">
 (function(){
   "use strict";
-  const BUILD="v4.9.9.57-logo-nav-comfort-polish";
-  function $(s,r=document){return r.querySelector(s)}
-  function all(s,r=document){return Array.from(r.querySelectorAll(s))}
+  var BUILD = "v4.9.9.58-mobile-nav-restore-portrait-fix";
+  function all(sel, root){ return Array.from((root||document).querySelectorAll(sel)); }
   function activePanel(){
-    const btn=$('[data-go].active');
-    if(btn&&btn.dataset&&btn.dataset.go)return btn.dataset.go;
-    const screen=all('[data-screen]').find(function(el){return !el.hidden});
-    return (screen&&screen.dataset&&screen.dataset.screen)||"dashboard";
+    var active = document.querySelector('.tab-button.active[data-go]');
+    if(active) return active.getAttribute('data-go') || 'dashboard';
+    var shown = all('[data-screen]').find(function(s){ return !s.hidden; });
+    return shown ? (shown.getAttribute('data-screen') || 'dashboard') : 'dashboard';
   }
-  function comfortSync(){
-    const panel=activePanel();
-    document.documentElement.dataset.aiqActivePanel=panel;
-    const dockToggle=$("#aiqV49944DockToggle"), dock=$("#aiqV49944Dock");
-    if(dockToggle){dockToggle.setAttribute("aria-label","Open ApexIQ emoji dock");dockToggle.title="Emoji dock";dockToggle.hidden=panel!=="squad";}
-    if(dock&&panel!=="squad")dock.hidden=true;
-    const support=$("#aiqV49950SupportToggle");
-    if(support){support.textContent="?";support.title="ApexIQ support";support.setAttribute("aria-label","Open ApexIQ support");}
+  function markPanel(panel){
+    document.documentElement.dataset.aiqV49958Panel = panel || activePanel() || 'dashboard';
+  }
+  function wrapSwitch(){
+    var old = window.switchPanel;
+    if(typeof old !== 'function' || old.__aiqV49958Wrapped) return;
+    function wrapped(panel){
+      var ret = old.apply(this, arguments);
+      try{ markPanel(panel); }catch(_){ }
+      setTimeout(function(){ try{ markPanel(panel); }catch(_){ } }, 80);
+      return ret;
+    }
+    wrapped.__aiqV49958Wrapped = true;
+    window.switchPanel = wrapped;
   }
   function patchBuildHub(){
-    const entry='<li data-aiq-v49957><small>v4.9.9.57</small><b>Logo + nav comfort polish</b><span>Improved the real PNG ApexIQ logo wrapper for dark-mode readability, increased logo confidence without recoloring the image, reduced nav utility clutter, hid mobile beta/admin crowding, and made support/emoji bubbles less intrusive. Search, Worker, badges, LFG posting, support data, beta access, meta, and theme logic were not rewritten.</span></li>';
+    var entry = '<li data-aiq-v49958><small>v4.9.9.58</small><b>Mobile nav restore + portrait fix</b><span>Rejected the broken v57 nav polish, rebuilt the mobile tab bar as a compact horizontal control from the last good v56 baseline, scoped logo image styling so it cannot affect legend portraits, restored portrait display guards, and kept stats, Worker, badges, LFG, support data, beta, meta, and theme logic untouched.</span></li>';
     all('#aiqV49948BuildHub,#aiqV49948BuildHubSettings').forEach(function(hub){
-      const badge=hub.querySelector('.aiq-v49948-build-badge');
-      if(badge)badge.textContent=BUILD;
-      const list=hub.querySelector('.aiq-v49948-build-card:first-of-type .aiq-v49948-build-list');
-      if(list&&!list.querySelector('[data-aiq-v49957]'))list.insertAdjacentHTML('afterbegin',entry);
+      var badge = hub.querySelector('.aiq-v49948-build-badge');
+      if(badge) badge.textContent = 'v4.9.9.58';
+      var list = hub.querySelector('.aiq-v49948-build-list');
+      if(list && !list.querySelector('[data-aiq-v49958]')) list.insertAdjacentHTML('afterbegin', entry);
     });
   }
-  function boot(){document.documentElement.dataset.v49957="logo-nav-comfort-polish";comfortSync();patchBuildHub();}
-  const prevSwitch=window.switchPanel;
-  if(typeof prevSwitch==="function"&&!prevSwitch.__aiqV49957){
-    const wrapped=function(){const ret=prevSwitch.apply(this,arguments);setTimeout(comfortSync,0);setTimeout(comfortSync,180);return ret;};
-    wrapped.__aiqV49957=true;
-    window.switchPanel=wrapped;
+  function boot(){
+    document.documentElement.dataset.v49958 = 'mobile-nav-restore-portrait-fix';
+    wrapSwitch();
+    markPanel(activePanel());
+    patchBuildHub();
+    [150,700,1600,3200].forEach(function(ms){ setTimeout(function(){ wrapSwitch(); markPanel(activePanel()); patchBuildHub(); }, ms); });
   }
-  document.addEventListener('click',function(){setTimeout(comfortSync,40);},true);
-  const mo=new MutationObserver(function(){clearTimeout(window.__aiqV49957ComfortT);window.__aiqV49957ComfortT=setTimeout(boot,120)});
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){boot();try{mo.observe(document.body,{childList:true,subtree:true})}catch(_){}});else{boot();try{mo.observe(document.body,{childList:true,subtree:true})}catch(_){}}
-  [250,900,1800,3200].forEach(function(ms){setTimeout(boot,ms)});
+  document.addEventListener('click', function(e){
+    var btn = e.target && e.target.closest && e.target.closest('[data-go]');
+    if(btn) markPanel(btn.getAttribute('data-go'));
+  }, true);
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true}); else boot();
 })();
 </script>
 
