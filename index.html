@@ -7459,5 +7459,88 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
 })();
 </script>
 
+
+
+<style id="apexiq-v49949-dedicated-badge-icons-css">
+/* v4.9.9.49: display-only badge icon polish. No search, Worker, LFG, meta, ranked, badge parser, or theme JS changes. */
+.aiq-v49948-badge-rail{
+  gap:8px !important;
+  margin-top:8px !important;
+  min-height:44px;
+}
+.aiq-v49948-badge-pill,
+.v49924BadgeChip.collection{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:44px !important;
+  height:44px !important;
+  min-width:44px !important;
+  min-height:44px !important;
+  max-width:44px !important;
+  padding:0 !important;
+  gap:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  overflow:visible !important;
+}
+.aiq-v49948-badge-pill img,
+.v49924BadgeChip.collection img{
+  width:42px !important;
+  height:42px !important;
+  object-fit:contain !important;
+  flex:0 0 auto !important;
+  filter:drop-shadow(0 8px 12px rgba(0,0,0,.42)) !important;
+}
+.aiq-v49948-badge-pill em,
+.v49924BadgeChip.collection em{
+  display:none !important;
+}
+.aiq-v49948-badge-pill:hover img,
+.v49924BadgeChip.collection:hover img{
+  transform:translateY(-1px) scale(1.04);
+}
+@media(max-width:680px){
+  .aiq-v49948-badge-pill,
+  .v49924BadgeChip.collection{width:40px !important;height:40px !important;min-width:40px !important;min-height:40px !important;max-width:40px !important;}
+  .aiq-v49948-badge-pill img,
+  .v49924BadgeChip.collection img{width:38px !important;height:38px !important;}
+}
+</style>
+<script id="apexiq-v49949-dedicated-badge-icons-js">
+(function(){
+  "use strict";
+  const BUILD="v4.9.9.49-dedicated-badge-icons";
+  function safe(v){try{return typeof esc==="function"?esc(v):String(v??"").replace(/[&<>\"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}catch(_){return String(v??"")}}
+  function polishBadgeIcons(){
+    document.documentElement.dataset.v49949="dedicated-badge-icons";
+    document.querySelectorAll(".aiq-v49948-badge-pill,.v49924BadgeChip.collection").forEach(function(el){
+      el.setAttribute("data-aiq-dedicated-badge","true");
+      const label=el.querySelector("em")?.textContent?.trim()||el.getAttribute("title")||"verified badge";
+      if(!el.getAttribute("aria-label"))el.setAttribute("aria-label",label);
+      if(!el.getAttribute("title"))el.setAttribute("title",label);
+    });
+  }
+  function updateBuildHub(){
+    const entry=`<li data-aiq-v49949><small>v4.9.9.49</small><b>Dedicated badge icon polish</b><span>Changed verified 20B/4K legend-card display from text pills into clean dedicated badge icons only. Search, Worker, LFG, ranked, meta, theme manager, badge parsing, and roadmap systems were not changed.</span></li>`;
+    document.querySelectorAll("#aiqV49948BuildHub,#aiqV49948BuildHubSettings").forEach(function(hub){
+      const badge=hub.querySelector(".aiq-v49948-build-badge");
+      if(badge)badge.textContent=BUILD;
+      const list=hub.querySelector(".aiq-v49948-build-card:first-of-type .aiq-v49948-build-list");
+      if(list&&!list.querySelector("[data-aiq-v49949]"))list.insertAdjacentHTML("afterbegin",entry);
+    });
+  }
+  function boot(){try{polishBadgeIcons();updateBuildHub();}catch(e){console.warn(BUILD,e)}}
+  const oldSwitchPanel=window.switchPanel;
+  if(typeof oldSwitchPanel==="function"){
+    window.switchPanel=function(){const ret=oldSwitchPanel.apply(this,arguments);setTimeout(boot,60);setTimeout(boot,900);return ret;};
+  }
+  const mo=new MutationObserver(function(){clearTimeout(window.__aiq49949T);window.__aiq49949T=setTimeout(boot,80)});
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",function(){boot();try{mo.observe(document.body,{childList:true,subtree:true})}catch(_){}});else{boot();try{mo.observe(document.body,{childList:true,subtree:true})}catch(_){}}
+})();
+</script>
+
 </body>
 </html>
