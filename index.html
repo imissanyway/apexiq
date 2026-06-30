@@ -7163,5 +7163,238 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
 })();
 </script>
 
+
+
+<!-- === ApexIQ v4.9.9.46 Beta Readiness Polish: no-meter stat chips + profile rank badge + stale Worker guard === -->
+<style id="apexiq-v49946-beta-readiness-css">
+  /* Remove the chunky green/yellow percentile meter UI without touching stat values or legend-card structure. */
+  .v49930PctRow{
+    display:flex!important;
+    flex-wrap:wrap!important;
+    align-items:center!important;
+    gap:6px!important;
+    margin-top:8px!important;
+    min-width:0!important;
+  }
+  .v49930PctBar,
+  .v49930PctBar i,
+  .v49930TinyNote{
+    display:none!important;
+  }
+  .v49930PctText,
+  .v49930RankText{
+    display:inline-flex!important;
+    align-items:center!important;
+    min-height:24px!important;
+    padding:3px 8px!important;
+    border-radius:999px!important;
+    border:1px solid rgba(124,58,237,.28)!important;
+    background:rgba(124,58,237,.10)!important;
+    color:var(--brand-2)!important;
+    font-size:.72rem!important;
+    line-height:1!important;
+    font-weight:950!important;
+    white-space:nowrap!important;
+  }
+  .v49930PctText.real{
+    border-color:rgba(16,185,129,.32)!important;
+    background:rgba(16,185,129,.12)!important;
+    color:#0f766e!important;
+  }
+  .v49930PctText.est:after{
+    content:" est";
+    opacity:.76;
+    font-size:.68em;
+    margin-left:3px;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+  }
+  [data-mode="dark"] .v49930PctText.real{color:#34d399!important}
+  [data-mode="dark"] .v49930PctText.est,
+  [data-mode="dark"] .v49930RankText{color:#c084fc!important}
+
+  .aiq-v49946-rank-badge{
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:8px!important;
+    width:100%!important;
+    min-width:0!important;
+    white-space:normal!important;
+    line-height:1.05!important;
+  }
+  .aiq-v49946-rank-badge img{
+    width:42px!important;
+    height:42px!important;
+    object-fit:contain!important;
+    flex:0 0 auto!important;
+    filter:drop-shadow(0 8px 14px rgba(0,0,0,.35));
+  }
+  .aiq-v49946-rank-badge strong{
+    display:block!important;
+    font:inherit!important;
+    color:inherit!important;
+    overflow-wrap:anywhere!important;
+  }
+  .aiq-v49946-rank-badge small{
+    display:block!important;
+    margin-top:3px!important;
+    font-size:.72rem!important;
+    letter-spacing:.04em!important;
+    color:rgba(255,255,255,.78)!important;
+    font-weight:900!important;
+  }
+  .stat-tile .aiq-v49946-rank-badge{
+    justify-content:flex-start!important;
+  }
+  .stat-tile .aiq-v49946-rank-badge img{
+    width:32px!important;
+    height:32px!important;
+  }
+  @media(max-width:820px){
+    .aiq-v49946-rank-badge img{width:34px!important;height:34px!important}
+    .stat-tile .aiq-v49946-rank-badge img{width:28px!important;height:28px!important}
+  }
+</style>
+<script id="apexiq-v49946-beta-readiness-polish-js">
+(function(){
+  "use strict";
+  const BUILD="v4.9.9.46-beta-readiness-polish";
+  const DEFAULT_ROOT=(typeof DEFAULT_WORKER!=="undefined"?DEFAULT_WORKER:"https://cool-wildflower-1646.pwr97pnmkn.workers.dev").replace(/\/$/,"");
+
+  function byId(id){return document.getElementById(id)}
+  function safe(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
+  function cleanRoot(raw){
+    const v=String(raw||"").trim();
+    if(!v)return DEFAULT_ROOT;
+    try{
+      const u=new URL(v);
+      if(!/^https?:$/i.test(u.protocol))return DEFAULT_ROOT;
+      if(/github\.io|index\.html|\.html$/i.test(u.hostname+u.pathname))return DEFAULT_ROOT;
+      return (u.origin+u.pathname).replace(/\/$/,"");
+    }catch(_){return DEFAULT_ROOT}
+  }
+  function getState(){try{return typeof state!=="undefined"?state:null}catch(_){return null}}
+  function field(profile,key,fb=""){
+    try{
+      const f=profile?.fields?.[key];
+      if(f&&f.value!==undefined&&f.value!==null&&f.value!=="")return f.value;
+      if(profile&&profile[key]!==undefined&&profile[key]!==null&&profile[key]!=="")return profile[key];
+    }catch(_){}
+    return fb;
+  }
+  function firstNonEmpty(){
+    for(const v of arguments){
+      const s=String(v??"").trim();
+      if(s&&s!=="—"&&s!=="not returned"&&s!=="[object Object]")return s;
+    }
+    return "";
+  }
+  function findRank(profile){
+    const r=firstNonEmpty(
+      field(profile,"rank",""), field(profile,"rankName",""), field(profile,"rankDisplay",""), field(profile,"currentRank",""),
+      profile?.ranked?.rank, profile?.ranked?.name, profile?.ranked?.rankName, profile?.ranked?.rankText,
+      profile?.rankedLookup?.rank, profile?.rankedLookup?.name, profile?.rankedLookup?.rankName, profile?.rankedLookup?.rankText,
+      profile?.global?.rank?.rankName, profile?.global?.rank?.rankDiv, profile?.global?.rank?.rankNameShort
+    );
+    return cleanRank(r||"Unranked");
+  }
+  function findRP(profile){
+    const v=firstNonEmpty(field(profile,"rp",""),field(profile,"rankScore",""),profile?.ranked?.rp,profile?.ranked?.score,profile?.rankedLookup?.rp,profile?.rankedLookup?.score,profile?.global?.rank?.rankScore);
+    return v;
+  }
+  function cleanRank(raw){
+    let s=String(raw||"Unranked").replace(/\s+/g," ").trim();
+    s=s.replace(/\s*[•·-]\s*[\d,]+\s*RP\b/ig,"").replace(/\b[\d,]+\s*RP\b/ig,"").replace(/\s*•\s*/g," ").trim();
+    if(!s||s==="—")return "Unranked";
+    if(/pred/i.test(s))return "Apex Predator";
+    if(/master/i.test(s))return "Master";
+    if(/diamond/i.test(s))return "Diamond";
+    if(/plat/i.test(s))return "Platinum";
+    if(/gold/i.test(s))return "Gold";
+    if(/silver/i.test(s))return "Silver";
+    if(/bronze/i.test(s))return "Bronze";
+    if(/rookie/i.test(s))return "Rookie";
+    if(/unranked|none|no rank/i.test(s))return "Unranked";
+    return s;
+  }
+  function rankIcon(rank){try{return typeof window.getRankIconSrc==="function"?window.getRankIconSrc(rank):""}catch(_){return ""}}
+  function rankHTML(profile){
+    const rank=findRank(profile), rp=findRP(profile), icon=rankIcon(rank);
+    return `<span class="aiq-v49946-rank-badge">${icon?`<img src="${safe(icon)}" alt="${safe(rank)} rank icon">`:""}<span><strong>${safe(rank)}</strong>${rp&&rp!=="—"?`<small>${safe(String(rp).replace(/\B(?=(\d{3})+(?!\d))/g,","))} RP</small>`:""}</span></span>`;
+  }
+  function polishRankUI(){
+    const s=getState(), profile=s?.profile;
+    if(!profile)return;
+    try{
+      const scoreCells=[...document.querySelectorAll(".score-cell")];
+      const rankCell=scoreCells.find(c=>/rank/i.test(c.querySelector("span")?.textContent||""));
+      const b=rankCell?.querySelector("b");
+      if(b)b.innerHTML=rankHTML(profile);
+      document.querySelectorAll(".stat-tile").forEach(tile=>{
+        const label=(tile.querySelector("span")?.textContent||"").trim();
+        if(/^rank$/i.test(label)){
+          const tb=tile.querySelector("b");
+          if(tb)tb.innerHTML=rankHTML(profile);
+        }
+      });
+    }catch(e){console.warn(BUILD,"rank polish skipped",e)}
+  }
+  function stripProgressMeters(){
+    try{
+      document.querySelectorAll(".v49930PctBar,.v49930TinyNote").forEach(el=>el.remove());
+      document.querySelectorAll(".v49930PctRow").forEach(row=>{
+        row.querySelectorAll("small").forEach(x=>{ if(!x.textContent.trim())x.remove(); });
+        if(!row.textContent.trim())row.remove();
+      });
+    }catch(_){}
+  }
+  function clearStaleWorkerBeforeSearch(){
+    try{
+      const saved=localStorage.getItem("apexiqApiProxy")||"";
+      const clean=cleanRoot(saved);
+      const stale=saved && clean!==DEFAULT_ROOT;
+      if(stale){
+        localStorage.removeItem("apexiqApiProxy");
+        const s=getState(); if(s)s.proxy=DEFAULT_ROOT;
+        const input=byId("proxyInput"); if(input)input.value=DEFAULT_ROOT;
+        const n=byId("aiqV49942SearchNotice")||byId("aiqFinalNotice");
+        if(n){n.className=(n.className||"")+" v49946WorkerReset"; n.innerHTML=`<b>Worker reset.</b><br>Cleared a stale saved Worker URL and retried with the default Worker.`;}
+        return true;
+      }
+    }catch(_){}
+    return false;
+  }
+
+  const previousSearch=window.apexiqSafeSearch;
+  if(typeof previousSearch==="function"){
+    window.apexiqSafeSearch=async function(){
+      clearStaleWorkerBeforeSearch();
+      const result=await previousSearch.apply(this,arguments);
+      setTimeout(()=>{polishRankUI();stripProgressMeters();},30);
+      setTimeout(()=>{polishRankUI();stripProgressMeters();},500);
+      return result;
+    };
+  }
+  const previousRenderProfile=window.renderProfile;
+  if(typeof previousRenderProfile==="function"){
+    window.renderProfile=function(){
+      const out=previousRenderProfile.apply(this,arguments);
+      setTimeout(()=>{polishRankUI();stripProgressMeters();},0);
+      return out;
+    };
+  }
+  function boot(){
+    document.documentElement.dataset.v49946="beta-readiness-polish";
+    stripProgressMeters();
+    polishRankUI();
+    document.addEventListener("click",()=>setTimeout(()=>{stripProgressMeters();polishRankUI();},80),true);
+    const obs=new MutationObserver(()=>{stripProgressMeters();polishRankUI();});
+    obs.observe(document.body,{childList:true,subtree:true});
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
+})();
+</script>
+
 </body>
 </html>
