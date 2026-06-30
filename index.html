@@ -6510,11 +6510,12 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
   const BUILD = "v4.9.9.42-stats-connection-restore";
   const DEFAULT_ROOT = "https://cool-wildflower-1646.pwr97pnmkn.workers.dev";
   const HEALTH_MS = 3500;
-  const FAST_MS = 12000;
+  const FAST_MS = 7000;
   const FULL_MS = 62000;
   let searchLock = false;
   let searchSeq = 0;
   let lastGoodRoot = "";
+  let rootOkUntil = 0;
 
   function byId(id){return document.getElementById(id)}
   function safe(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
@@ -6561,6 +6562,7 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
   function commitRoot(root){
     const clean=cleanRoot(root);
     lastGoodRoot=clean;
+    rootOkUntil=Date.now()+120000;
     const s=getState();
     try{if(s)s.proxy=clean;localStorage.setItem("apexiqApiProxy",clean)}catch(_){if(s)s.proxy=clean}
     const input=byId("proxyInput");if(input)input.value=clean;
@@ -6585,6 +6587,7 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
     }finally{clearTimeout(to)}
   }
   async function resolveRoot(){
+    if(lastGoodRoot && Date.now()<rootOkUntil)return lastGoodRoot;
     const preferred=lastGoodRoot||configuredRoot();
     const roots=[preferred,DEFAULT_ROOT].map(cleanRoot).filter((r,i,a)=>r&&a.indexOf(r)===i);
     const errors=[];
@@ -6991,6 +6994,171 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
     window.renderAll=function(){oldRenderAll();renderSquadV44();ensureCredits();};
   }
   function boot(){document.documentElement.dataset.v49944="lfg-emoji-credits";ensureDock();renderSquadV44();ensureCredits();}
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
+})();
+</script>
+
+
+<!-- === ApexIQ v4.9.9.45 LFG local post storage + mobile dock safe zone + search speed guard === -->
+<style id="apexiq-v49945-lfg-mobile-speed-css">
+  .aiq-v49944-post-note-good{color:var(--brand);font-weight:900}
+  .aiq-v49945-feed-sticker{display:inline-flex;vertical-align:middle;align-items:center;justify-content:center;max-width:54px;max-height:54px;margin:0 3px}
+  .aiq-v49945-feed-sticker img{width:46px;height:46px;object-fit:contain;vertical-align:middle}
+  .aiq-v49945-feed-token{display:inline-flex;align-items:center;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:3px 7px;font-weight:900;color:var(--muted);font-size:.82em;margin:0 2px}
+  @media(max-width:860px){
+    .aiq-v49944-dock-toggle{
+      right:16px!important;
+      bottom:calc(env(safe-area-inset-bottom,0px) + 104px)!important;
+      width:56px!important;
+      height:56px!important;
+      border-radius:18px!important;
+      z-index:9000!important;
+    }
+    .aiq-v49944-dock{
+      right:10px!important;
+      left:10px!important;
+      bottom:calc(env(safe-area-inset-bottom,0px) + 170px)!important;
+      width:auto!important;
+      max-height:calc(100vh - 230px)!important;
+      z-index:9000!important;
+    }
+    .aiq-v49944-credit-section{margin-bottom:calc(env(safe-area-inset-bottom,0px) + 124px)!important}
+    .aiq-v49944-footer{margin-bottom:calc(env(safe-area-inset-bottom,0px) + 124px)!important;padding-left:18px!important;padding-right:18px!important}
+  }
+</style>
+<script id="apexiq-v49945-lfg-post-mobile-speed-js">
+(function(){
+  "use strict";
+  const BUILD="v4.9.9.45-lfg-post-mobile-safe-speed";
+  const OLD_KEY="apexiq:lfgPosts:v49944";
+  const POST_KEY="apexiq:lfgPosts:v49945";
+  const MAX_POSTS=60;
+  let stickerIndex=null;
+  function byId(id){return document.getElementById(id)}
+  function safe(v){return String(v??"").replace(/[&<>\"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
+  function getState(){try{return typeof state==="object"?state:null}catch(_){return null}}
+  function packs(){try{return Array.isArray(PACK_DATA)?PACK_DATA:[]}catch(_){return []}}
+  function buildStickerIndex(){
+    if(stickerIndex)return stickerIndex;
+    stickerIndex=new Map();
+    packs().forEach(function(pack,pi){(pack.stickers||[]).forEach(function(st,si){
+      const key=(pack.id||pack.name||"pack")+":"+si;
+      if(st&&st.src)stickerIndex.set(st.src,{key,pack:pack.id||pack.name||"pack",idx:si,label:st.label||pack.name||"Sticker",legend:pack.name||pack.id||"Legend",src:st.src});
+    })});
+    return stickerIndex;
+  }
+  function stickerByKey(key){
+    const [packId,idxRaw]=String(key||"").split(":");
+    const idx=Number(idxRaw);
+    const pack=packs().find(p=>String(p.id||p.name)===packId || String(p.name)===packId);
+    const st=pack&&Array.isArray(pack.stickers)?pack.stickers[idx]:null;
+    return st?{src:st.src,label:st.label||pack.name||"Sticker",legend:pack.name||pack.id||"Legend"}:null;
+  }
+  function loadPosts(){
+    try{
+      const cur=JSON.parse(localStorage.getItem(POST_KEY)||"[]");
+      if(Array.isArray(cur)&&cur.length)return cur.slice(0,MAX_POSTS);
+    }catch(_){}
+    try{
+      const old=JSON.parse(localStorage.getItem(OLD_KEY)||"[]");
+      return Array.isArray(old)?old.slice(0,MAX_POSTS):[];
+    }catch(_){return []}
+  }
+  function savePosts(posts){
+    localStorage.setItem(POST_KEY,JSON.stringify(posts.slice(0,MAX_POSTS)));
+  }
+  function nodeToStoredHTML(node){
+    if(!node)return "";
+    if(node.nodeType===Node.TEXT_NODE)return safe(node.textContent||"");
+    if(node.nodeType!==Node.ELEMENT_NODE)return "";
+    const el=node;
+    if(el.classList&&el.classList.contains("aiq-v49944-sticker")){
+      const img=el.querySelector("img");
+      const src=img?img.getAttribute("src")||"":"";
+      const found=buildStickerIndex().get(src);
+      if(found)return `<span class="aiq-v49945-feed-sticker" data-sticker-key="${safe(found.key)}" title="${safe(found.legend)} ${safe(found.label)}"></span>`;
+      return `<span class="aiq-v49945-feed-token">${safe(el.dataset.sticker||img?.alt||"Sticker")}</span>`;
+    }
+    if(el.tagName==="BR")return "<br>";
+    if(el.tagName==="DIV"||el.tagName==="P")return Array.from(el.childNodes).map(nodeToStoredHTML).join("")+"<br>";
+    return Array.from(el.childNodes).map(nodeToStoredHTML).join("");
+  }
+  function serializeComposer(comp){
+    if(!comp)return "";
+    const html=Array.from(comp.childNodes).map(nodeToStoredHTML).join("").replace(/(<br>\s*)+$/i,"").trim();
+    const plain=(comp.innerText||"").replace(/\u00a0/g," ").trim();
+    return html || safe(plain);
+  }
+  function hydrateStoredHTML(html){
+    const tpl=document.createElement("template");tpl.innerHTML=String(html||"");
+    tpl.content.querySelectorAll("script,style,iframe,object,embed,link,meta").forEach(n=>n.remove());
+    tpl.content.querySelectorAll(".aiq-v49945-feed-sticker[data-sticker-key]").forEach(function(el){
+      const st=stickerByKey(el.getAttribute("data-sticker-key"));
+      if(st&&st.src){
+        el.innerHTML=`<img loading="lazy" src="${safe(st.src)}" alt="${safe(st.label)}">`;
+        el.title=(st.legend||"")+" "+(st.label||"");
+      }else{
+        el.outerHTML='<span class="aiq-v49945-feed-token">Sticker</span>';
+      }
+    });
+    tpl.content.querySelectorAll("*").forEach(function(el){
+      Array.from(el.attributes).forEach(function(a){const n=a.name.toLowerCase();if(n.startsWith("on")||n==="style")el.removeAttribute(a.name)});
+      if(el.tagName.toLowerCase()==="img"){
+        const src=el.getAttribute("src")||"";
+        if(!/^data:image\//.test(src)&&!/^assets\//.test(src)&&!/^\.\/?assets\//.test(src))el.remove();
+        else {el.loading="lazy";el.alt=el.getAttribute("alt")||"ApexIQ sticker";}
+      }
+    });
+    return tpl.innerHTML.trim();
+  }
+  function renderFeed(){
+    const feed=byId("aiqV49944Feed");if(!feed)return;
+    const posts=loadPosts();
+    if(!posts.length){feed.innerHTML='<article class="aiq-v49944-post"><b>No LFG posts yet</b><p>Write the first post. Posts save locally for now until the Worker/forum backend is connected.</p></article>';return;}
+    feed.innerHTML=posts.map(function(p){return `<article class="aiq-v49944-post"><header><div><b>${safe(p.title||"LFG Post")}</b><small> by ${safe(p.author||"ApexIQ user")}</small></div><small>${safe(p.time||"")}</small></header><div class="aiq-v49944-tags"><span class="aiq-v49944-tag">${safe(p.platform||"Auto")}</span><span class="aiq-v49944-tag">${safe(p.mode||"BR")}</span><span class="aiq-v49944-tag">${safe(p.vibe||"Chill")}</span></div><div class="aiq-v49944-post-body">${hydrateStoredHTML(p.body||"")}</div></article>`}).join("");
+  }
+  function createPost(){
+    const comp=byId("aiqLfgComposer");
+    const body=serializeComposer(comp);
+    const plain=(comp?.innerText||"").replace(/\u00a0/g," ").trim();
+    const hasSticker=!!(comp&&comp.querySelector(".aiq-v49944-sticker,img"));
+    if(!body && !plain && !hasSticker){alert("Write a post first.");return;}
+    const s=getState();
+    const post={
+      id:"lfg_"+Date.now(),
+      title:byId("aiqV49944Title")?.value?.trim()||"Looking for squad",
+      author:(s?.player||localStorage.getItem("apexiq:lastPlayer")||"ApexIQ user"),
+      platform:byId("aiqV49944Platform")?.value||s?.platform||"Auto",
+      mode:byId("aiqV49944Mode")?.value||"BR",
+      vibe:byId("aiqV49944Vibe")?.value||"Chill",
+      body:body,
+      time:new Date().toLocaleString()
+    };
+    try{
+      const posts=loadPosts();posts.unshift(post);savePosts(posts);
+      if(comp)comp.innerHTML="";
+      renderFeed();
+      const note=byId("aiqV49944PostNote");
+      if(note){note.className="aiq-v49944-post-note-good";note.textContent="Posted to local LFG feed.";setTimeout(()=>{note.textContent="";note.className=""},3500)}
+    }catch(e){
+      console.error(BUILD,"post failed",e);
+      alert("Post failed to save locally. This usually means browser storage is blocked or full.");
+    }
+  }
+  function bind(){
+    document.addEventListener("click",function(e){
+      const btn=e.target&&e.target.closest&&e.target.closest("#aiqV49944PostBtn");
+      if(!btn)return;
+      e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();createPost();
+    },true);
+    document.addEventListener("input",function(e){if(e.target&&e.target.id==="aiqLfgComposer")buildStickerIndex()},true);
+  }
+  function boot(){
+    document.documentElement.dataset.v49945="lfg-post-mobile-safe-speed";
+    bind();
+    setTimeout(renderFeed,50);
+    setTimeout(renderFeed,500);
+  }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
 })();
 </script>
