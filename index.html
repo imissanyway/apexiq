@@ -9769,5 +9769,162 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
 })();
 </script>
 
+
+
+<!-- === ApexIQ v4.9.9.73 Meta Complete Roster Display Fix === -->
+<style id="apexiq-v49973-meta-complete-roster-css">
+/* v4.9.9.73: Meta display-only completion patch. No beta/search/nav/ranked/portrait/badge/LFG systems changed. */
+.v49973MetaNotice{margin:0 0 14px;padding:10px 12px;border:1px solid color-mix(in srgb,var(--brand,#7c3aed) 28%,var(--line,#334155));border-radius:14px;background:color-mix(in srgb,var(--brand,#7c3aed) 9%,var(--surface,#0f172a));color:var(--muted,#94a3b8);font-weight:850;line-height:1.35;}
+.v49973MetaNotice b{color:var(--text,#f8fafc)}
+.v49973MetaGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;align-items:stretch;}
+.v49973MetaCard{position:relative;min-height:146px;overflow:hidden;border:1px solid color-mix(in srgb,var(--line,#334155) 88%,transparent);border-radius:16px;background:linear-gradient(180deg,color-mix(in srgb,var(--surface,#0f172a) 95%,transparent),color-mix(in srgb,var(--surface-2,#111827) 98%,transparent));box-shadow:0 12px 34px rgba(0,0,0,.18);}
+.v49973MetaCard::before{content:"";position:absolute;inset:0 0 auto;height:3px;background:linear-gradient(90deg,var(--brand,#7c3aed),var(--brand-2,#22d3ee),var(--brand-3,#f97316));opacity:.9;}
+.v49973MetaBg{position:absolute;right:-16px;bottom:-14px;width:68%;height:118%;object-fit:contain;opacity:.26;filter:drop-shadow(0 16px 22px rgba(0,0,0,.38));pointer-events:none;}
+.v49973MetaShade{position:absolute;inset:0;background:linear-gradient(90deg,color-mix(in srgb,var(--surface,#0f172a) 94%,transparent) 0%,color-mix(in srgb,var(--surface,#0f172a) 74%,transparent) 58%,transparent 100%);pointer-events:none;}
+.v49973MetaContent{position:relative;z-index:1;display:grid;align-content:space-between;gap:12px;min-height:146px;padding:13px;}
+.v49973MetaTop{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.v49973MetaTop b{font-size:1.02rem;line-height:1.05;color:var(--text,#f8fafc);max-width:138px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.v49973MetaTop span{color:var(--muted,#94a3b8);font-weight:1000;font-size:.82rem;}
+.v49973Pick{font-size:clamp(1.45rem,4.6vw,2rem);font-weight:1000;letter-spacing:-.06em;color:var(--text,#f8fafc);line-height:.92;}
+.v49973MetaCard.pending .v49973Pick{font-size:1rem;letter-spacing:-.02em;color:color-mix(in srgb,var(--muted,#94a3b8) 88%,var(--text,#f8fafc));}
+.v49973Trend{font-weight:1000;font-size:.78rem;line-height:1.1;}
+.v49973Trend.up{color:#22c55e}.v49973Trend.down{color:#f87171}.v49973Trend.flat{color:var(--muted,#94a3b8)}
+.v49973Facts{display:grid;gap:3px;font-size:.76rem;color:var(--muted,#94a3b8);}
+.v49973Facts span{display:flex;justify-content:space-between;gap:8px;}
+.v49973Facts strong{color:var(--text,#f8fafc);font-weight:1000;text-align:right;}
+.v49973MetaPreview{display:grid;gap:8px;}
+.v49973PreviewRow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line,#334155);border-radius:13px;background:var(--surface,#0f172a);}
+.v49973PreviewRow b{color:var(--muted,#94a3b8)}.v49973PreviewRow span{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:900;color:var(--text,#f8fafc)}.v49973PreviewRow em{font-style:normal;font-weight:1000;color:var(--text,#f8fafc)}
+@media(max-width:860px){.v49973MetaGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.v49973MetaCard{min-height:132px}.v49973MetaContent{min-height:132px;padding:11px}.v49973MetaTop b{font-size:.94rem;max-width:112px}.v49973Pick{font-size:1.42rem}.v49973MetaBg{width:74%;opacity:.23}.v49973Facts{font-size:.7rem}}
+@media(max-width:420px){.v49973MetaGrid{grid-template-columns:1fr 1fr}.v49973MetaTop b{max-width:98px}.v49973Pick{font-size:1.3rem}}
+</style>
+<script id="apexiq-v49973-meta-complete-roster-js">
+(function(){
+  "use strict";
+  var BUILD="v4.9.9.73-meta-complete-roster-display-from-v72";
+  function byId(id){return document.getElementById(id)}
+  function safe(v){try{return String(v==null?"":v).replace(/[&<>\"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}catch(_){return ""}}
+  function scalar(v){
+    if(v===undefined||v===null)return "";
+    if(typeof v==="string"||typeof v==="number"||typeof v==="boolean")return String(v);
+    if(Array.isArray(v)){for(var i=0;i<v.length;i++){var s=scalar(v[i]); if(s&&s!=="[object Object]")return s} return ""}
+    if(typeof v==="object"){
+      var keys=["pickRate","rate","value","percent","text","label","name","legend","avgRank","averageRank","avgLevel","averageLevel","level","trend","change","delta","rank"];
+      for(var k=0;k<keys.length;k++){var out=scalar(v[keys[k]]); if(out&&out!=="[object Object]")return out;}
+    }
+    return "";
+  }
+  function norm(v){return scalar(v).toLowerCase().replace(/[^a-z0-9]/g,"")}
+  function num(v){var n=Number(scalar(v).replace("%","").replace(/,/g,"").replace(/[^\d.-]/g,""));return Number.isFinite(n)?n:0}
+  function packs(){try{return Array.isArray(window.PACK_DATA)?window.PACK_DATA:[]}catch(_){return []}}
+  var fallbackNames=["Alter","Ash","Axle","Ballistic","Bangalore","Bloodhound","Catalyst","Caustic","Conduit","Crypto","Fuse","Gibraltar","Horizon","Lifeline","Loba","Mad Maggie","Mirage","Newcastle","Octane","Pathfinder","Rampart","Revenant","Seer","Sparrow","Valkyrie","Vantage","Wattson","Wraith"];
+  function packFor(name){var n=norm(name);return packs().find(function(p){return norm(p&&p.name)===n})||null}
+  function packImg(pack){try{return typeof window.packImage==="function"?window.packImage(pack):(pack&&pack.stickers&&pack.stickers[0]&&pack.stickers[0].src)||""}catch(_){return (pack&&pack.stickers&&pack.stickers[0]&&pack.stickers[0].src)||""}}
+  function roster(){
+    var out=[];
+    packs().forEach(function(p){if(p&&p.name&&!out.some(function(x){return norm(x.name)===norm(p.name)}))out.push({name:p.name,img:packImg(p)})});
+    fallbackNames.forEach(function(n){if(!out.some(function(x){return norm(x.name)===norm(n)})){var p=packFor(n);out.push({name:n,img:p?packImg(p):""})}});
+    return out;
+  }
+  var visibleSnapshot={
+    seer:{pickRate:"12.6",trend:"▲2830.74%",avgRank:"Platinum 3",avgLevel:"837"},
+    axle:{pickRate:"12.1",trend:"▼29.85%",avgRank:"Platinum 3",avgLevel:"833"},
+    pathfinder:{pickRate:"9.8",trend:"▲333.24%",avgRank:"Platinum 4",avgLevel:"823"},
+    octane:{pickRate:"6.5",trend:"▼6.44%",avgRank:"Gold 2",avgLevel:"547"},
+    ballistic:{pickRate:"5.8",trend:"▲882.72%",avgRank:"Platinum 4",avgLevel:"802"},
+    valkyrie:{pickRate:"5.1",trend:"▼51.92%",avgRank:"Gold 1",avgLevel:"626"},
+    wraith:{pickRate:"4.8",trend:"▼4.66%",avgRank:"Gold 3",avgLevel:"537"},
+    bangalore:{pickRate:"4.7",trend:"▼15.16%",avgRank:"Gold 2",avgLevel:"564"},
+    madmaggie:{pickRate:"4.7",trend:"▼39.66%",avgRank:"Platinum 4",avgLevel:"692"},
+    conduit:{pickRate:"4.3",trend:"",avgRank:"",avgLevel:""},
+    lifeline:{pickRate:"3.1",trend:"",avgRank:"",avgLevel:""},
+    ash:{pickRate:"2.8",trend:"",avgRank:"",avgLevel:""}
+  };
+  function rowName(m){return scalar(m&& (m.legend||m.name||m.character||m.legendName||m.hero||m.label||m.title))}
+  function rowPick(m){return scalar(m&&(m.pickRate!=null?m.pickRate:m.rate!=null?m.rate:m.percent!=null?m.percent:m.value!=null?m.value:m.pick_rate!=null?m.pick_rate:m.pickrate!=null?m.pickrate:m.usage))}
+  function rowTrend(m){return scalar(m&&(m.trend||m.change||m.delta||m.changeRate||m.diff))}
+  function rowRank(m){return scalar(m&&(m.avgRank||m.averageRank||m.rankAvg||m.avg_rank||m.rank_average))}
+  function rowLevel(m){return scalar(m&&(m.avgLevel||m.averageLevel||m.avgLvl||m.avg_level||m.level_average||m.level))}
+  function deepArrays(obj,out,depth){out=out||[];depth=depth||0;if(!obj||depth>4)return out;if(Array.isArray(obj)){out.push(obj);obj.forEach(function(x){deepArrays(x,out,depth+1)});return out}if(typeof obj==="object")Object.keys(obj).forEach(function(k){deepArrays(obj[k],out,depth+1)});return out}
+  function liveRows(data){
+    data=data||{};var pools=[];[data.legends,data.meta,data.pickrates,data.pickRates,data.rows,data.data,data.items,data.result,data.payload&&data.payload.legends,data.payload&&data.payload.rows].forEach(function(a){if(Array.isArray(a))pools.push(a)});
+    deepArrays(data).forEach(function(a){if(Array.isArray(a)&&a.length&&a.some(function(x){return x&&typeof x==="object"&&rowName(x)}))pools.push(a)});
+    var best=[];var bestScore=-1;
+    pools.forEach(function(arr){
+      var mapped=arr.map(function(m,i){if(!m||typeof m!=="object")return null;var name=rowName(m);if(!name)return null;var p=packFor(name);var legend=p?p.name:name;return {legend:legend,pickRate:rowPick(m),trend:rowTrend(m),avgRank:rowRank(m).replace(/^Avg rank\s*/i,"").trim(),avgLevel:rowLevel(m),img:p?packImg(p):"",order:i+1,source:scalar(m.source||data.source||"live")}}).filter(Boolean);
+      var score=mapped.reduce(function(s,r){return s+(num(r.pickRate)>0?5:0)+(r.avgRank?1:0)+(r.avgLevel?1:0)},0);
+      if(score>bestScore){bestScore=score;best=mapped;}
+    });
+    return best;
+  }
+  function completeRows(){
+    var by={};
+    roster().forEach(function(r,i){by[norm(r.name)]={legend:r.name,pickRate:"",trend:"",avgRank:"",avgLevel:"",img:r.img,source:"roster",rosterIndex:i,pending:true}});
+    Object.keys(visibleSnapshot).forEach(function(k){
+      var match=roster().find(function(r){return norm(r.name)===k})||{name:k,img:""};
+      by[k]=Object.assign(by[k]||{legend:match.name,img:match.img,rosterIndex:999},visibleSnapshot[k],{legend:match.name,img:match.img,source:"visible fallback",pending:false});
+    });
+    liveRows((window.state&&window.state.meta)||{}).forEach(function(r,i){
+      var key=norm(r.legend);if(!key)return;var p=packFor(r.legend);var seed=by[key]||{};
+      by[key]=Object.assign({},seed,r,{legend:(p&&p.name)||r.legend,img:r.img||seed.img||(p?packImg(p):""),source:r.source||"live",pending:!(num(r.pickRate)>0),rosterIndex:seed.rosterIndex==null?999:seed.rosterIndex,liveIndex:i});
+    });
+    var rows=Object.keys(by).map(function(k){return by[k]});
+    return rows.sort(function(a,b){
+      var na=num(a.pickRate), nb=num(b.pickRate);
+      if(nb!==na)return nb-na;
+      if((a.pending?1:0)!==(b.pending?1:0))return (a.pending?1:0)-(b.pending?1:0);
+      return (a.rosterIndex||0)-(b.rosterIndex||0);
+    });
+  }
+  function trendClass(v){var s=scalar(v);return /▼|down|-/i.test(s)?"down":(/▲|up|\+/i.test(s)?"up":"flat")}
+  function pickText(v){var s=scalar(v).replace("%","").trim();return num(s)>0?s+"%":"Pending"}
+  function notice(rows,full){
+    var valued=rows.filter(function(r){return num(r.pickRate)>0}).length;
+    var pending=rows.length-valued;
+    return '<div class="v49973MetaNotice"><b>'+safe(full?'Meta board':'Meta preview')+'</b> '+safe(rows.length)+' legends shown · '+safe(valued)+' live/visible pick-rate rows · '+safe(pending)+' roster cards waiting on live meta data.</div>';
+  }
+  function cardHTML(m,i){
+    var pending=!(num(m.pickRate)>0);
+    return '<article class="v49973MetaCard '+(pending?'pending':'ready')+'">'+(m.img?'<img class="v49973MetaBg" loading="lazy" decoding="async" src="'+safe(m.img)+'" alt="'+safe(m.legend)+'">':'')+'<div class="v49973MetaShade"></div><div class="v49973MetaContent"><div><div class="v49973MetaTop"><b>'+safe(m.legend)+'</b><span>#'+safe(i+1)+'</span></div><div class="v49973Pick">'+safe(pickText(m.pickRate))+'</div><div class="v49973Trend '+trendClass(m.trend)+'">'+safe(pending?'Awaiting live row':(m.trend||'Stable'))+'</div></div><div class="v49973Facts"><span><em>Avg rank</em><strong>'+safe(m.avgRank||'Pending')+'</strong></span><span><em>Avg level</em><strong>'+safe(m.avgLevel||'Pending')+'</strong></span></div></div></article>';
+  }
+  function previewHTML(rows){
+    return notice(rows,false)+'<div class="v49973MetaPreview">'+rows.slice(0,6).map(function(m,i){return '<article class="v49973PreviewRow"><b>#'+safe(i+1)+'</b><span>'+safe(m.legend)+'</span><em>'+safe(pickText(m.pickRate))+'</em></article>'}).join('')+'</div>';
+  }
+  var renderToken=0;
+  function metaVisible(){var s=document.querySelector('.screen[data-screen="meta"]');return !!s&&!s.hidden}
+  function render(id){
+    var target=byId(id);if(!target)return;
+    var rows=completeRows();
+    target.dataset.v49973="1";
+    if(id==="metaPanel"||!metaVisible()){target.innerHTML=previewHTML(rows);return;}
+    var token=String(++renderToken);target.dataset.v49973Token=token;
+    target.innerHTML=notice(rows,true)+'<div class="v49973MetaGrid" data-v49973-grid></div>';
+    var grid=target.querySelector('[data-v49973-grid]');var i=0;var chunk=6;
+    function pump(){
+      if(!grid||target.dataset.v49973Token!==token||!metaVisible())return;
+      var end=Math.min(i+chunk,rows.length);
+      grid.insertAdjacentHTML('beforeend',rows.slice(i,end).map(function(m,idx){return cardHTML(m,i+idx)}).join(''));
+      i=end;
+      if(i<rows.length){(window.requestAnimationFrame||function(fn){setTimeout(fn,16)})(pump)}
+    }
+    (window.requestAnimationFrame||function(fn){setTimeout(fn,0)})(pump);
+  }
+  window.renderMeta=function(id){render(id)};
+  var oldSwitch=window.switchPanel;
+  if(typeof oldSwitch==="function"&&!oldSwitch.__v49973){
+    var wrapped=function(name){var ret=oldSwitch.apply(this,arguments);setTimeout(function(){if(name==="meta")render('metaPanelFull');else if(name==="dashboard")render('metaPanel')},130);return ret;};
+    wrapped.__v49973=true;window.switchPanel=wrapped;
+  }
+  function boot(){try{document.documentElement.dataset.v49973="meta-complete-roster"}catch(_){}render('metaPanel');if(metaVisible())render('metaPanelFull')}
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else setTimeout(boot,0);
+  try{
+    var list=document.querySelector('.aiq-build-list, .build-list, #changelogList, [data-build-list]');
+    if(list&&!list.querySelector('[data-aiq-v49973]')){
+      var li=document.createElement('li');li.setAttribute('data-aiq-v49973','');li.innerHTML='<small>v4.9.9.73</small><b>Meta complete roster display</b><span>Kept the stable v71 beta foundation and v72 Meta freeze protection, then made the Meta tab show every roster legend with clear pending labels for rows not returned by live meta data. No search, Worker, beta, nav, portrait, ranked, badge, LFG, support, or theme systems were changed.</span>';list.prepend(li);
+    }
+  }catch(_){ }
+})();
+</script>
+
 </body>
 </html>
