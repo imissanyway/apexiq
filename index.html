@@ -6495,5 +6495,296 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
 })();
 </script>
 
+
+
+<style id="apexiq-v49942-stats-connection-css">
+.v49942Notice{margin:10px 0;padding:11px 13px;border-radius:14px;border:1px solid rgba(59,130,246,.24);background:rgba(59,130,246,.10);color:var(--muted);font-weight:850;line-height:1.35}
+.v49942Notice.good{border-color:rgba(34,197,94,.26);background:rgba(34,197,94,.10)}
+.v49942Notice.bad{border-color:rgba(244,63,94,.28);background:rgba(244,63,94,.10)}
+.v49942Notice b{color:var(--text)}
+</style>
+<script id="apexiq-v49942-stats-connection-restore-js">
+(function(){
+  "use strict";
+
+  const BUILD = "v4.9.9.42-stats-connection-restore";
+  const DEFAULT_ROOT = "https://cool-wildflower-1646.pwr97pnmkn.workers.dev";
+  const HEALTH_MS = 3500;
+  const FAST_MS = 12000;
+  const FULL_MS = 62000;
+  let searchLock = false;
+  let searchSeq = 0;
+  let lastGoodRoot = "";
+
+  function byId(id){return document.getElementById(id)}
+  function safe(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
+  function cleanPlatform(input){
+    const p=String(input||"auto").trim().toUpperCase();
+    if(!p||p==="AUTO"||p==="ANY"||p==="ALL")return "auto";
+    if(["PLAYSTATION","PS","PSN","PS5","PS4"].includes(p))return "PS4";
+    if(["XBOX","XB","XB1","X1","SERIESX","XBL"].includes(p))return "X1";
+    if(["NINTENDO","SWITCH"].includes(p))return "SWITCH";
+    if(["PC","ORIGIN","STEAM"].includes(p))return "PC";
+    return "auto";
+  }
+  function num(v){const n=Number(String(v??"").replace(/,/g,"").replace(/[^\d.-]/g,""));return Number.isFinite(n)?n:0}
+  function nonEmpty(v){return v!==undefined&&v!==null&&v!==""&&v!=="—"&&v!=="not returned"&&String(v)!=="[object Object]"}
+  function getState(){try{return typeof state!=="undefined"?state:null}catch(_){return null}}
+  function setStatusSafe(text,cls=""){try{if(typeof setStatus==="function")setStatus(text,cls);else{const el=byId("liveStatus");if(el){el.textContent=text;el.className="status "+cls}}}catch(_){}}
+  function renderProfileSafe(){try{if(typeof renderProfile==="function")renderProfile()}catch(e){console.warn(BUILD,"renderProfile protected",e)}}
+  function renderLegendsSafe(){try{if(typeof renderLegends==="function")renderLegends()}catch(e){console.warn(BUILD,"renderLegends protected",e)}}
+  function renderBadgesSafe(){try{if(typeof renderBadgesPanel==="function")renderBadgesPanel()}catch(e){console.warn(BUILD,"renderBadgesPanel protected",e)}}
+  function ensureAutoOption(){
+    const sel=byId("platformInput");
+    if(!sel)return;
+    if(!Array.from(sel.options).some(o=>String(o.value).toLowerCase()==="auto")){
+      const opt=document.createElement("option");opt.value="auto";opt.textContent="Auto";sel.insertBefore(opt,sel.firstChild);
+    }
+    sel.value=cleanPlatform(sel.value||getState()?.platform||"auto");
+  }
+  function cleanRoot(raw){
+    const value=String(raw||"").trim();
+    if(!value)return DEFAULT_ROOT;
+    try{
+      const u=new URL(value);
+      if(!/^https?:$/i.test(u.protocol))return DEFAULT_ROOT;
+      if(/github\.io|index\.html|\.html$/i.test(u.hostname+u.pathname))return DEFAULT_ROOT;
+      return u.origin+u.pathname.replace(/\/$/,"");
+    }catch(_){return DEFAULT_ROOT}
+  }
+  function configuredRoot(){
+    const s=getState();
+    let raw="";
+    try{raw=localStorage.getItem("apexiqApiProxy")||""}catch(_){raw=""}
+    return cleanRoot(raw || s?.proxy || DEFAULT_ROOT);
+  }
+  function commitRoot(root){
+    const clean=cleanRoot(root);
+    lastGoodRoot=clean;
+    const s=getState();
+    try{if(s)s.proxy=clean;localStorage.setItem("apexiqApiProxy",clean)}catch(_){if(s)s.proxy=clean}
+    const input=byId("proxyInput");if(input)input.value=clean;
+    return clean;
+  }
+  function makeURL(root,path,params={}){
+    const u=new URL(cleanRoot(root)+path);
+    for(const [k,v] of Object.entries(params||{}))if(v!==undefined&&v!==null&&v!=="")u.searchParams.set(k,v);
+    return u.toString();
+  }
+  async function fetchJSONAt(root,path,params={},timeout=30000){
+    const ctrl=new AbortController();
+    const to=setTimeout(()=>ctrl.abort(),timeout);
+    try{
+      const res=await fetch(makeURL(root,path,params),{cache:"no-store",headers:{Accept:"application/json"},signal:ctrl.signal});
+      const text=await res.text();
+      let data;
+      try{data=JSON.parse(text)}catch(_){throw new Error("Worker returned non-JSON from "+cleanRoot(root)+": "+text.slice(0,120))}
+      if(!res.ok)throw new Error(data.error||data.message||("HTTP "+res.status));
+      if(data&&data.error)throw new Error(data.error);
+      return data;
+    }finally{clearTimeout(to)}
+  }
+  async function resolveRoot(){
+    const preferred=lastGoodRoot||configuredRoot();
+    const roots=[preferred,DEFAULT_ROOT].map(cleanRoot).filter((r,i,a)=>r&&a.indexOf(r)===i);
+    const errors=[];
+    for(const r of roots){
+      try{
+        const h=await fetchJSONAt(r,"/api/health",{client:"v49942",_:Date.now()},HEALTH_MS);
+        if(h&&h.ok){commitRoot(r);return r}
+        errors.push(r+": health not ok");
+      }catch(e){errors.push(r+": "+(e?.name==="AbortError"?"health timed out":(e.message||String(e))))}
+    }
+    // Do not block search if health is down but a Worker might still answer /api/player.
+    console.warn(BUILD,"health fallback",errors.join(" | "));
+    return commitRoot(DEFAULT_ROOT);
+  }
+  async function workerJSON(path,params={},timeout=30000){
+    const first=await resolveRoot();
+    const roots=[first,DEFAULT_ROOT].map(cleanRoot).filter((r,i,a)=>r&&a.indexOf(r)===i);
+    const errors=[];
+    for(const r of roots){
+      try{
+        const data=await fetchJSONAt(r,path,{...params,client:"v49942",_:Date.now()},timeout);
+        commitRoot(r);
+        return data;
+      }catch(e){
+        errors.push(r+": "+(e?.name==="AbortError"?"request timed out":(e.message||String(e))));
+        if(r!==DEFAULT_ROOT)commitRoot(DEFAULT_ROOT);
+      }
+    }
+    throw new Error(errors.join(" | ")||"No Worker response.");
+  }
+  function envelopeProfile(data){
+    if(!data||typeof data!=="object")return null;
+    return data.profile||data.profilePage||(data.ok?data:null);
+  }
+  function statRows(profile){
+    const pools=[profile?.allLegendStats,profile?.legendStats,profile?.legends,profile?.legendRows,profile?.trackerRows,profile?.profilePage?.legendStats,profile?.profile?.legendStats,profile?.rendered?.legendStats,profile?.rendered?.legendCards].filter(Boolean);
+    let rows=0,stats=0;
+    const walk=x=>{
+      if(!x)return;
+      if(Array.isArray(x)){x.forEach(walk);return;}
+      if(typeof x!=="object")return;
+      const rowLike=Array.isArray(x.stats)||Array.isArray(x.trackers)||Array.isArray(x.data)||Array.isArray(x.values);
+      if(rowLike){rows++;stats+=(x.stats||x.trackers||x.data||x.values||[]).length||0;}
+      for(const v of Object.values(x)){if(v&&typeof v==="object")walk(v)}
+    };
+    pools.forEach(walk);
+    return {rows,stats};
+  }
+  function profileLooksUsable(profile){
+    if(!profile||typeof profile!=="object")return false;
+    const sr=statRows(profile);
+    if(sr.rows||sr.stats)return true;
+    const fields=profile.fields||{};
+    const fieldCount=Object.values(fields).filter(f=>nonEmpty(f?.value)).length;
+    if(fieldCount>=2)return true;
+    if(nonEmpty(profile.name)&&fieldCount>=1)return true;
+    if(profile.rankedLookup&&profile.rankedLookup.ok)return true;
+    if(nonEmpty(profile.rank)||nonEmpty(profile.rp)||nonEmpty(profile.trueLevel)||nonEmpty(profile.level)||nonEmpty(profile.uid))return true;
+    return false;
+  }
+  function profileCacheKey(player,platform){return "apexiq:v49942:profile:"+String(player||"").toLowerCase()+":"+String(platform||"auto").toLowerCase()}
+  function rememberProfile(player,platform,profile){try{localStorage.setItem(profileCacheKey(player,platform),JSON.stringify({time:Date.now(),profile}).slice(0,900000))}catch(_){}}
+  function readCachedProfile(player,platform){try{return JSON.parse(localStorage.getItem(profileCacheKey(player,platform))||"null")?.profile||null}catch(_){return null}}
+  function notice(kind,html){
+    let n=byId("aiqV49942SearchNotice");
+    const panel=byId("profilePanel");
+    if(!n&&panel){n=document.createElement("div");n.id="aiqV49942SearchNotice";panel.parentNode?.insertBefore(n,panel)}
+    if(n){n.className="v49942Notice "+(kind||"");n.innerHTML=html}
+  }
+  function applyProfile(profile, player, platform, mode){
+    const s=getState();
+    if(!s)return;
+    s.profile=profile;
+    s.profileError="";
+    if(profile&&typeof profile==="object")profile.fastMode=mode==="fast";
+    renderProfileSafe();
+    if(mode!=="fast"){
+      renderLegendsSafe();
+      renderBadgesSafe();
+    }
+  }
+  async function resolveThenRetry(player,platform,seq){
+    const resolved=await workerJSON("/api/resolve-player",{player,platform,refresh:"1",nocache:"1"},25000);
+    if(seq!==searchSeq)return null;
+    if(!resolved||!resolved.ok||!resolved.uid)return null;
+    const uidPlayer="uid:"+(resolved.platform||platform||"PC")+":"+resolved.uid;
+    const retried=await workerJSON("/api/player",{player:uidPlayer,platform:resolved.platform||platform,refresh:"1",nocache:"1",rankedFallback:"0"},FULL_MS);
+    return {retried,resolved};
+  }
+
+  window.apexiqSafeSearch = async function(fresh=true){
+    if(searchLock)return;
+    searchLock=true;
+    const seq=++searchSeq;
+    ensureAutoOption();
+    const s=getState();
+    const player=(byId("playerInput")?.value||s?.player||"imissanyway").trim()||"imissanyway";
+    const platform=cleanPlatform(byId("platformInput")?.value||s?.platform||"auto");
+    if(byId("platformInput"))byId("platformInput").value=platform;
+    if(s){s.player=player;s.platform=platform;s.profile=null;s.profileError="";s._lastLegendRows=[];}
+    try{localStorage.setItem("apexiq:lastPlayer",player);localStorage.setItem("apexiq:platform",platform)}catch(_){ }
+    const btn=byId("searchButtonV49919")||document.querySelector("#searchForm button[type='submit']");
+    const oldText=btn?.textContent||"Search";
+    if(btn){btn.disabled=true;btn.textContent="Searching…"}
+    setStatusSafe("SEARCHING","syncing");
+    const cached=readCachedProfile(player,platform);
+    if(cached&&profileLooksUsable(cached)){
+      applyProfile(cached,player,platform,"cached");
+      notice("",`<b>Cached preview shown.</b><br>Refreshing live stats for ${safe(player)} on ${safe(platform)}.`);
+    }else{
+      const panel=byId("profilePanel");
+      if(panel)panel.innerHTML=`<section class="empty"><b>Searching ${safe(player)}…</b><p>Checking Worker connection, then loading live profile stats.</p></section>`;
+      renderLegendsSafe();
+    }
+
+    try{
+      await resolveRoot();
+      try{
+        const fast=await workerJSON("/api/player-lite",{player,platform,refresh:fresh?"1":"",nocache:"1"},FAST_MS);
+        if(seq!==searchSeq)return;
+        const fastProfile=envelopeProfile(fast);
+        if(fastProfile&&profileLooksUsable(fastProfile)){
+          applyProfile(fastProfile,player,platform,"fast");
+          notice("",`<b>Fast profile connected.</b><br>Hydrating full stats from the Worker now.`);
+          setStatusSafe("FAST READY","syncing");
+        }
+      }catch(e){console.warn(BUILD,"fast profile skipped",e.message||e)}
+
+      let full=await workerJSON("/api/player",{player,platform,refresh:fresh?"1":"",nocache:"1",rankedFallback:"0"},FULL_MS);
+      if(seq!==searchSeq)return;
+      let profile=envelopeProfile(full);
+
+      if(!profileLooksUsable(profile)){
+        const retry=await resolveThenRetry(player,platform,seq).catch(e=>({error:e.message||String(e)}));
+        if(seq!==searchSeq)return;
+        if(retry&&retry.retried){
+          full=retry.retried;
+          profile=envelopeProfile(full);
+          if(profile&&retry.resolved){profile.resolvedByV49942=retry.resolved;}
+        }
+      }
+
+      if(!profileLooksUsable(profile)){
+        throw new Error((full&&full.error)||"Worker returned JSON, but no usable profile/stat data for this player.");
+      }
+
+      if(profile&&typeof profile==="object")profile.fastMode=false;
+      if(s){s.profile=profile;s.profileError="";}
+      rememberProfile(player,platform,profile);
+      renderProfileSafe();
+      renderLegendsSafe();
+      renderBadgesSafe();
+      const rows=statRows(profile);
+      const root=cleanRoot(getState()?.proxy||DEFAULT_ROOT);
+      notice("good",`<b>Live profile loaded.</b><br>${safe(player)} · ${safe(platform)} · ${rows.rows} legend rows · Worker: ${safe(root.replace(/^https?:\/\//,""))}`);
+      setStatusSafe("LIVE READY","good");
+    }catch(e){
+      if(seq!==searchSeq)return;
+      const msg=e?.name==="AbortError"?"Profile request timed out.":(e.message||String(e));
+      const s=getState();
+      if(s){s.profileError=msg;}
+      const cached=readCachedProfile(player,platform);
+      if(cached&&profileLooksUsable(cached)){
+        if(s)s.profile=cached;
+        renderProfileSafe();renderLegendsSafe();renderBadgesSafe();
+        notice("bad",`<b>Live search failed; showing same-player cache.</b><br>${safe(msg)}`);
+        setStatusSafe("CACHE READY","syncing");
+      }else{
+        if(s)s.profile=null;
+        renderProfileSafe();renderLegendsSafe();
+        notice("bad",`<b>Search failed.</b><br>${safe(msg)}<br><small>Settings → Check health can verify the Worker path. Stale saved Worker URLs now fall back to the default Worker automatically.</small>`);
+        setStatusSafe("SEARCH FAIL","bad");
+      }
+    }finally{
+      if(seq===searchSeq){
+        if(btn){btn.disabled=false;btn.textContent=oldText==="Go Live"?"Search":oldText}
+        searchLock=false;
+      }
+    }
+  };
+
+  document.addEventListener("submit",function(e){
+    if(e.target&&e.target.id==="searchForm"){
+      e.preventDefault();
+      e.stopPropagation();
+      window.apexiqSafeSearch(true);
+    }
+  },true);
+
+  function boot(){
+    document.documentElement.dataset.v49942="stats-connection-restore";
+    ensureAutoOption();
+    const root=configuredRoot();
+    if(root!==configuredRoot()||!root)commitRoot(DEFAULT_ROOT);
+    const btn=byId("searchButtonV49919")||document.querySelector("#searchForm button[type='submit']");
+    if(btn){btn.disabled=false;btn.textContent="Search"}
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
+})();
+</script>
+
 </body>
 </html>
