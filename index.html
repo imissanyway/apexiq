@@ -9762,7 +9762,7 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
 <script id="apexiq-v49964-beta-release-polish-js">
 (function(){
   "use strict";
-  const BUILD="v4.9.9.64-beta-release-polish-copy-settings-codes-guide";
+  const BUILD="v4.9.9.65-beta-enter-access-fix";
   function $(s,r=document){return r.querySelector(s)}
   function $all(s,r=document){return Array.from(r.querySelectorAll(s))}
   function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]||c))}
@@ -9829,6 +9829,98 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
     [250,900,1800,3600].forEach(ms=>setTimeout(()=>{try{cleanHero();cleanCopy();sanitizeStatus();updateBuildHub();}catch(e){console.warn(BUILD,e)}},ms));
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
+})();
+</script>
+
+
+
+<!-- === ApexIQ v4.9.9.65 Beta enter/access hotfix === -->
+<script id="apexiq-v49965-beta-enter-access-fix-js">
+(function(){
+  "use strict";
+  const BUILD="v4.9.9.65-beta-enter-access-fix";
+  const TOKEN_KEY="apexiq:betaToken:v49950";
+  const ROLE_KEY="apexiq:betaRole:v49950";
+  const CODES={
+    "AIQ-ORIGIN-7K2M":{name:"Coye / IMissAnyway",role:"Owner",admin:true,desc:"Founder · Product Lead · QA/API Testing Lead · Release Control"},
+    "AIQ-ANCHOR-9Q4T":{name:"Fastwagen",role:"Tester · Contributor · Asset Verification",admin:true,desc:"Sticker, badge, logo, UI, beta feedback, and asset verification"},
+    "AIQ-SENTINEL-3W8X":{name:"Deadkenn3dys",role:"Tester/Admin candidate",admin:true,desc:"Trusted beta testing and support/admin candidate"},
+    "AIQ-RIFT-7K2M":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
+    "AIQ-NOVA-9Q4T":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
+    "AIQ-PULSE-3W8X":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
+    "AIQ-VAULT-6D1P":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
+    "AIQ-ORBIT-5H7L":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
+    "AIQ-PHASE-2N9C":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
+    "AIQ-TRACK-8F4A":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
+    "AIQ-BOOST-1R6V":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
+    "AIQ-SCAN-4M2K":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
+    "AIQ-PRIME-7X9D":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
+    "AIQ-BEACON-3C5Q":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
+    "AIQ-LEGEND-6T8Z":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"}
+  };
+  function $(s,r=document){return r.querySelector(s)}
+  function normalizeCode(v){
+    return String(v||"")
+      .trim()
+      .toUpperCase()
+      .replace(/[\u2010\u2011\u2012\u2013\u2014\u2212]/g,"-")
+      .replace(/[^A-Z0-9-]/g,"");
+  }
+  function safeJSONSet(key,val){
+    try{localStorage.setItem(key,JSON.stringify(val));return true}catch(e){
+      try{sessionStorage.setItem(key,JSON.stringify(val));return true}catch(_){return false}
+    }
+  }
+  function showError(msg){
+    const err=$("#aiqV49950BetaError");
+    if(err)err.textContent=msg||"Invalid beta code.";
+  }
+  function unlockWith(code){
+    const c=normalizeCode(code);
+    const meta=CODES[c];
+    if(!meta){showError("Invalid beta code.");return false;}
+    const stamp=Date.now();
+    const ok1=safeJSONSet(TOKEN_KEY,{ok:true,code:c,ts:stamp,build:BUILD});
+    const ok2=safeJSONSet(ROLE_KEY,Object.assign({code:c,ts:stamp,build:BUILD},meta));
+    if(!ok1||!ok2){showError("Could not save beta access. Enable browser site storage, then try again.");return false;}
+    document.documentElement.dataset.aiqBeta="ok";
+    const gate=$("#aiqV49950BetaGate");
+    if(gate){gate.hidden=true;gate.setAttribute("aria-hidden","true");gate.style.display="none";}
+    const label=$("#aiqV49950PrivateLabel span");
+    if(label)label.textContent="Private Beta · "+meta.role;
+    showError("");
+    setTimeout(function(){try{window.dispatchEvent(new CustomEvent("apexiq:beta:granted",{detail:{role:meta.role}}))}catch(_){ }},0);
+    return true;
+  }
+  function bind(){
+    const input=$("#aiqV49950BetaCode");
+    const button=$("#aiqV49950BetaEnter");
+    if(button && !button.dataset.aiqV49965Bound){
+      button.dataset.aiqV49965Bound="1";
+      button.addEventListener("click",function(ev){
+        const val=($("#aiqV49950BetaCode")||{}).value||"";
+        if(unlockWith(val)){ev.preventDefault();ev.stopPropagation();}
+      },true);
+    }
+    if(input && !input.dataset.aiqV49965Bound){
+      input.dataset.aiqV49965Bound="1";
+      input.addEventListener("keydown",function(ev){
+        if(ev.key==="Enter"){
+          if(unlockWith(input.value)){ev.preventDefault();ev.stopPropagation();}
+        }
+      },true);
+      input.addEventListener("input",function(){
+        const cleaned=normalizeCode(input.value);
+        if(cleaned && cleaned!==input.value.toUpperCase().replace(/[\u2010\u2011\u2012\u2013\u2014\u2212]/g,"-")){
+          input.value=cleaned;
+        }
+      });
+    }
+  }
+  function boot(){bind();setTimeout(bind,150);setTimeout(bind,600);}
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
+  try{new MutationObserver(bind).observe(document.documentElement,{childList:true,subtree:true});}catch(_){ }
+  window.APEXIQ_BETA_GRANT_V49965=unlockWith;
 })();
 </script>
 
