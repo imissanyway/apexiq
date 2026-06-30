@@ -7542,5 +7542,205 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
 })();
 </script>
 
+
+
+<!-- === ApexIQ v4.9.9.50 Private beta gate + support/admin foundation === -->
+<style id="apexiq-v49950-beta-support-admin-css">
+/* v4.9.9.50: additive beta/support/admin shell. Does not touch search, Worker, LFG, emoji, badges, meta, ranked, or themes. */
+html[data-aiq-beta="locked"] body{overflow:hidden;}
+.aiq-v49950-beta-overlay{
+  position:fixed;inset:0;z-index:120000;display:grid;place-items:center;padding:18px;
+  background:radial-gradient(circle at 20% 15%, color-mix(in srgb,var(--brand,#7c3aed) 24%, transparent), transparent 34%),
+             radial-gradient(circle at 80% 10%, color-mix(in srgb,var(--brand-2,#22d3ee) 22%, transparent), transparent 36%),
+             rgba(2,8,23,.86);
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+}
+.aiq-v49950-beta-overlay[hidden]{display:none!important;}
+.aiq-v49950-beta-card{
+  width:min(560px,100%);border:1px solid color-mix(in srgb,var(--brand,#7c3aed) 42%,var(--line,#334155));
+  background:linear-gradient(180deg,color-mix(in srgb,var(--surface,#0f172a) 94%,transparent),color-mix(in srgb,var(--surface-2,#111827) 98%,transparent));
+  color:var(--text,#f8fafc);border-radius:30px;padding:28px;box-shadow:0 40px 120px rgba(0,0,0,.5);
+}
+.aiq-v49950-beta-kicker,.aiq-v49950-panel-kicker{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;color:var(--brand-2,#22d3ee);
+  font-weight:1000;text-transform:uppercase;letter-spacing:.14em;font-size:.78rem;
+}
+.aiq-v49950-beta-card h2{font-size:clamp(2rem,8vw,4.4rem);line-height:.9;margin:0 0 12px;letter-spacing:-.08em;}
+.aiq-v49950-beta-card p{color:var(--muted,#94a3b8);line-height:1.5;margin:0 0 16px;}
+.aiq-v49950-beta-form{display:grid;gap:10px;margin-top:16px;}
+.aiq-v49950-beta-form input,.aiq-v49950-support-panel select,.aiq-v49950-support-panel textarea{
+  width:100%;min-height:48px;border-radius:15px;border:1px solid var(--line,#334155);background:var(--surface-2,#111827);color:var(--text,#f8fafc);
+  padding:12px 14px;font:inherit;outline:none;
+}
+.aiq-v49950-beta-form input:focus,.aiq-v49950-support-panel textarea:focus,.aiq-v49950-support-panel select:focus{border-color:var(--brand,#7c3aed);box-shadow:0 0 0 4px color-mix(in srgb,var(--brand,#7c3aed) 18%, transparent);}
+.aiq-v49950-beta-actions,.aiq-v49950-support-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+.aiq-v49950-btn{
+  border:0;border-radius:15px;min-height:46px;padding:0 16px;font-weight:1000;cursor:pointer;color:#fff;
+  background:linear-gradient(90deg,var(--brand,#7c3aed),var(--brand-2,#22d3ee));box-shadow:0 16px 40px color-mix(in srgb,var(--brand,#7c3aed) 24%, transparent);
+}
+.aiq-v49950-btn.ghost{background:var(--surface-2,#111827);color:var(--text,#f8fafc);border:1px solid var(--line,#334155);box-shadow:none;}
+.aiq-v49950-note{font-size:.84rem;color:var(--muted,#94a3b8);line-height:1.4;}
+.aiq-v49950-error{color:#fca5a5;font-weight:900;min-height:20px;}
+.aiq-v49950-private-label{
+  display:inline-flex;align-items:center;gap:6px;border:1px solid color-mix(in srgb,var(--brand,#7c3aed) 38%,var(--line,#334155));
+  background:color-mix(in srgb,var(--brand,#7c3aed) 13%,var(--surface,#0f172a));color:var(--text,#f8fafc);
+  border-radius:999px;padding:7px 11px;font-size:.74rem;font-weight:1000;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap;
+}
+.aiq-v49950-private-label i{width:8px;height:8px;border-radius:999px;background:var(--brand-2,#22d3ee);box-shadow:0 0 16px var(--brand-2,#22d3ee);}
+.aiq-v49950-support-toggle{
+  position:fixed;right:18px;bottom:170px;z-index:9300;width:52px;height:52px;border:0;border-radius:18px;cursor:pointer;
+  background:linear-gradient(135deg,var(--brand-3,#f97316),var(--brand,#7c3aed));color:#fff;font-size:1.15rem;font-weight:1000;
+  box-shadow:0 22px 60px rgba(0,0,0,.38);
+}
+.aiq-v49950-support-panel{
+  position:fixed;right:18px;bottom:238px;z-index:9301;width:min(430px,calc(100vw - 36px));max-height:min(680px,calc(100vh - 276px));overflow:auto;
+  background:var(--surface,#0f172a);color:var(--text,#f8fafc);border:1px solid var(--line,#334155);border-radius:26px;padding:16px;box-shadow:0 34px 110px rgba(0,0,0,.42);
+}
+.aiq-v49950-support-panel[hidden]{display:none!important;}
+.aiq-v49950-support-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:12px;}
+.aiq-v49950-support-head h3{margin:0;font-size:1.28rem;}
+.aiq-v49950-support-head small{color:var(--muted,#94a3b8);}
+.aiq-v49950-close{border:1px solid var(--line,#334155);background:var(--surface-2,#111827);color:var(--text,#f8fafc);border-radius:12px;width:40px;height:40px;font-weight:1000;cursor:pointer;}
+.aiq-v49950-support-panel label{display:grid;gap:6px;margin:10px 0;color:var(--muted,#94a3b8);font-weight:900;font-size:.85rem;}
+.aiq-v49950-support-panel textarea{min-height:116px;resize:vertical;line-height:1.45;}
+.aiq-v49950-ticket-status{min-height:22px;color:var(--brand-2,#22d3ee);font-weight:900;}
+.aiq-v49950-admin-box{border-top:1px solid var(--line,#334155);margin-top:14px;padding-top:14px;display:grid;gap:10px;}
+.aiq-v49950-admin-list{display:grid;gap:9px;max-height:260px;overflow:auto;padding-right:3px;}
+.aiq-v49950-ticket{border:1px solid var(--line,#334155);background:var(--surface-2,#111827);border-radius:16px;padding:11px;display:grid;gap:7px;}
+.aiq-v49950-ticket b{color:var(--text,#f8fafc);}.aiq-v49950-ticket small{color:var(--muted,#94a3b8);line-height:1.35;}.aiq-v49950-ticket p{margin:0;color:var(--text,#f8fafc);overflow-wrap:anywhere;}
+.aiq-v49950-ticket select{min-height:38px;padding:6px 9px;border-radius:10px;font-size:.86rem;}
+.aiq-v49950-settings-card{grid-column:1/-1;border:1px solid var(--line,#334155);background:var(--surface,#0f172a);border-radius:18px;padding:16px;margin-top:14px;display:grid;gap:10px;}
+.aiq-v49950-settings-card h3{margin:0}.aiq-v49950-settings-card p{margin:0;color:var(--muted,#94a3b8);line-height:1.45;}
+.aiq-v49950-role-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;}
+.aiq-v49950-role-card{border:1px solid var(--line,#334155);background:var(--surface-2,#111827);border-radius:15px;padding:11px;display:grid;gap:5px;}
+.aiq-v49950-role-card b{color:var(--text,#f8fafc);}.aiq-v49950-role-card span{color:var(--brand-2,#22d3ee);font-weight:900;font-size:.85rem;}.aiq-v49950-role-card small{color:var(--muted,#94a3b8);line-height:1.35;}
+@media(max-width:860px){
+  .aiq-v49950-beta-card{padding:22px;border-radius:24px;}
+  .aiq-v49950-support-toggle{right:16px!important;bottom:calc(env(safe-area-inset-bottom,0px) + 172px)!important;width:46px!important;height:46px!important;border-radius:16px!important;font-size:1rem!important;}
+  .aiq-v49950-support-panel{right:10px!important;left:10px!important;bottom:calc(env(safe-area-inset-bottom,0px) + 226px)!important;width:auto!important;max-height:calc(100vh - 282px)!important;padding:14px!important;}
+  .aiq-v49950-beta-actions,.aiq-v49950-support-actions{display:grid;grid-template-columns:1fr;}
+}
+</style>
+<script id="apexiq-v49950-beta-support-admin-js">
+(function(){
+  "use strict";
+  const BUILD="v4.9.9.50-beta-gate-support-admin";
+  const TOKEN_KEY="apexiq:betaToken:v49950";
+  const ROLE_KEY="apexiq:betaRole:v49950";
+  const TICKET_KEY="apexiq:supportTickets:v49950";
+  const CONFIG={enabled: (window.APEXIQ_BETA_GATE_ENABLED!==false && !/[?&]beta=off\b/i.test(location.search))};
+  const CODES={
+    IMISSANYWAY:{name:"Coye / IMissAnyway",role:"Owner",admin:true,desc:"Founder · Product Lead · QA & API Testing Lead"},
+    FASTWAGEN:{name:"Fastwagen",role:"Tester · Contributor · Asset Verification",admin:true,desc:"Sticker, badge, logo, UI, and beta verification"},
+    DEADKENN3DYS:{name:"Deadkenn3dys",role:"Tester/Admin candidate",admin:true,desc:"Trusted beta testing and support/admin candidate"}
+  };
+  const CATEGORIES=["Stats issue","Badge issue","LFG issue","Sticker/emoji issue","Theme/UI issue","Beta access","General feedback"];
+  const STATUSES=["open","reviewing","fixed","closed"];
+  function $(s,r=document){return r.querySelector(s)}
+  function $all(s,r=document){return Array.from(r.querySelectorAll(s))}
+  function safe(v){try{return typeof esc==="function"?esc(v):String(v??"").replace(/[&<>\"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}catch(_){return String(v??"")}}
+  function readJSON(key,fb){try{const v=localStorage.getItem(key);return v?JSON.parse(v):fb}catch(_){return fb}}
+  function writeJSON(key,val){try{localStorage.setItem(key,JSON.stringify(val));return true}catch(e){console.warn(BUILD,e);return false}}
+  function role(){return readJSON(ROLE_KEY,null)}
+  function codeKey(v){return String(v||"").trim().toUpperCase().replace(/\s+/g,"")}
+  function hasAccess(){if(!CONFIG.enabled)return true;const tok=readJSON(TOKEN_KEY,null);return !!(tok&&tok.ok&&tok.code&&CODES[tok.code])}
+  function grant(code){const c=codeKey(code);const meta=CODES[c];if(!meta)return false;writeJSON(TOKEN_KEY,{ok:true,code:c,ts:Date.now()});writeJSON(ROLE_KEY,{code:c,...meta,ts:Date.now()});document.documentElement.dataset.aiqBeta="ok";ensureBetaGate();ensurePrivateLabel();ensureSupportShell();ensureSettingsPanel();return true}
+  function revoke(){try{localStorage.removeItem(TOKEN_KEY);localStorage.removeItem(ROLE_KEY)}catch(_){};document.documentElement.dataset.aiqBeta=CONFIG.enabled?"locked":"off";ensureBetaGate();ensurePrivateLabel();ensureSettingsPanel();}
+  function ensurePrivateLabel(){
+    const old=$("#aiqV49950PrivateLabel");
+    const r=role();
+    if(!CONFIG.enabled){if(old)old.remove();return;}
+    const txt=r?`Private Beta · ${r.role}`:"Private Beta";
+    if(old){old.innerHTML=`<i></i><span>${safe(txt)}</span>`;return;}
+    const target=$(".nav-actions")||$(".broadcast-nav")||document.body;
+    const el=document.createElement("span");el.id="aiqV49950PrivateLabel";el.className="aiq-v49950-private-label";el.innerHTML=`<i></i><span>${safe(txt)}</span>`;
+    target.insertBefore(el,target.firstChild||null);
+  }
+  function ensureBetaGate(){
+    if(!CONFIG.enabled){document.documentElement.dataset.aiqBeta="off";const ex=$("#aiqV49950BetaGate");if(ex)ex.hidden=true;return;}
+    let gate=$("#aiqV49950BetaGate");
+    if(!gate){
+      document.body.insertAdjacentHTML("beforeend",`<div id="aiqV49950BetaGate" class="aiq-v49950-beta-overlay" role="dialog" aria-modal="true" aria-labelledby="aiqV49950BetaTitle"><section class="aiq-v49950-beta-card"><div class="aiq-v49950-beta-kicker"><span>ApexIQ private beta</span><span>v4.9.9.50</span></div><h2 id="aiqV49950BetaTitle">Beta access</h2><p>ApexIQ is in a controlled private beta while the Worker/KV access system, support tools, and final launch checks are being prepared.</p><div class="aiq-v49950-beta-form"><input id="aiqV49950BetaCode" autocomplete="one-time-code" placeholder="Enter beta access code"><div class="aiq-v49950-beta-actions"><button type="button" id="aiqV49950BetaEnter" class="aiq-v49950-btn">Enter ApexIQ</button><button type="button" id="aiqV49950BetaDev" class="aiq-v49950-btn ghost" title="Temporary local frontend gate only">Dev note</button></div><div id="aiqV49950BetaError" class="aiq-v49950-error"></div><div class="aiq-v49950-note"><b>Security note:</b> this frontend gate is only a beta-testing placeholder. Real access enforcement belongs in the Cloudflare Worker/KV layer and remains on the roadmap.</div></div></section></div>`);
+      gate=$("#aiqV49950BetaGate");
+      $("#aiqV49950BetaEnter")?.addEventListener("click",function(){const input=$("#aiqV49950BetaCode");const err=$("#aiqV49950BetaError");if(grant(input?.value)){if(err)err.textContent="";}else{if(err)err.textContent="Invalid beta code.";input?.focus();}});
+      $("#aiqV49950BetaCode")?.addEventListener("keydown",function(e){if(e.key==="Enter")$("#aiqV49950BetaEnter")?.click();});
+      $("#aiqV49950BetaDev")?.addEventListener("click",function(){const err=$("#aiqV49950BetaError");if(err)err.textContent="Frontend placeholder only. Use ?beta=off for local development, or move validation into Worker/KV for real security.";});
+    }
+    const ok=hasAccess();gate.hidden=ok;document.documentElement.dataset.aiqBeta=ok?"ok":"locked";if(!ok)setTimeout(() => $("#aiqV49950BetaCode")?.focus(),80);
+  }
+  function tickets(){return readJSON(TICKET_KEY,[]).filter(Boolean)}
+  function saveTickets(list){return writeJSON(TICKET_KEY,list.slice(0,200))}
+  function context(){
+    let st=null;try{st=(typeof state==="object"?state:null)}catch(_){}
+    const active=$(".tab-button.active,[data-go].active");
+    return {searchedUsername:st?.player||$("#playerInput")?.value||"",platform:st?.platform||$("#platformInput")?.value||"Auto",page:active?.dataset?.go||active?.textContent?.trim()||"unknown"};
+  }
+  function renderAdminList(){
+    const box=$("#aiqV49950AdminTickets");if(!box)return;
+    const r=role();
+    if(!r?.admin){box.innerHTML='<div class="aiq-v49950-note">Admin/support inbox unlocks after an authorized beta code is entered.</div>';return;}
+    const list=tickets();
+    if(!list.length){box.innerHTML='<div class="aiq-v49950-note">No local support tickets yet.</div>';return;}
+    box.innerHTML=list.map(t=>`<article class="aiq-v49950-ticket" data-ticket="${safe(t.id)}"><b>${safe(t.category)} · ${safe(t.status||"open")}</b><small>${safe(t.timestamp)} · ${safe(t.searchedUsername||"no search")} · ${safe(t.platform||"Auto")} · ${safe(t.page||"unknown tab")}</small><p>${safe(t.message)}</p><select data-ticket-status="${safe(t.id)}">${STATUSES.map(s=>`<option value="${safe(s)}" ${s===(t.status||"open")?"selected":""}>${safe(s)}</option>`).join("")}</select></article>`).join("");
+  }
+  function createTicket(){
+    const cat=$("#aiqV49950TicketCategory")?.value||"General feedback";
+    const msg=String($("#aiqV49950TicketMessage")?.value||"").trim();
+    const out=$("#aiqV49950TicketStatus");
+    if(!msg){if(out)out.textContent="Type a message first.";return;}
+    const c=context();
+    const t={id:"ticket_"+Date.now()+"_"+Math.random().toString(16).slice(2),category:cat,message:msg,searchedUsername:c.searchedUsername,platform:c.platform,page:c.page,timestamp:new Date().toLocaleString(),status:"open"};
+    const list=[t,...tickets()];
+    if(saveTickets(list)){if(out)out.textContent="Ticket saved locally.";const box=$("#aiqV49950TicketMessage");if(box)box.value="";renderAdminList();}
+    else if(out)out.textContent="Could not save ticket. Local storage may be full.";
+  }
+  function ensureSupportShell(){
+    if(!$("#aiqV49950SupportToggle")){
+      document.body.insertAdjacentHTML("beforeend",`<button type="button" id="aiqV49950SupportToggle" class="aiq-v49950-support-toggle" aria-label="Open ApexIQ support">?</button><section id="aiqV49950SupportPanel" class="aiq-v49950-support-panel" hidden><div class="aiq-v49950-support-head"><div><div class="aiq-v49950-panel-kicker"><span>Support desk</span><span>local beta</span></div><h3>ApexIQ Support</h3><small>Report bugs, badge issues, stat problems, beta access, or UI feedback.</small></div><button type="button" id="aiqV49950SupportClose" class="aiq-v49950-close" aria-label="Close support">×</button></div><label>Category<select id="aiqV49950TicketCategory">${CATEGORIES.map(c=>`<option>${safe(c)}</option>`).join("")}</select></label><label>Message<textarea id="aiqV49950TicketMessage" placeholder="Tell us what happened. Include the searched name/platform if it matters."></textarea></label><div class="aiq-v49950-support-actions"><button type="button" id="aiqV49950SubmitTicket" class="aiq-v49950-btn">Submit ticket</button><button type="button" id="aiqV49950OpenAdmin" class="aiq-v49950-btn ghost">Admin inbox</button></div><div id="aiqV49950TicketStatus" class="aiq-v49950-ticket-status"></div><div id="aiqV49950AdminBox" class="aiq-v49950-admin-box"><b>Admin/support inbox</b><div id="aiqV49950AdminTickets" class="aiq-v49950-admin-list"></div></div></section>`);
+      $("#aiqV49950SupportToggle")?.addEventListener("click",function(){const p=$("#aiqV49950SupportPanel");if(p){p.hidden=!p.hidden;if(!p.hidden)renderAdminList();}});
+      $("#aiqV49950SupportClose")?.addEventListener("click",function(){const p=$("#aiqV49950SupportPanel");if(p)p.hidden=true;});
+      $("#aiqV49950SubmitTicket")?.addEventListener("click",createTicket);
+      $("#aiqV49950OpenAdmin")?.addEventListener("click",function(){renderAdminList();$("#aiqV49950AdminBox")?.scrollIntoView({block:"nearest"});});
+      $("#aiqV49950AdminTickets")?.addEventListener("change",function(e){const sel=e.target.closest("[data-ticket-status]");if(!sel)return;const id=sel.getAttribute("data-ticket-status");const list=tickets();const item=list.find(x=>x.id===id);if(item){item.status=sel.value;item.updatedAt=new Date().toLocaleString();saveTickets(list);renderAdminList();}});
+    }
+    renderAdminList();
+  }
+  function settingsHTML(){
+    const r=role();
+    return `<section id="aiqV49950SettingsCard" class="aiq-v49950-settings-card"><div class="aiq-v49950-panel-kicker"><span>Private beta + support</span><span>${safe(BUILD)}</span></div><h3>Beta access and admin support</h3><p>This is the frontend beta/admin placeholder. It is useful for private testing, but real security still needs Worker/KV validation.</p><div class="aiq-v49950-role-grid"><article class="aiq-v49950-role-card"><b>Coye / IMissAnyway</b><span>Owner</span><small>Product lead, QA/API testing lead, roadmap, build approval, and final release control.</small></article><article class="aiq-v49950-role-card"><b>Fastwagen</b><span>Tester · Contributor · Asset Verification</span><small>Sticker, badge, logo, UI, beta feedback, and asset verification.</small></article><article class="aiq-v49950-role-card"><b>Deadkenn3dys</b><span>Tester/Admin candidate</span><small>Trusted tester role prepared for support/admin workflows.</small></article></div><p><b>Current access:</b> ${r?`${safe(r.name)} — ${safe(r.role)}`:"not unlocked"}</p><div class="aiq-v49950-support-actions"><button type="button" id="aiqV49950SettingsOpenSupport" class="aiq-v49950-btn">Open support desk</button><button type="button" id="aiqV49950ResetBeta" class="aiq-v49950-btn ghost">Reset beta access</button></div></section>`;
+  }
+  function ensureSettingsPanel(){
+    const panel=$("#settingsPanel");if(!panel)return;
+    const old=$("#aiqV49950SettingsCard");if(old)old.remove();
+    panel.insertAdjacentHTML("beforeend",settingsHTML());
+    $("#aiqV49950SettingsOpenSupport")?.addEventListener("click",function(){ensureSupportShell();const p=$("#aiqV49950SupportPanel");if(p){p.hidden=false;renderAdminList();}});
+    $("#aiqV49950ResetBeta")?.addEventListener("click",function(){revoke();});
+  }
+  function updateBuildHub(){
+    const entry=`<li data-aiq-v49950><small>v4.9.9.50</small><b>Private beta gate + support/admin foundation</b><span>Added the frontend private beta access screen, local beta/admin role foundation, local support tickets, admin inbox status updates, mobile support panel polish, and roadmap/changelog updates. Search, Worker, LFG, emoji posting, badges, meta, ranked, and theme internals were not changed.</span></li>`;
+    $all("#aiqV49948BuildHub,#aiqV49948BuildHubSettings").forEach(function(hub){
+      const badge=hub.querySelector(".aiq-v49948-build-badge");if(badge)badge.textContent=BUILD;
+      const latest=hub.querySelector(".aiq-v49948-build-card:first-of-type .aiq-v49948-build-list");if(latest&&!latest.querySelector("[data-aiq-v49950]"))latest.insertAdjacentHTML("afterbegin",entry);
+      const roadmap=hub.querySelector(".aiq-v49948-build-card:nth-of-type(2) .aiq-v49948-build-list");
+      if(roadmap){
+        $all("li",roadmap).forEach(function(li){const b=li.querySelector("b");if(/Private beta shield/i.test(b?.textContent||"")){b.textContent="Private beta shield — frontend placeholder active";const span=li.querySelector("span");if(span)span.textContent="Access-code UX, local beta token, support entry points, and tester/admin placeholders are active. Real enforcement still belongs in Cloudflare Worker/KV.";}});
+        if(!roadmap.querySelector("[data-aiq-worker-kv]"))roadmap.insertAdjacentHTML("beforeend",`<li data-aiq-worker-kv><b>Worker/KV real access validation</b><span>Move beta codes, admin roles, revocation, rate limiting, and protected API access out of index.html and into the Worker/KV layer.</span></li>`);
+      }
+    });
+  }
+  function boot(){
+    document.documentElement.dataset.v49950="beta-gate-support-admin";
+    ensurePrivateLabel();ensureBetaGate();ensureSupportShell();ensureSettingsPanel();updateBuildHub();
+    [250,900,1800,3200].forEach(ms=>setTimeout(function(){try{ensurePrivateLabel();ensureBetaGate();ensureSettingsPanel();updateBuildHub();}catch(e){console.warn(BUILD,e)}},ms));
+  }
+  const oldRenderSettings=window.renderSettings;
+  if(typeof oldRenderSettings==="function"){
+    window.renderSettings=function(){const ret=oldRenderSettings.apply(this,arguments);setTimeout(function(){ensureSettingsPanel();updateBuildHub();},0);return ret;};
+  }
+  const mo=new MutationObserver(function(){clearTimeout(window.__aiq49950T);window.__aiq49950T=setTimeout(function(){try{ensurePrivateLabel();ensureSupportShell();ensureSettingsPanel();updateBuildHub();}catch(e){console.warn(BUILD,e)}},120)});
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",function(){boot();try{mo.observe(document.body,{childList:true,subtree:true})}catch(_){}});else{boot();try{mo.observe(document.body,{childList:true,subtree:true})}catch(_){}}
+})();
+</script>
+
 </body>
 </html>
