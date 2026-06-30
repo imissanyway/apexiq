@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ApexIQ — v4.9.9.54 Logo Theme Integration</title>
-<link id="apexiq-v49954-favicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%2307172b%22%2F%3E%3Cpath%20d%3D%22M14%2050%2032%2010l18%2040h-9l-3.4-8H26.4L23%2050h-9Zm16-16h4l-2-5-2%205Z%22%20fill%3D%22%23f8fbff%22%2F%3E%3Cpath%20d%3D%22M26%2042h12l3.4%208H22.6L26%2042Z%22%20fill%3D%22%238b5cf6%22%2F%3E%3Cpath%20d%3D%22M42%2050h8l-4-9-4%209Z%22%20fill%3D%22%2300e5ff%22%2F%3E%3C%2Fsvg%3E">
+<title>ApexIQ — v4.9.9.56 Real Logo Image Theme Safe</title>
+<link id="apexiq-v49956-favicon" rel="icon" type="image/png" href="assets/apexiq-logo.png">
 <!-- ApexIQ Predator Broadcast v4.9.9.10 Source Re-Extract + Edge Fix: artifact-cleanup-only badge asset refresh on top of the stable full badge system. -->
 <style>
 
@@ -3794,13 +3794,78 @@ html[data-v497="polish-performance-ui-freeze"] #searchForm{
   color: rgba(100,116,139,.9) !important;
 }
 </style>
+
+<!-- === ApexIQ v4.9.9.56 Real PNG logo theme-safe wrapper === -->
+<style id="apexiq-v49956-real-logo-css">
+/* v4.9.9.56: uses the selected real ApexIQ PNG wordmark. No SVG logo remake. */
+:root{
+  --logo-chip-bg: color-mix(in srgb, var(--surface-2) 88%, transparent);
+  --logo-chip-border: color-mix(in srgb, var(--brand) 34%, var(--line));
+  --logo-accent: var(--brand);
+  --logo-accent-2: var(--brand-2);
+  --logo-glow: color-mix(in srgb, var(--brand) 26%, transparent);
+}
+.brand-bug.apexiq-v49956-brand{
+  min-height: 44px !important;
+  min-width: 188px !important;
+  max-width: 230px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 6px 13px !important;
+  overflow: hidden !important;
+  border-radius: 14px !important;
+  border: 1px solid var(--logo-chip-border) !important;
+  background:
+    linear-gradient(135deg, var(--logo-chip-bg), color-mix(in srgb, var(--logo-accent) 9%, transparent)) !important;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--logo-accent-2) 10%, transparent) inset,
+    0 8px 24px var(--logo-glow) !important;
+  text-decoration: none !important;
+  flex: 0 0 auto !important;
+}
+.apexiq-v49956-logo-img{
+  display: block !important;
+  width: clamp(128px, 10.5vw, 184px) !important;
+  height: auto !important;
+  max-height: 28px !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  filter: drop-shadow(0 0 10px var(--logo-glow));
+  user-select: none !important;
+  pointer-events: none !important;
+}
+@media (max-width: 760px){
+  .brand-bug.apexiq-v49956-brand{
+    min-width: 132px !important;
+    max-width: 150px !important;
+    min-height: 42px !important;
+    padding: 6px 10px !important;
+  }
+  .apexiq-v49956-logo-img{
+    width: 124px !important;
+    max-height: 25px !important;
+  }
+}
+@media (max-width: 430px){
+  .brand-bug.apexiq-v49956-brand{
+    min-width: 112px !important;
+    max-width: 122px !important;
+    padding: 6px 8px !important;
+  }
+  .apexiq-v49956-logo-img{
+    width: 108px !important;
+    max-height: 23px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div class="app">
   <nav class="broadcast-nav" aria-label="ApexIQ navigation">
-    <a class="brand-bug apexiq-v49954-brand" href="#" onclick="switchPanel('dashboard');return false;" aria-label="ApexIQ home">
-      <span class="apexiq-v49954-wordmark" aria-hidden="true"><span class="apexiq-v49954-base">Apex</span><span class="apexiq-v49954-iq"><span>I</span><span class="apexiq-v49954-q">Q</span></span></span>
-      <span class="apexiq-v49954-status">Broadcast Final</span>
+    <a class="brand-bug apexiq-v49956-brand" href="#" onclick="switchPanel('dashboard');return false;" aria-label="ApexIQ home">
+      <img class="apexiq-v49956-logo-img" src="assets/apexiq-logo.png" alt="ApexIQ" decoding="async" fetchpriority="high">
     </a>
     <div class="tab-strip">
       <button class="tab-button" data-go="dashboard">Dashboard</button>
@@ -8274,6 +8339,34 @@ html[data-aiq-beta="locked"] body{overflow:hidden;}
   }
   function boot(){document.documentElement.dataset.v49954="logo-theme-integration";[0,250,900,1800].forEach(function(ms){setTimeout(patchBuildHub,ms)});}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+})();
+</script>
+
+
+<script id="apexiq-v49956-changelog-roadmap">
+(function(){
+  "use strict";
+  function all(sel, root){ return Array.from((root||document).querySelectorAll(sel)); }
+  function text(el){ return String((el&&el.textContent)||""); }
+  function patchBuildHub(){
+    var entry = '<li data-aiq-v49956><small>v4.9.9.56</small><b>Real logo image theme-safe</b><span>Replaced the incorrect remade/SVG logo direction with the selected real ApexIQ transparent PNG wordmark. Theme changes now affect the logo chip, glow, border, and accent treatment without distorting or redesigning the logo image. Protected stats, badges, LFG, support, beta, meta, and theme systems remained untouched.</span></li>';
+    var roadmap = '<li data-aiq-v49956-roadmap><b>Logo image integration — done</b><span>The live nav now uses the selected ApexIQ PNG wordmark. Future brand work should create an editable source/vector export from this exact approved design, not generate a new logo.</span></li>';
+    all('#aiqV49948BuildHub,#aiqV49948BuildHubSettings').forEach(function(hub){
+      var badge = hub.querySelector('.aiq-v49948-build-badge');
+      if(badge) badge.textContent = 'v4.9.9.56';
+      var lists = all('.aiq-v49948-build-list', hub);
+      if(lists[0] && !lists[0].querySelector('[data-aiq-v49956]')) lists[0].insertAdjacentHTML('afterbegin', entry);
+      if(lists[1]){
+        all('li', lists[1]).forEach(function(li){
+          var b = li.querySelector('b');
+          if(/logo\s*(\+|image|theme|integration)/i.test(text(b))) li.remove();
+        });
+        if(!lists[1].querySelector('[data-aiq-v49956-roadmap]')) lists[1].insertAdjacentHTML('afterbegin', roadmap);
+      }
+    });
+  }
+  function boot(){ document.documentElement.dataset.v49956 = 'real-logo-image-theme-safe'; [0,250,900,1800].forEach(function(ms){ setTimeout(patchBuildHub, ms); }); }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true}); else boot();
 })();
 </script>
 
