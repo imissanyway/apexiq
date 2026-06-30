@@ -7947,5 +7947,209 @@ html[data-aiq-beta="locked"] body{overflow:hidden;}
 })();
 </script>
 
+
+
+<!-- === ApexIQ v4.9.9.53 Badge locker proof sync === -->
+<script id="apexiq-v49953-badge-locker-proof-sync-js">
+(function(){
+  "use strict";
+  const BUILD="v4.9.9.53-badge-locker-proof-sync";
+  const OWNER_20B_BLOCKLIST=new Set(["gibraltar"]);
+  const ROSTER_FALLBACK=["Alter","Ash","Axle","Ballistic","Bangalore","Bloodhound","Catalyst","Caustic","Conduit","Crypto","Fuse","Gibraltar","Horizon","Lifeline","Loba","Mad Maggie","Mirage","Newcastle","Octane","Pathfinder","Rampart","Revenant","Seer","Sparrow","Valkyrie","Vantage","Wattson","Wraith"];
+  function $(s,r=document){return r.querySelector(s)}
+  function $all(s,r=document){return Array.from(r.querySelectorAll(s))}
+  function safe(v){return String(v??"").replace(/[&<>\"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
+  function norm(v){return String(v||"").toLowerCase().replace(/[^a-z0-9]/g,"")}
+  function fmt(v){try{return typeof fmtSafe==="function"?fmtSafe(v):String(v??"—")}catch(_){return String(v??"—")}}
+  function num(v){const n=Number(String(v??"").replace(/,/g,""));return Number.isFinite(n)?n:0}
+  function getState(){try{return typeof state==="object"?state:null}catch(_){return null}}
+  function fieldSafe(obj,key,fb=""){try{return typeof field==="function"?field(obj,key,fb):(obj?.fields?.[key]?.value??obj?.[key]??fb)}catch(_){return fb}}
+  function packs(){try{return Array.isArray(PACK_DATA)?PACK_DATA:ROSTER_FALLBACK.map(name=>({name,id:norm(name)}))}catch(_){return ROSTER_FALLBACK.map(name=>({name,id:norm(name)}))}}
+  function rosterName(n){const k=norm(n);if(!k)return"";const p=packs().find(x=>norm(x.name)===k||norm(x.id)===k);return p?p.name:""}
+  function rosterCount(){return packs().length||28}
+  function manifest(){try{const el=document.getElementById("apexiqBadgeManifestV498");const m=window.APEXIQ_BADGE_MANIFEST_V498||JSON.parse(el?.textContent||"{}");return Array.isArray(m.badges)?m.badges:[]}catch(_){return[]}}
+  function manifestBadge(id){return manifest().find(b=>String(b.id)===id)||null}
+  function isOwnerProfile(profile){const st=getState();const s=[st?.player,profile?.player,profile?.name,profile?.displayName,fieldSafe(profile,"name",""),fieldSafe(profile,"player","")].join(" ");return /imissanyway/i.test(s)}
+  function rowLike(x){return !!(x&&typeof x==="object"&&(Array.isArray(x.stats)||Array.isArray(x.trackers)||Array.isArray(x.data)||Array.isArray(x.values)||Array.isArray(x.badges)||Array.isArray(x.officialBadges)||Array.isArray(x.badgeSlots)||Array.isArray(x.legendBadges)||Array.isArray(x.alsBadges)||Array.isArray(x.collectionBadges)||Array.isArray(x.visualBadges)||Array.isArray(x.badgeRows)))}
+  function rawStatArray(row){return [
+    ...(Array.isArray(row?.stats)?row.stats:[]),
+    ...(Array.isArray(row?.trackers)?row.trackers.map(t=>({label:t.label||t.name||t.key,value:t.value,source:t.source||row.source})):[]),
+    ...(Array.isArray(row?.data)?row.data.map(t=>({label:t.label||t.name||t.key||t.displayName,value:t.value??t.total??t.amount,source:t.source||row.source})):[]),
+    ...(Array.isArray(row?.values)?row.values.map(t=>({label:t.label||t.name||t.key||t.displayName,value:t.value??t.total??t.amount,source:t.source||row.source})):[])
+  ].filter(Boolean)}
+  function rawBadgeArray(row){return [
+    ...(Array.isArray(row?.officialBadges)?row.officialBadges:[]),
+    ...(Array.isArray(row?.badges)?row.badges:[]),
+    ...(Array.isArray(row?.badgeSlots)?row.badgeSlots:[]),
+    ...(Array.isArray(row?.legendBadges)?row.legendBadges:[]),
+    ...(Array.isArray(row?.alsBadges)?row.alsBadges:[]),
+    ...(Array.isArray(row?.collectionBadges)?row.collectionBadges:[]),
+    ...(Array.isArray(row?.visualBadges)?row.visualBadges:[]),
+    ...(Array.isArray(row?.badgeRows)?row.badgeRows:[])
+  ].filter(Boolean)}
+  function badgeText(b){if(typeof b==="string")return b;return [b?.rawName,b?.name,b?.label,b?.title,b?.displayName,b?.alt,b?.ariaLabel,b?.id,b?.type,b?.key,b?.badgeType].filter(Boolean).join(" ")}
+  function badgeSrc(b){return typeof b==="object"?String(b?.src||b?.url||b?.icon||b?.image||""):""}
+  function exactWake(text,legend){const l=String(legend||"").replace(/[.*+?^${}()|[\]\\]/g,"\\$&");return new RegExp("^"+l+"(?:'s|’s)?\\s+Wake$","i").test(String(text||"").trim().replace(/[_-]+/g," "))}
+  function exactWrath(text,legend){const l=String(legend||"").replace(/[.*+?^${}()|[\]\\]/g,"\\$&");return new RegExp("^"+l+"(?:'s|’s)?\\s+Wrath$","i").test(String(text||"").trim().replace(/[_-]+/g," "))}
+  function explicit20(text,src){const s=String(text||"").toLowerCase().replace(/[_-]+/g," ");const u=String(src||"").toLowerCase();return /\b20\s*kill\s*badge\b|\b20\s*bomb\b|\b20b\b|\btwenty\s*kill\b|\bwake\b/.test(s)||/20b[_-]?collection|twenty[_-]?kill|wake/.test(u)}
+  function explicit4k(text,src){const s=String(text||"").toLowerCase().replace(/[_-]+/g," ");const u=String(src||"").toLowerCase();return /\b4\s*k\s*damage\s*badge\b|\b4k\b|4000\s*damage|4,000\s*damage|four\s*thousand\s*damage|\bwrath\b|hammer/.test(s)||/4k[_-]?collection|four[_-]?k|wrath/.test(u)}
+  function typeFromBadge(b,legend,profile){
+    const text=badgeText(b),src=badgeSrc(b),id=norm((typeof b==="object"&&(b.id||b.type||b.badgeType||b.key))||"");
+    const bLegend=rosterName(typeof b==="object"?(b.legend||b.legendName||b.character||b.nameHint):"");
+    if(bLegend&&bLegend!==legend)return"";
+    let type="";
+    if(id==="twentykill"||id==="20b"||id==="twentykillbadge"||id==="wake")type="20b";
+    else if(id==="fourk"||id==="4k"||id==="fourkdamagebadge"||id==="wrath")type="4k";
+    else if(exactWake(text,legend))type="20b";
+    else if(exactWrath(text,legend))type="4k";
+    else if(explicit20(text,src))type="20b";
+    else if(explicit4k(text,src))type="4k";
+    if(!type)return"";
+    if(isOwnerProfile(profile)&&type==="20b"&&OWNER_20B_BLOCKLIST.has(norm(legend)))return"";
+    return type;
+  }
+  function mergedLegendRows(profile){
+    const pools=[profile?.allLegendStats,profile?.legendStats,profile?.legends,profile?.legendRows,profile?.trackerRows,profile?.legendBadges,profile?.officialLegendBadges,profile?.alsLegendBadges,profile?.profilePage?.legendStats,profile?.profile?.legendStats,profile?.rendered?.legendStats,profile?.profilePage?.allLegendStats,profile?.rendered?.legendCards,profile?.rendered?.legendBadges,profile?.profilePage?.legendBadges].filter(Boolean);
+    const raw=[];
+    const collect=function(x,hint=""){
+      if(!x)return;
+      if(Array.isArray(x)){x.forEach(i=>collect(i,hint));return;}
+      if(typeof x!=="object")return;
+      const nm=rosterName(x.legend||x.name||x.legendName||x.LegendName||x.displayName||x.character||hint);
+      if(nm&&rowLike(x))raw.push({...x,legend:nm});
+      for(const [key,child] of Object.entries(x)){if(child&&typeof child==="object")collect(child,rosterName(key)||nm||hint)}
+    };
+    pools.forEach(p=>collect(p,""));
+    const by=new Map();
+    for(const r of raw){
+      const legend=rosterName(r.legend||r.name||r.legendName);const k=norm(legend);if(!k)continue;
+      const old=by.get(k)||{legend,stats:[],badges:[],officialBadges:[],badgeSlots:[],source:""};
+      const merged={...old,legend,source:[old.source,r.source].filter(Boolean).join(" + ")||r.source||old.source||"Apex Legends Status"};
+      merged.stats=[...(old.stats||[]),...rawStatArray(r)];
+      merged.badges=[...(old.badges||[]),...rawBadgeArray(r)];
+      merged.officialBadges=merged.badges;
+      by.set(k,merged);
+    }
+    return [...by.values()];
+  }
+  function proofCounts(profile){
+    const p=profile||((getState()||{}).profile)||{};
+    const legends20=new Set(),legends4k=new Set(),evidence=[];
+    for(const row of mergedLegendRows(p)){
+      const legend=rosterName(row?.legend||row?.name||row?.legendName)||String(row?.legend||"");
+      if(!legend)continue;
+      const seen=new Set();
+      for(const b of rawBadgeArray(row)){
+        const type=typeFromBadge(b,legend,p);
+        if(!type||seen.has(type))continue;
+        seen.add(type);
+        if(type==="20b")legends20.add(norm(legend));
+        if(type==="4k")legends4k.add(norm(legend));
+        evidence.push({legend,type,source:"badge",raw:badgeText(b)});
+      }
+      // This mirrors the accepted legend-card proof bridge: exact ALS text rows only, never numeric stat inference.
+      for(const s of rawStatArray(row)){
+        const label=String(s?.label||s?.name||s?.key||"").trim();
+        let type="";
+        if(exactWake(label,legend)&&!(isOwnerProfile(p)&&OWNER_20B_BLOCKLIST.has(norm(legend))))type="20b";
+        if(exactWrath(label,legend))type="4k";
+        if(!type||seen.has(type))continue;
+        seen.add(type);
+        if(type==="20b")legends20.add(norm(legend));
+        if(type==="4k")legends4k.add(norm(legend));
+        evidence.push({legend,type,source:"exact-row",raw:label});
+      }
+    }
+    return {legends20,legends4k,evidence,profileKey:[norm((getState()||{}).player||p.player||p.name||p.displayName||""),String((getState()||{}).platform||p.platform||"auto").toLowerCase()].join("|")};
+  }
+  function tierRequirement(t){return String(t?.requires).toLowerCase()==="all_legends"?rosterCount():num(t?.requires)}
+  function tierStateFor(b,value){
+    const tiers=(b?.tiers||[]).slice().sort((a,b)=>tierRequirement(a)-tierRequirement(b));
+    let earned=null,next=tiers[0]||null;
+    for(const t of tiers){if(value>=tierRequirement(t)){earned=t;next=null}else{next=t;break}}
+    return {earned,next,asset:(earned||next||tiers[tiers.length-1]||{}).asset||(tiers[0]||{}).asset||"",requirement:tierRequirement(earned||next||tiers[0]||{})};
+  }
+  function collectionState(id,count){const b=manifestBadge(id)||{id,name:id==="20b_collection"?"20B Collection":"4K Collection",tiers:[]};const ts=tierStateFor(b,count);return {...b,value:count,...ts,unlocked:!!ts.earned};}
+  function setStatTile(panel,label,value,small){
+    const tile=$all(".stat-tile",panel).find(t=>norm($("span",t)?.textContent||"")===norm(label));
+    if(tile){const b=$("b",tile);const s=$("small",tile);if(b)b.textContent=String(value);if(s&&small)s.textContent=small;}
+  }
+  function updateLockerCard(panel,stateObj){
+    const card=$all(".v49924LockerCard",panel).find(c=>norm($("h4",c)?.textContent||"")===norm(stateObj.name));
+    if(!card)return;
+    const tier=stateObj.earned||stateObj.next||{};
+    const req=tierRequirement(tier)||1;
+    const asset=(tier.asset||stateObj.asset||"");
+    card.classList.toggle("unlocked",!!stateObj.unlocked);
+    card.classList.toggle("locked",!stateObj.unlocked);
+    let img=$("img",card);
+    if(asset){
+      if(!img){card.insertAdjacentHTML("afterbegin",`<img loading="lazy" src="${safe(asset)}" alt="${safe(stateObj.name)}">`);img=$("img",card);}
+      if(img){img.setAttribute("src",asset);img.setAttribute("alt",stateObj.name);}
+    }
+    const p=$("p",card);
+    if(p)p.textContent=(stateObj.unlocked?"unlocked ":"locked · next ")+(tier.label||"Tier I")+" · "+fmt(stateObj.value)+"/"+fmt(req);
+  }
+  function recalcLockerTotals(panel){
+    const unlocked=$all(".v49924LockerCard.unlocked",panel).length;
+    const total=$all(".v49924LockerCard",panel).length;
+    setStatTile(panel,"Unlocked",unlocked,"of "+total+" badge lines");
+    const maxTier=$all(".v49924LockerCard.unlocked",panel).filter(c=>/\bTier\s+IV\b/i.test($("p",c)?.textContent||"")).length;
+    setStatTile(panel,"Max tier",maxTier,"tier IV lines");
+  }
+  function patchBadgesPanel(){
+    const panel=$("#badgesPanel"),p=(getState()||{}).profile;if(!panel||!p)return;
+    const counts=proofCounts(p);
+    const twenty=collectionState("20b_collection",counts.legends20.size);
+    const fourk=collectionState("4k_collection",counts.legends4k.size);
+    setStatTile(panel,"20B legends",counts.legends20.size,"verified ALS badge-slot proof");
+    setStatTile(panel,"4K legends",counts.legends4k.size,"verified ALS badge-slot proof");
+    updateLockerCard(panel,twenty);
+    updateLockerCard(panel,fourk);
+    recalcLockerTotals(panel);
+    const guard=panel.querySelector(".v49924Warn");
+    if(guard&&!guard.querySelector("[data-aiq-v49953]"))guard.insertAdjacentHTML("beforeend",` <span data-aiq-v49953>Locker synced from verified per-legend ALS 20B/4K proof.</span>`);
+  }
+  function romanTier(label){const m=String(label||"").match(/\b(?:tier\s*)?(IV|III|II|I)\b/i);return m?m[1].toUpperCase():"—"}
+  function miniButtonHTML(s){const tier=romanTier(s.earned?.label);const req=tierRequirement(s.earned||s.next||{})||1;const detail=`${s.name}: ${s.earned?.label||"unlocked"} · ${s.value}/${req}`;return `<button type="button" class="v49924MiniBadge" title="${safe(detail)}" data-aiq-mini-badge="${safe(detail)}" data-aiq-v49953-mini="${safe(s.id)}"><img loading="lazy" src="${safe(s.asset)}" alt="${safe(s.name)}"><span>${safe(tier)}</span></button>`}
+  function patchMiniCase(){
+    const p=(getState()||{}).profile;if(!p)return;
+    const caseEl=$("#profilePanel .v49924MiniCase");if(!caseEl)return;
+    const counts=proofCounts(p);
+    const items=[collectionState("20b_collection",counts.legends20.size),collectionState("4k_collection",counts.legends4k.size)].filter(x=>x.unlocked&&x.asset);
+    if(!items.length)return;
+    let grid=caseEl.querySelector(".v49924MiniGrid");
+    if(!grid){
+      const empty=caseEl.querySelector(".v49924Tip.is-open");if(empty)empty.remove();
+      caseEl.insertAdjacentHTML("beforeend",`<div class="v49924MiniGrid"></div><div id="apexiqMiniBadgeTip" class="v49924Tip"></div>`);
+      grid=caseEl.querySelector(".v49924MiniGrid");
+    }
+    for(const it of items){
+      if(!grid.querySelector(`[data-aiq-v49953-mini="${CSS.escape(it.id)}"]`)&&!$all(".v49924MiniBadge",grid).some(b=>norm(b.getAttribute("title")||"").includes(norm(it.name))))grid.insertAdjacentHTML("afterbegin",miniButtonHTML(it));
+    }
+    const small=caseEl.querySelector(".v49924MiniCaseHead small");if(small)small.textContent=String($all(".v49924MiniBadge",grid).length)+" unlocked";
+  }
+  function updateBuildHub(){
+    const entry='<li data-aiq-v49953><small>v4.9.9.53</small><b>Badge locker proof sync</b><span>Synced the AIQ Badge Case + Proof Locker with the same verified per-legend ALS 20B/4K proof used by legend cards. Collection progress now counts unique verified legends without using stat-number inference. Search, Worker, legend card display, LFG, support, beta, meta, and theme systems were not changed.</span></li>';
+    const roadmap='<li data-aiq-v49953-roadmap><b>Badge system / proof locker hardening</b><span>Continue improving locker proof evidence, tier rules, and tester-visible badge audit details so AIQ unlocks always match verified ALS proof.</span></li>';
+    $all("#aiqV49948BuildHub,#aiqV49948BuildHubSettings").forEach(function(hub){
+      const badge=hub.querySelector(".aiq-v49948-build-badge");if(badge)badge.textContent=BUILD;
+      const lists=$all(".aiq-v49948-build-list",hub);
+      if(lists[0]&&!lists[0].querySelector("[data-aiq-v49953]"))lists[0].insertAdjacentHTML("afterbegin",entry);
+      if(lists[1]&&!lists[1].querySelector("[data-aiq-v49953-roadmap]"))lists[1].insertAdjacentHTML("afterbegin",roadmap);
+    });
+  }
+  function patchAll(){try{patchBadgesPanel();patchMiniCase();updateBuildHub();window.apexiqV49953ProofCounts=proofCounts((getState()||{}).profile||{});}catch(e){console.warn(BUILD,e)}}
+  const oldRenderBadges=window.renderBadgesPanel;
+  if(typeof oldRenderBadges==="function")window.renderBadgesPanel=function(){const ret=oldRenderBadges.apply(this,arguments);setTimeout(patchAll,0);return ret;};
+  const oldRenderProfile=window.renderProfile;
+  if(typeof oldRenderProfile==="function")window.renderProfile=function(){const ret=oldRenderProfile.apply(this,arguments);setTimeout(patchAll,0);return ret;};
+  const oldSwitch=window.switchPanel;
+  if(typeof oldSwitch==="function")window.switchPanel=function(){const ret=oldSwitch.apply(this,arguments);setTimeout(patchAll,60);return ret;};
+  function boot(){document.documentElement.dataset.v49953="badge-locker-proof-sync";[0,250,900,1800,3200].forEach(ms=>setTimeout(patchAll,ms));}
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
+})();
+</script>
+
 </body>
 </html>
