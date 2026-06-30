@@ -7691,7 +7691,7 @@ html[data-aiq-beta="locked"] body{overflow:hidden;}
     const c=context();
     const t={id:"ticket_"+Date.now()+"_"+Math.random().toString(16).slice(2),category:cat,message:msg,searchedUsername:c.searchedUsername,platform:c.platform,page:c.page,timestamp:new Date().toLocaleString(),status:"open"};
     const list=[t,...tickets()];
-    if(saveTickets(list)){if(out)out.textContent="Ticket saved locally.";const box=$("#aiqV49950TicketMessage");if(box)box.value="";renderAdminList();}
+    if(saveTickets(list)){if(out){out.textContent="Submitted!";out.setAttribute("data-success","true");}const btn=$("#aiqV49950SubmitTicket");if(btn){const old=btn.textContent;btn.textContent="Submitted!";setTimeout(()=>{btn.textContent=old||"Submit ticket";},1400);}const box=$("#aiqV49950TicketMessage");if(box)box.value="";renderAdminList();}
     else if(out)out.textContent="Could not save ticket. Local storage may be full.";
   }
   function ensureSupportShell(){
@@ -7739,6 +7739,48 @@ html[data-aiq-beta="locked"] body{overflow:hidden;}
   }
   const mo=new MutationObserver(function(){clearTimeout(window.__aiq49950T);window.__aiq49950T=setTimeout(function(){try{ensurePrivateLabel();ensureSupportShell();ensureSettingsPanel();updateBuildHub();}catch(e){console.warn(BUILD,e)}},120)});
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",function(){boot();try{mo.observe(document.body,{childList:true,subtree:true})}catch(_){}});else{boot();try{mo.observe(document.body,{childList:true,subtree:true})}catch(_){}}
+})();
+</script>
+
+
+<!-- === ApexIQ v4.9.9.51 Mobile beta label + support confirmation polish === -->
+<style id="apexiq-v49951-mobile-beta-label-ticket-confirm-css">
+/* v4.9.9.51: additive polish only. Keeps search, Worker, LFG, emoji, badges, meta, ranked, and themes untouched. */
+.aiq-v49950-ticket-status[data-success="true"]{color:var(--ok,#22c55e)!important;font-weight:1000;}
+@media(max-width:860px){
+  /* The private beta/admin role pill was landing inside the mobile tab shell and blocking tabs. Mobile keeps access visible in Settings instead. */
+  #aiqV49950PrivateLabel{display:none!important;}
+  .aiq-v49950-support-toggle{right:calc(env(safe-area-inset-right,0px) + 12px)!important;bottom:calc(env(safe-area-inset-bottom,0px) + 188px)!important;width:42px!important;height:42px!important;border-radius:14px!important;font-size:.95rem!important;}
+  .aiq-v49950-support-panel{bottom:calc(env(safe-area-inset-bottom,0px) + 240px)!important;max-height:calc(100vh - 300px)!important;}
+}
+</style>
+<script id="apexiq-v49951-mobile-beta-label-ticket-confirm-js">
+(function(){
+  "use strict";
+  const BUILD="v4.9.9.51-mobile-beta-label-ticket-confirm";
+  function $(s,r=document){return r.querySelector(s)}
+  function $all(s,r=document){return Array.from(r.querySelectorAll(s))}
+  function markSubmittedText(){
+    const out=$("#aiqV49950TicketStatus");
+    if(out && /ticket saved locally/i.test(out.textContent||"")){out.textContent="Submitted!";out.setAttribute("data-success","true");}
+  }
+  function updateBuildHub(){
+    const entry='<li data-aiq-v49951><small>v4.9.9.51</small><b>Mobile beta label + support confirmation polish</b><span>Hid the private beta/admin role pill on mobile so it no longer blocks the bottom navigation, kept beta/admin access visible in Settings, and changed successful support ticket feedback to “Submitted!”. Search, Worker, LFG, emoji posting, badges, meta, ranked, and theme internals were not changed.</span></li>';
+    $all("#aiqV49948BuildHub,#aiqV49948BuildHubSettings").forEach(function(hub){
+      const badge=hub.querySelector(".aiq-v49948-build-badge");if(badge)badge.textContent=BUILD;
+      const latest=hub.querySelector(".aiq-v49948-build-card:first-of-type .aiq-v49948-build-list");
+      if(latest&&!latest.querySelector("[data-aiq-v49951]"))latest.insertAdjacentHTML("afterbegin",entry);
+    });
+  }
+  function boot(){
+    document.documentElement.dataset.v49951="mobile-beta-label-ticket-confirm";
+    markSubmittedText();updateBuildHub();
+  }
+  document.addEventListener("click",function(e){
+    if(e.target&&e.target.closest&&e.target.closest("#aiqV49950SubmitTicket"))setTimeout(markSubmittedText,80);
+  },true);
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);else boot();
+  [300,900,1800,3200].forEach(ms=>setTimeout(boot,ms));
 })();
 </script>
 
