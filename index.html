@@ -9822,16 +9822,18 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
 .v49975PreviewRow.live{border-color:color-mix(in srgb,#22c55e 32%,var(--line,#334155));}.v49975PreviewRow.visible{border-color:color-mix(in srgb,var(--brand,#7c3aed) 28%,var(--line,#334155));}.v49975PreviewRow.baseline{border-color:color-mix(in srgb,var(--brand-2,#22d3ee) 18%,var(--line,#334155));opacity:.96;}
 .v49975StateChip{display:inline-flex;width:max-content;max-width:130px;align-items:center;border:1px solid color-mix(in srgb,var(--brand-2,#22d3ee) 32%,var(--line,#334155));border-radius:999px;padding:3px 7px;margin:8px 0 6px;background:color-mix(in srgb,var(--brand-2,#22d3ee) 10%,var(--surface,#0f172a));color:var(--text,#f8fafc);font-weight:1000;font-size:.68rem;text-transform:uppercase;letter-spacing:.045em;}
 .v49975StateChip.live{border-color:color-mix(in srgb,#22c55e 42%,var(--line,#334155));background:color-mix(in srgb,#22c55e 12%,var(--surface,#0f172a));}.v49975StateChip.visible{border-color:color-mix(in srgb,var(--brand,#7c3aed) 38%,var(--line,#334155));background:color-mix(in srgb,var(--brand,#7c3aed) 12%,var(--surface,#0f172a));}.v49975StateChip.baseline{border-color:color-mix(in srgb,var(--brand-3,#f97316) 30%,var(--line,#334155));background:color-mix(in srgb,var(--brand-3,#f97316) 8%,var(--surface,#0f172a));}
+.v49975StateChip.cached{border-color:color-mix(in srgb,var(--brand-3,#f97316) 36%,var(--line,#334155));background:color-mix(in srgb,var(--brand-3,#f97316) 10%,var(--surface,#0f172a));color:var(--text,#f8fafc);} .v49975MetaCard.ready:has(.v49975StateChip.cached){border-color:color-mix(in srgb,var(--brand-3,#f97316) 20%,var(--line,#334155));}
+
 .v49975MetaCard.baseline{border-color:color-mix(in srgb,var(--brand-3,#f97316) 22%,var(--line,#334155));}.v49975MetaCard.baseline::before{opacity:.62;background:linear-gradient(90deg,color-mix(in srgb,var(--brand-3,#f97316) 62%,transparent),color-mix(in srgb,var(--brand-2,#22d3ee) 44%,transparent));}.v49975MetaCard.baseline .v49973MetaBg{opacity:.21;filter:saturate(.78) contrast(.92) drop-shadow(0 18px 24px rgba(0,0,0,.42));}.v49975MetaCard.baseline .v49973Trend.base{color:color-mix(in srgb,var(--brand-3,#f97316) 78%,var(--text,#f8fafc));}
 .v49975MetaCard.baseline .v49973Pick{display:none!important}.v49976AwaitingBlock{display:grid;gap:3px;margin:8px 0 7px}.v49976AwaitingBlock strong{font-size:.98rem;line-height:1.05;color:var(--text,#f8fafc);font-weight:1000}.v49976AwaitingBlock small{font-size:.76rem;line-height:1.12;color:color-mix(in srgb,var(--muted,#94a3b8) 88%,var(--text,#f8fafc));font-weight:900}.v49975PreviewRow.baseline em{font-size:.82rem;color:color-mix(in srgb,var(--brand-3,#f97316) 74%,var(--text,#f8fafc));}.v49975PreviewRow.baseline small{color:color-mix(in srgb,var(--muted,#94a3b8) 92%,var(--text,#f8fafc));}.v49975PreviewRow.visible small,.v49975PreviewRow.live small{color:color-mix(in srgb,#22c55e 74%,var(--text,#f8fafc));}
 .v49975MetaGrid{margin-bottom:86px}.screen[data-screen="meta"] #metaPanelFull{padding-bottom:86px;}
 @media(max-width:860px){.v49975MetaPreviewAll{grid-template-columns:1fr 1fr;gap:7px}.v49975PreviewRow{padding:8px}.v49975StateChip{font-size:.64rem;max-width:112px}.v49975MetaCard .v49973Facts{font-size:.68rem}}
 @media(max-width:420px){.v49975MetaPreviewAll{grid-template-columns:1fr}.v49975PreviewRow{grid-template-columns:auto minmax(0,1fr) auto}}
 </style>
-<script id="apexiq-v49973-meta-complete-roster-js">
+<script id="apexiq-v49977-meta-cache-restore-js">
 (function(){
   "use strict";
-  var BUILD="v4.9.9.76-meta-source-integrity-from-v75";
+  var BUILD="v4.9.9.77-meta-cache-restore-source-labels-from-v76";
   function byId(id){return document.getElementById(id)}
   function safe(v){try{return String(v==null?"":v).replace(/[&<>\"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}catch(_){return ""}}
   function scalar(v){
@@ -9858,7 +9860,7 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
     return out;
   }
 
-  /* v76: complete roster coverage. Sourced rows keep values when available. Awaiting rows keep portraits/roster info only and never show fake pick-rate percentages. */
+  /* v77: complete Meta roster source restore. Use the full cached Meta snapshot that previously powered the complete board; live/visible rows can still override when actual source data is present. */
   var baselineMeta=[
     {legend:"Seer",pickRate:"12.6",trend:"▲2830.74%",avgRank:"Platinum 3",avgLevel:"837",state:"visible"},
     {legend:"Axle",pickRate:"12.1",trend:"▼29.85%",avgRank:"Platinum 3",avgLevel:"833",state:"visible"},
@@ -9869,25 +9871,25 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
     {legend:"Wraith",pickRate:"4.8",trend:"▼4.66%",avgRank:"Gold 3",avgLevel:"537",state:"visible"},
     {legend:"Bangalore",pickRate:"4.7",trend:"▼15.16%",avgRank:"Gold 2",avgLevel:"564",state:"visible"},
     {legend:"Mad Maggie",pickRate:"4.7",trend:"▼39.66%",avgRank:"Platinum 4",avgLevel:"692",state:"visible"},
-    {legend:"Conduit",pickRate:"4.3",trend:"Stable",avgRank:"Baseline",avgLevel:"Roster",state:"visible"},
-    {legend:"Lifeline",pickRate:"3.1",trend:"Stable",avgRank:"Baseline",avgLevel:"Roster",state:"visible"},
-    {legend:"Ash",pickRate:"2.8",trend:"Stable",avgRank:"Baseline",avgLevel:"Roster",state:"visible"},
-    {legend:"Alter",pickRate:"",trend:"Awaiting live meta data",avgRank:"Pending live row",avgLevel:"No live row yet",state:"baseline"},
-    {legend:"Bloodhound",pickRate:"",trend:"Awaiting live meta data",avgRank:"Pending live row",avgLevel:"No live row yet",state:"baseline"},
-    {legend:"Catalyst",pickRate:"",trend:"Awaiting live meta data",avgRank:"Pending live row",avgLevel:"No live row yet",state:"baseline"},
-    {legend:"Caustic",pickRate:"",trend:"Awaiting live meta data",avgRank:"Pending live row",avgLevel:"No live row yet",state:"baseline"},
-    {legend:"Crypto",pickRate:"",trend:"Awaiting live meta data",avgRank:"Pending live row",avgLevel:"No live row yet",state:"baseline"},
-    {legend:"Fuse",pickRate:"",trend:"Awaiting live meta data",avgRank:"Pending live row",avgLevel:"No live row yet",state:"baseline"},
-    {legend:"Gibraltar",pickRate:"",trend:"Awaiting live meta data",avgRank:"Pending live row",avgLevel:"No live row yet",state:"baseline"},
-    {legend:"Horizon",pickRate:"",trend:"Awaiting live meta data",avgRank:"Pending live row",avgLevel:"No live row yet",state:"baseline"},
-    {legend:"Loba",pickRate:"",trend:"Awaiting live meta data",avgRank:"Pending live row",avgLevel:"No live row yet",state:"baseline"},
-    {legend:"Mirage",pickRate:"",trend:"Awaiting live meta data",avgRank:"Pending live row",avgLevel:"No live row yet",state:"baseline"},
-    {legend:"Newcastle",pickRate:"",trend:"Awaiting live meta data",avgRank:"Pending live row",avgLevel:"No live row yet",state:"baseline"},
-    {legend:"Rampart",pickRate:"",trend:"Awaiting live meta data",avgRank:"Pending live row",avgLevel:"No live row yet",state:"baseline"},
-    {legend:"Revenant",pickRate:"",trend:"Awaiting live meta data",avgRank:"Pending live row",avgLevel:"No live row yet",state:"baseline"},
-    {legend:"Sparrow",pickRate:"",trend:"Awaiting live meta data",avgRank:"Pending live row",avgLevel:"No live row yet",state:"baseline"},
-    {legend:"Vantage",pickRate:"",trend:"Awaiting live meta data",avgRank:"Pending live row",avgLevel:"No live row yet",state:"baseline"},
-    {legend:"Wattson",pickRate:"",trend:"Awaiting live meta data",avgRank:"Pending live row",avgLevel:"No live row yet",state:"baseline"}
+    {legend:"Conduit",pickRate:"4.3",trend:"▼66.34%",avgRank:"Gold 1",avgLevel:"732",state:"visible"},
+    {legend:"Lifeline",pickRate:"3.1",trend:"▲8.15%",avgRank:"Silver 1",avgLevel:"440",state:"visible"},
+    {legend:"Ash",pickRate:"2.8",trend:"▼34.15%",avgRank:"Gold 3",avgLevel:"595",state:"visible"},
+    {legend:"Fuse",pickRate:"2.7",trend:"▼8.55%",avgRank:"Gold 2",avgLevel:"568",state:"cached"},
+    {legend:"Gibraltar",pickRate:"2.0",trend:"▼10.6%",avgRank:"Gold 3",avgLevel:"523",state:"cached"},
+    {legend:"Mirage",pickRate:"2.0",trend:"▼6.08%",avgRank:"Gold 2",avgLevel:"670",state:"cached"},
+    {legend:"Caustic",pickRate:"1.9",trend:"▼8.57%",avgRank:"Gold 2",avgLevel:"618",state:"cached"},
+    {legend:"Revenant",pickRate:"1.9",trend:"▼2.84%",avgRank:"Gold 2",avgLevel:"623",state:"cached"},
+    {legend:"Sparrow",pickRate:"1.7",trend:"▼24.08%",avgRank:"Gold 3",avgLevel:"586",state:"cached"},
+    {legend:"Alter",pickRate:"1.6",trend:"▲20.15%",avgRank:"Gold 1",avgLevel:"755",state:"cached"},
+    {legend:"Vantage",pickRate:"1.6",trend:"▼50.97%",avgRank:"Gold 2",avgLevel:"656",state:"cached"},
+    {legend:"Wattson",pickRate:"1.6",trend:"▲1.19%",avgRank:"Gold 1",avgLevel:"769",state:"cached"},
+    {legend:"Bloodhound",pickRate:"1.3",trend:"▼1.46%",avgRank:"Bronze 2",avgLevel:"21",state:"cached"},
+    {legend:"Horizon",pickRate:"1.3",trend:"▼0.62%",avgRank:"Gold 1",avgLevel:"913",state:"cached"},
+    {legend:"Loba",pickRate:"1.1",trend:"▲5.43%",avgRank:"Gold 2",avgLevel:"783",state:"cached"},
+    {legend:"Newcastle",pickRate:"0.8",trend:"▼17.48%",avgRank:"Gold 3",avgLevel:"603",state:"cached"},
+    {legend:"Rampart",pickRate:"0.7",trend:"▼8.99%",avgRank:"Gold 4",avgLevel:"548",state:"cached"},
+    {legend:"Catalyst",pickRate:"0.5",trend:"—",avgRank:"—",avgLevel:"—",state:"cached"},
+    {legend:"Crypto",pickRate:"0.3",trend:"—",avgRank:"—",avgLevel:"—",state:"cached"}
   ];
   function rowName(m){return scalar(m&& (m.legend||m.name||m.character||m.legendName||m.hero||m.label||m.title))}
   function rowPick(m){return scalar(m&&(m.pickRate!=null?m.pickRate:m.rate!=null?m.rate:m.percent!=null?m.percent:m.value!=null?m.value:m.pick_rate!=null?m.pick_rate:m.pickrate!=null?m.pickrate:m.usage))}
@@ -9908,7 +9910,7 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
   }
   function seedRow(base,i){
     var p=packFor(base.legend);var r=roster().find(function(x){return norm(x.name)===norm(base.legend)})||{};
-    return {legend:(p&&p.name)||base.legend,pickRate:base.pickRate,trend:base.trend,avgRank:base.avgRank,avgLevel:base.avgLevel,img:(p?packImg(p):r.img)||"",source:base.state==="visible"?"sourced meta row":"Pending live row",dataState:base.state||"baseline",className:classFor(base.legend),rosterIndex:i};
+    return {legend:(p&&p.name)||base.legend,pickRate:base.pickRate,trend:base.trend,avgRank:base.avgRank,avgLevel:base.avgLevel,img:(p?packImg(p):r.img)||"",source:base.state==="visible"?"sourced meta row":(base.state==="cached"?"cached meta snapshot":"Pending live row"),dataState:base.state||"baseline",className:classFor(base.legend),rosterIndex:i};
   }
   function completeRows(){
     var by={};
@@ -9924,13 +9926,17 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
   }
   function trendClass(v){var s=scalar(v);return /▼|down|-/i.test(s)?"down":(/▲|up|\+/i.test(s)?"up":/baseline/i.test(s)?"base":"flat")}
   function pickText(v){var s=scalar(v).replace("%","").trim();return num(s)>0?s+"%":"—"}
-  function rowStateLabel(r){return r.dataState==="live"?"Live row":(r.dataState==="visible"?"Sourced row":"Awaiting")}
+  function rowStateLabel(r){return r.dataState==="live"?"Live row":(r.dataState==="visible"?"Sourced row":(r.dataState==="cached"?"Cached snapshot":"Awaiting"))}
   function notice(rows,full){
     var live=rows.filter(function(r){return r.dataState==="live"}).length;
     var visible=rows.filter(function(r){return r.dataState==="visible"}).length;
+    var cached=rows.filter(function(r){return r.dataState==="cached"}).length;
     var sourced=live+visible;
-    var awaiting=rows.length-sourced;
-    return '<div class="v49973MetaNotice v49975MetaNotice"><b>'+safe(full?'Meta board':'Meta preview')+'</b> '+safe(rows.length)+' legends shown · '+safe(sourced)+' sourced rows · '+safe(awaiting)+' awaiting live meta data.</div>';
+    var awaiting=rows.length-sourced-cached;
+    var parts=[safe(rows.length)+' legends shown', safe(sourced)+' sourced rows'];
+    if(cached)parts.push(safe(cached)+' cached meta snapshot rows');
+    if(awaiting)parts.push(safe(awaiting)+' awaiting live meta data');
+    return '<div class="v49973MetaNotice v49975MetaNotice"><b>'+safe(full?'Meta board':'Meta preview')+'</b> '+parts.join(' · ')+'.</div>';
   }
   function cardHTML(m,i){
     var img=m.img?'<img class="v49973MetaBg" loading="lazy" decoding="async" src="'+safe(m.img)+'" alt="'+safe(m.legend)+'">':'';
@@ -9960,11 +9966,11 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
     var wrapped=function(name){var ret=oldSwitch.apply(this,arguments);setTimeout(function(){if(name==="meta")render('metaPanelFull');else if(name==="dashboard")render('metaPanel')},180);return ret;};
     wrapped.__v49975=true;window.switchPanel=wrapped;
   }
-  function boot(){try{document.documentElement.dataset.v49976="meta-source-integrity"}catch(_){}render('metaPanel');if(metaVisible())render('metaPanelFull')}
+  function boot(){try{document.documentElement.dataset.v49977="meta-cache-restore"}catch(_){}render('metaPanel');if(metaVisible())render('metaPanelFull')}
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else setTimeout(boot,0);
   try{
     var list=document.querySelector('.aiq-build-list, .build-list, #changelogList, [data-build-list]');
-    if(list&&!list.querySelector('[data-aiq-v49976]')){var li=document.createElement('li');li.setAttribute('data-aiq-v49976','');li.innerHTML='<small>v4.9.9.76</small><b>Meta source integrity</b><span>Kept all 28 legends visible while removing fake-looking baseline pick-rate percentages. Sourced rows keep real values; missing rows now show honest awaiting-live-data states. No beta, nav, search, Worker, ranked, badge, LFG, support, or theme systems were changed.</span>';list.prepend(li);}
+    if(list&&!list.querySelector('[data-aiq-v49976]')){var li=document.createElement('li');li.setAttribute('data-aiq-v49976','');li.innerHTML='<small>v4.9.9.77</small><b>Meta complete snapshot restore</b><span>Restored the complete cached Meta snapshot that previously powered the full 28-legend board, while keeping sourced rows labeled separately from cached snapshot rows. No beta, nav, search, Worker, ranked, badge, LFG, support, or theme systems were changed.</span>';list.prepend(li);}
   }catch(_){ }
 })();
 </script>
