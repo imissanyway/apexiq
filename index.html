@@ -8900,5 +8900,239 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
 })();
 </script>
 
+
+
+<!-- === ApexIQ v4.9.9.60 Legend performance diagnostics + cache === -->
+<style id="apexiq-v49960-performance-css">
+/* v4.9.9.60: scoped diagnostics + render cache helpers only. No global image/nav/search rules. */
+.aiq-v49960-perf-card{
+  border:1px solid color-mix(in srgb,var(--brand) 24%,var(--line));
+  border-radius:18px;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--surface-2) 94%,transparent),color-mix(in srgb,var(--brand) 7%,transparent));
+  padding:14px;
+  display:grid;
+  gap:10px;
+}
+.aiq-v49960-perf-card h3{margin:0;font-size:16px;color:var(--text);}
+.aiq-v49960-perf-card p{margin:0;color:var(--muted);line-height:1.42;}
+.aiq-v49960-perf-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;}
+.aiq-v49960-perf-grid span{border:1px solid var(--line);border-radius:14px;padding:9px 10px;background:color-mix(in srgb,var(--surface) 75%,transparent);display:grid;gap:2px;}
+.aiq-v49960-perf-grid em{font-style:normal;color:var(--muted);font-size:11px;font-weight:900;letter-spacing:.04em;text-transform:uppercase;}
+.aiq-v49960-perf-grid b{font-size:14px;color:var(--text);}
+.aiq-v49960-cache-chip{display:inline-flex;align-items:center;gap:6px;width:max-content;border:1px solid color-mix(in srgb,var(--brand-2) 35%,var(--line));border-radius:999px;padding:5px 9px;background:color-mix(in srgb,var(--brand-2) 10%,transparent);font-size:12px;font-weight:900;color:var(--text);}
+.aiq-v49960-cache-chip:before{content:"";width:8px;height:8px;border-radius:99px;background:var(--brand-2);box-shadow:0 0 16px color-mix(in srgb,var(--brand-2) 55%,transparent);}
+</style>
+<script id="apexiq-v49960-performance-js">
+(function(){
+  "use strict";
+  var BUILD="v4.9.9.60-legend-performance-diagnostics-cache";
+  if(window.__apexiqV49960Booted)return;
+  window.__apexiqV49960Booted=true;
+
+  var DEBUG=false;
+  try{DEBUG=new URLSearchParams(location.search).get("debug")==="perf";}catch(_){DEBUG=false;}
+  var profileCache=window.__apexiqV49960ProfileCache||(window.__apexiqV49960ProfileCache=new Map());
+  var portraitCache=window.__apexiqV49960PortraitCache||(window.__apexiqV49960PortraitCache=new Map());
+  var inFlight=window.__apexiqV49960InFlight||(window.__apexiqV49960InFlight=new Map());
+  var renderTimer=0,portraitTimer=0,activeKey="",lastLegendRenderKey="";
+
+  function $(s,r){return (r||document).querySelector(s)}
+  function all(s,r){return Array.from((r||document).querySelectorAll(s))}
+  function safe(v){return String(v==null?"":v).replace(/[&<>\"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
+  function norm(v){return String(v||"").toLowerCase().replace(/[^a-z0-9]/g,"")}
+  function getInput(id){var el=document.getElementById(id);return el?String(el.value||"").trim():""}
+  function st(){try{return typeof state==="object"?state:{}}catch(_){return {}}}
+  function currentKey(){var s=st();var player=getInput("playerInput")||s.player||"";var platform=getInput("platformInput")||s.platform||"auto";return norm(player)+"|"+String(platform||"auto").toLowerCase();}
+  function urlKey(url){try{var u=new URL(url,location.href);var p=u.searchParams.get("player")||u.searchParams.get("name")||"";var pf=u.searchParams.get("platform")||u.searchParams.get("plat")||"auto";return norm(p)+"|"+String(pf||"auto").toLowerCase();}catch(_){return ""}}
+  function now(){return (performance&&performance.now)?performance.now():Date.now()}
+  var perf=window.ApexIQPerf||(window.ApexIQPerf={});
+  perf.debug=DEBUG;
+  perf.t0=perf.t0||now();
+  perf.marks=perf.marks||[];
+  perf.lastKey=perf.lastKey||"";
+  perf.lastSummary=perf.lastSummary||{};
+  perf.reset=function(key){this.t0=now();this.marks=[];this.lastKey=key||currentKey();mark("search start",{key:this.lastKey});};
+  function mark(label,data){
+    var t=Math.round(now()-perf.t0);
+    var item={label:label,ms:t,data:data||{}};
+    perf.marks.push(item);
+    perf.lastSummary[label]=t;
+    if(DEBUG)console.log("[ApexIQ perf]",label,t+"ms",data||"");
+    schedulePerfPanel();
+    return item;
+  }
+  function compact(ms){return typeof ms==="number"?ms+"ms":"—"}
+  var perfPanelTimer=0;
+  function schedulePerfPanel(){if(!DEBUG)return;clearTimeout(perfPanelTimer);perfPanelTimer=setTimeout(renderPerfPanel,120);}
+  function renderPerfPanel(){
+    if(!DEBUG)return;
+    var panel=$("#settingsPanel");if(!panel)return;
+    var old=$("#aiqV49960PerfCard",panel);if(old)old.remove();
+    var summary=perf.lastSummary||{};
+    var cacheCount=profileCache.size||0;
+    var rows=perf.marks.slice(-12).map(function(m){return '<span><em>'+safe(m.label)+'</em><b>'+safe(compact(m.ms))+'</b></span>'}).join("");
+    panel.insertAdjacentHTML("beforeend",'<section id="aiqV49960PerfCard" class="aiq-v49960-perf-card"><h3>Performance diagnostics</h3><p>Visible only with <b>?debug=perf</b>. This tracks where search → profile → legends → portraits spend time.</p><span class="aiq-v49960-cache-chip">Session caches: '+safe(cacheCount)+' profile(s), '+safe(portraitCache.size||0)+' portrait(s)</span><div class="aiq-v49960-perf-grid">'+rows+'</div></section>');
+  }
+  function schedule(fn,delay){return setTimeout(function(){try{fn()}catch(e){console.warn(BUILD,e)}},delay||0)}
+  function callIf(name){var fn=window[name];if(typeof fn==="function"){return fn.apply(window,Array.prototype.slice.call(arguments,1));}}
+  function buildPortraitCache(){
+    try{
+      if(!Array.isArray(PACK_DATA))return;
+      PACK_DATA.forEach(function(p){
+        if(!p||!p.name)return;
+        var src="";
+        try{if(typeof packImage==="function")src=packImage(p)||"";}catch(_){src="";}
+        if(!src&&Array.isArray(p.stickers)&&p.stickers[0])src=p.stickers[0].src||"";
+        if(src)portraitCache.set(norm(p.name),src);
+      });
+    }catch(e){if(DEBUG)console.warn(BUILD,"portrait cache",e)}
+  }
+  function legendNameFromCard(card){
+    var raw=card&&card.getAttribute&&card.getAttribute("data-legend");
+    if(!raw){var h=card&&card.querySelector&&card.querySelector(".legend-title h3,h3");raw=h?h.textContent:"";}
+    raw=String(raw||"").replace(/\s*·.*$/," ").trim();
+    return raw;
+  }
+  function initialText(name){return String(name||"??").split(/\s+/).map(function(x){return x[0]||""}).join("").slice(0,2).toUpperCase()||"??";}
+  function fixPortrait(card){
+    if(!card)return;
+    var visual=card.querySelector&&card.querySelector(".legend-visual");if(!visual)return;
+    var legend=legendNameFromCard(card);if(!legend)return;
+    var src=portraitCache.get(norm(legend))||"";
+    var img=visual.querySelector("img");
+    if(src){
+      if(!img){visual.innerHTML='<img class="aiq-v49959-portrait aiq-v49960-portrait" loading="eager" decoding="async" src="'+safe(src)+'" alt="'+safe(legend)+'">';img=visual.querySelector("img");}
+      else{
+        img.classList.add("aiq-v49959-portrait","aiq-v49960-portrait");
+        img.loading="eager";img.decoding="async";
+        if(!img.getAttribute("src")||img.complete&&img.naturalWidth===0)img.setAttribute("src",src);
+        if(!img.getAttribute("alt"))img.setAttribute("alt",legend);
+      }
+      visual.classList.add("aiq-v49959-has-portrait","aiq-v49960-has-portrait");
+      img.onerror=function(){
+        var parent=this.parentNode;if(parent){parent.classList.remove("aiq-v49959-has-portrait","aiq-v49960-has-portrait");parent.innerHTML='<b class="aiq-v49959-portrait-fallback">'+safe(initialText(legend))+'</b>';}
+      };
+    }else if(!visual.querySelector("img")&&!visual.querySelector("b")){
+      visual.innerHTML='<b class="aiq-v49959-portrait-fallback">'+safe(initialText(legend))+'</b>';
+    }
+  }
+  function recoverPortraitsV60(){buildPortraitCache();all("#legendsPreview .legend-card,#legendsPanel .legend-card").forEach(fixPortrait);mark("portrait recovery completed",{cards:all("#legendsPreview .legend-card,#legendsPanel .legend-card").length});}
+  function schedulePortraitsV60(delay){clearTimeout(portraitTimer);portraitTimer=setTimeout(recoverPortraitsV60,delay||60);}
+  function cacheProfile(key,profile){
+    if(!key||!profile)return;
+    profileCache.set(key,{profile:profile,ts:Date.now()});
+    while(profileCache.size>8){profileCache.delete(profileCache.keys().next().value)}
+  }
+  function fastRenderFromProfile(profile,source){
+    if(!profile)return;
+    try{if(typeof state==="object"){state.profile=profile;state.profileError="";}}
+    catch(_){ }
+    schedule(function(){mark("dashboard profile rendered",{source:source||"profile"});callIf("renderProfile");},0);
+    schedule(function(){mark("legend rows normalized",{source:source||"profile"});callIf("renderLegends");mark("Legend Snapshot rendered",{source:source||"profile"});schedulePortraitsV60(35);},20);
+  }
+
+  // Prefill from in-memory cache before the normal load finishes. The original load still runs and remains source of truth.
+  var oldLoadAll=window.loadAll;
+  if(typeof oldLoadAll==="function"){
+    window.loadAll=async function(fresh){
+      activeKey=currentKey();
+      perf.reset(activeKey);
+      var cached=profileCache.get(activeKey);
+      if(cached&&cached.profile&&!fresh){
+        mark("session profile cache hit",{key:activeKey,ageMs:Date.now()-cached.ts});
+        fastRenderFromProfile(cached.profile,"session cache");
+      }
+      if(inFlight.get(activeKey))mark("duplicate search/hydration guarded",{key:activeKey});
+      inFlight.set(activeKey,true);
+      try{return await oldLoadAll.apply(this,arguments)}
+      finally{inFlight.delete(activeKey);mark("loadAll complete",{key:activeKey});schedulePerfPanel();}
+    };
+  }
+
+  // Wrap fetch only for passive timing/cache; do not change requests/endpoints/responses.
+  var nativeFetch=window.fetch&&window.fetch.bind(window);
+  if(nativeFetch&&!window.__apexiqV49960FetchWrapped){
+    window.__apexiqV49960FetchWrapped=true;
+    window.fetch=function(input,init){
+      var url=typeof input==="string"?input:(input&&input.url)||"";
+      var isPlayer=/\/api\/player(?:\?|$)/i.test(url);
+      var isRanked=/\/api\/ranked(?:\?|$)/i.test(url);
+      var isMeta=/\/api\/meta(?:\?|$)/i.test(url);
+      var requestKey=isPlayer?urlKey(url):"";
+      if(isPlayer)mark("profile request started",{key:requestKey||activeKey});
+      if(isRanked)mark("ranked request started");
+      if(isMeta)mark("meta request started");
+      var started=now();
+      return nativeFetch(input,init).then(function(res){
+        var dur=Math.round(now()-started);
+        if(isPlayer){
+          mark("fast/full profile response received",{status:res.status,duration:dur,key:requestKey});
+          try{
+            res.clone().text().then(function(text){
+              try{
+                var data=JSON.parse(text);var profile=(data&&data.profile)||data;
+                if(profile&&typeof profile==="object"){
+                  var key=requestKey||activeKey||currentKey();cacheProfile(key,profile);
+                  mark("full profile/legend data received",{key:key,bytes:text.length});
+                  if(!activeKey||key===activeKey||key===currentKey())fastRenderFromProfile(profile,"early player response");
+                }
+              }catch(e){if(DEBUG)console.warn(BUILD,"profile clone parse",e)}
+            });
+          }catch(e){if(DEBUG)console.warn(BUILD,"profile clone",e)}
+        }
+        if(isRanked)mark("ranked response received",{status:res.status,duration:dur});
+        if(isMeta)mark("meta response received",{status:res.status,duration:dur});
+        return res;
+      });
+    };
+  }
+
+  var oldRenderLegends=window.renderLegends;
+  if(typeof oldRenderLegends==="function"){
+    window.renderLegends=function(){
+      var key=currentKey();
+      if(key&&key===lastLegendRenderKey&&$("#legendsPanel .legend-card")){
+        mark("full legend render skipped cached DOM",{key:key});
+        schedulePortraitsV60(30);
+        return;
+      }
+      clearTimeout(renderTimer);
+      var ret=oldRenderLegends.apply(this,arguments);
+      lastLegendRenderKey=key;
+      mark("full legend cards rendered",{cards:all("#legendsPanel .legend-card").length,key:key});
+      schedulePortraitsV60(45);
+      return ret;
+    };
+  }
+  var oldSwitch=window.switchPanel;
+  if(typeof oldSwitch==="function"){
+    window.switchPanel=function(panel){
+      var ret=oldSwitch.apply(this,arguments);
+      if(panel==="settings")setTimeout(renderPerfPanel,60);
+      if(panel==="legends"||panel==="dashboard")schedulePortraitsV60(80);
+      return ret;
+    };
+  }
+  var oldRenderSettings=window.renderSettings;
+  if(typeof oldRenderSettings==="function"){
+    window.renderSettings=function(){var ret=oldRenderSettings.apply(this,arguments);setTimeout(renderPerfPanel,0);return ret;};
+  }
+  function updateBuildHub(){
+    var entry='<li data-aiq-v49960><small>v4.9.9.60</small><b>Legend performance diagnostics + cache</b><span>Added ?debug=perf timing checkpoints, early profile-response rendering, small session profile cache, portrait source cache, duplicate legend render guard, and scoped portrait recovery scheduling. Worker endpoints, search contract, badges, LFG, support, beta, meta, logo, and mobile nav were not rewritten.</span></li>';
+    all('#aiqV49948BuildHub,#aiqV49948BuildHubSettings').forEach(function(hub){
+      var badge=hub.querySelector('.aiq-v49948-build-badge');if(badge)badge.textContent='v4.9.9.60';
+      var list=hub.querySelector('.aiq-v49948-build-list');if(list&&!list.querySelector('[data-aiq-v49960]'))list.insertAdjacentHTML('afterbegin',entry);
+    });
+  }
+  function boot(){
+    document.documentElement.dataset.v49960="legend-performance-diagnostics-cache";
+    buildPortraitCache();updateBuildHub();schedulePortraitsV60(250);schedulePerfPanel();
+    mark("v60 boot",{debug:DEBUG});
+    [800,1800,3200].forEach(function(ms){setTimeout(function(){try{updateBuildHub();schedulePortraitsV60(0);renderPerfPanel();}catch(e){console.warn(BUILD,e)}},ms)});
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
+})();
+</script>
+
 </body>
 </html>
