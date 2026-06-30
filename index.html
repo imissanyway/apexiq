@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ApexIQ — v4.9.9.58 Mobile Nav Restore + Portrait Fix</title>
+<title>ApexIQ — v4.9.9.74 Meta Pending Card Polish</title>
 <link id="apexiq-v49956-favicon" rel="icon" type="image/png" href="assets/apexiq-logo.png">
 <!-- ApexIQ Predator Broadcast v4.9.9.10 Source Re-Extract + Edge Fix: artifact-cleanup-only badge asset refresh on top of the stable full badge system. -->
 <style>
@@ -9771,9 +9771,9 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
 
 
 
-<!-- === ApexIQ v4.9.9.73 Meta Complete Roster Display Fix === -->
+<!-- === ApexIQ v4.9.9.74 Meta Pending Card Polish === -->
 <style id="apexiq-v49973-meta-complete-roster-css">
-/* v4.9.9.73: Meta display-only completion patch. No beta/search/nav/ranked/portrait/badge/LFG systems changed. */
+/* v4.9.9.74: Meta pending-card presentation polish only. Preserves v71 beta, v72 freeze fix, and v73 complete roster display. */
 .v49973MetaNotice{margin:0 0 14px;padding:10px 12px;border:1px solid color-mix(in srgb,var(--brand,#7c3aed) 28%,var(--line,#334155));border-radius:14px;background:color-mix(in srgb,var(--brand,#7c3aed) 9%,var(--surface,#0f172a));color:var(--muted,#94a3b8);font-weight:850;line-height:1.35;}
 .v49973MetaNotice b{color:var(--text,#f8fafc)}
 .v49973MetaGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;align-items:stretch;}
@@ -9797,11 +9797,25 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
 .v49973PreviewRow b{color:var(--muted,#94a3b8)}.v49973PreviewRow span{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:900;color:var(--text,#f8fafc)}.v49973PreviewRow em{font-style:normal;font-weight:1000;color:var(--text,#f8fafc)}
 @media(max-width:860px){.v49973MetaGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.v49973MetaCard{min-height:132px}.v49973MetaContent{min-height:132px;padding:11px}.v49973MetaTop b{font-size:.94rem;max-width:112px}.v49973Pick{font-size:1.42rem}.v49973MetaBg{width:74%;opacity:.23}.v49973Facts{font-size:.7rem}}
 @media(max-width:420px){.v49973MetaGrid{grid-template-columns:1fr 1fr}.v49973MetaTop b{max-width:98px}.v49973Pick{font-size:1.3rem}}
+.v49973MetaGrid{margin-bottom:52px;}
+.screen[data-screen="meta"] #metaPanelFull{padding-bottom:48px;}
+.v49973MetaCard.ready .v49973MetaBg{opacity:.28;}
+.v49973MetaCard.pending{border-color:color-mix(in srgb,var(--brand-2,#22d3ee) 22%,var(--line,#334155));background:linear-gradient(180deg,color-mix(in srgb,var(--surface,#0f172a) 98%,transparent),color-mix(in srgb,var(--surface-2,#111827) 98%,transparent));}
+.v49973MetaCard.pending::before{opacity:.55;background:linear-gradient(90deg,color-mix(in srgb,var(--brand,#7c3aed) 72%,transparent),color-mix(in srgb,var(--brand-2,#22d3ee) 60%,transparent),color-mix(in srgb,var(--brand-3,#f97316) 50%,transparent));}
+.v49973MetaCard.pending .v49973MetaBg{opacity:.34;right:-12px;bottom:-12px;width:74%;filter:saturate(.82) contrast(.95) drop-shadow(0 18px 24px rgba(0,0,0,.42));}
+.v49973MetaCard.pending .v49973MetaShade{background:linear-gradient(90deg,color-mix(in srgb,var(--surface,#0f172a) 96%,transparent) 0%,color-mix(in srgb,var(--surface,#0f172a) 82%,transparent) 48%,color-mix(in srgb,var(--surface,#0f172a) 50%,transparent) 100%);}
+.v49973MetaCard.pending .v49973Pick{display:none;}
+.v49973PendingStatus{display:grid;gap:5px;margin-top:12px;max-width:142px;}
+.v49973PendingChip{display:inline-flex;width:max-content;align-items:center;gap:6px;border:1px solid color-mix(in srgb,var(--brand-2,#22d3ee) 38%,var(--line,#334155));border-radius:999px;padding:4px 8px;background:color-mix(in srgb,var(--brand-2,#22d3ee) 12%,var(--surface,#0f172a));color:var(--text,#f8fafc);font-weight:1000;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;}
+.v49973PendingStatus small{display:block;color:color-mix(in srgb,var(--muted,#94a3b8) 92%,var(--text,#f8fafc));font-weight:900;line-height:1.12;}
+.v49973MetaCard.pending .v49973Facts strong{color:color-mix(in srgb,var(--text,#f8fafc) 86%,var(--brand-2,#22d3ee));}
+@media(max-width:860px){.v49973MetaGrid{margin-bottom:76px}.v49973PendingStatus{max-width:118px}.v49973MetaCard.pending .v49973MetaBg{opacity:.31;width:82%;}}
+
 </style>
 <script id="apexiq-v49973-meta-complete-roster-js">
 (function(){
   "use strict";
-  var BUILD="v4.9.9.73-meta-complete-roster-display-from-v72";
+  var BUILD="v4.9.9.74-meta-pending-card-polish-from-v73";
   function byId(id){return document.getElementById(id)}
   function safe(v){try{return String(v==null?"":v).replace(/[&<>\"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}catch(_){return ""}}
   function scalar(v){
@@ -9816,10 +9830,10 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
   }
   function norm(v){return scalar(v).toLowerCase().replace(/[^a-z0-9]/g,"")}
   function num(v){var n=Number(scalar(v).replace("%","").replace(/,/g,"").replace(/[^\d.-]/g,""));return Number.isFinite(n)?n:0}
-  function packs(){try{return Array.isArray(window.PACK_DATA)?window.PACK_DATA:[]}catch(_){return []}}
+  function packs(){try{if(Array.isArray(PACK_DATA))return PACK_DATA}catch(_){ }try{return Array.isArray(window.PACK_DATA)?window.PACK_DATA:[]}catch(_){return []}}
   var fallbackNames=["Alter","Ash","Axle","Ballistic","Bangalore","Bloodhound","Catalyst","Caustic","Conduit","Crypto","Fuse","Gibraltar","Horizon","Lifeline","Loba","Mad Maggie","Mirage","Newcastle","Octane","Pathfinder","Rampart","Revenant","Seer","Sparrow","Valkyrie","Vantage","Wattson","Wraith"];
   function packFor(name){var n=norm(name);return packs().find(function(p){return norm(p&&p.name)===n})||null}
-  function packImg(pack){try{return typeof window.packImage==="function"?window.packImage(pack):(pack&&pack.stickers&&pack.stickers[0]&&pack.stickers[0].src)||""}catch(_){return (pack&&pack.stickers&&pack.stickers[0]&&pack.stickers[0].src)||""}}
+  function packImg(pack){try{if(typeof packImage==="function")return packImage(pack)||""}catch(_){ }try{return typeof window.packImage==="function"?window.packImage(pack):(pack&&pack.stickers&&pack.stickers[0]&&pack.stickers[0].src)||""}catch(_){return (pack&&pack.stickers&&pack.stickers[0]&&pack.stickers[0].src)||""}}
   function roster(){
     var out=[];
     packs().forEach(function(p){if(p&&p.name&&!out.some(function(x){return norm(x.name)===norm(p.name)}))out.push({name:p.name,img:packImg(p)})});
@@ -9881,11 +9895,15 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
   function notice(rows,full){
     var valued=rows.filter(function(r){return num(r.pickRate)>0}).length;
     var pending=rows.length-valued;
-    return '<div class="v49973MetaNotice"><b>'+safe(full?'Meta board':'Meta preview')+'</b> '+safe(rows.length)+' legends shown · '+safe(valued)+' live/visible pick-rate rows · '+safe(pending)+' roster cards waiting on live meta data.</div>';
+    return '<div class="v49973MetaNotice"><b>'+safe(full?'Meta board':'Meta preview')+'</b> '+safe(rows.length)+' legends shown · '+safe(valued)+' live/visible pick-rate rows · '+safe(pending)+' awaiting live meta data.</div>';
   }
   function cardHTML(m,i){
     var pending=!(num(m.pickRate)>0);
-    return '<article class="v49973MetaCard '+(pending?'pending':'ready')+'">'+(m.img?'<img class="v49973MetaBg" loading="lazy" decoding="async" src="'+safe(m.img)+'" alt="'+safe(m.legend)+'">':'')+'<div class="v49973MetaShade"></div><div class="v49973MetaContent"><div><div class="v49973MetaTop"><b>'+safe(m.legend)+'</b><span>#'+safe(i+1)+'</span></div><div class="v49973Pick">'+safe(pickText(m.pickRate))+'</div><div class="v49973Trend '+trendClass(m.trend)+'">'+safe(pending?'Awaiting live row':(m.trend||'Stable'))+'</div></div><div class="v49973Facts"><span><em>Avg rank</em><strong>'+safe(m.avgRank||'Pending')+'</strong></span><span><em>Avg level</em><strong>'+safe(m.avgLevel||'Pending')+'</strong></span></div></div></article>';
+    var img=m.img?'<img class="v49973MetaBg" loading="lazy" decoding="async" src="'+safe(m.img)+'" alt="'+safe(m.legend)+'">':'';
+    if(pending){
+      return '<article class="v49973MetaCard pending">'+img+'<div class="v49973MetaShade"></div><div class="v49973MetaContent"><div><div class="v49973MetaTop"><b>'+safe(m.legend)+'</b><span>#'+safe(i+1)+'</span></div><div class="v49973PendingStatus"><span class="v49973PendingChip">Pending</span><small>Awaiting live meta data</small></div></div><div class="v49973Facts"><span><em>Avg rank</em><strong>Pending</strong></span><span><em>Live row</em><strong>Not available yet</strong></span></div></div></article>';
+    }
+    return '<article class="v49973MetaCard ready">'+img+'<div class="v49973MetaShade"></div><div class="v49973MetaContent"><div><div class="v49973MetaTop"><b>'+safe(m.legend)+'</b><span>#'+safe(i+1)+'</span></div><div class="v49973Pick">'+safe(pickText(m.pickRate))+'</div><div class="v49973Trend '+trendClass(m.trend)+'">'+safe(m.trend||'Stable')+'</div></div><div class="v49973Facts"><span><em>Avg rank</em><strong>'+safe(m.avgRank||'Pending')+'</strong></span><span><em>Avg level</em><strong>'+safe(m.avgLevel||'Pending')+'</strong></span></div></div></article>';
   }
   function previewHTML(rows){
     return notice(rows,false)+'<div class="v49973MetaPreview">'+rows.slice(0,6).map(function(m,i){return '<article class="v49973PreviewRow"><b>#'+safe(i+1)+'</b><span>'+safe(m.legend)+'</span><em>'+safe(pickText(m.pickRate))+'</em></article>'}).join('')+'</div>';
@@ -9915,12 +9933,12 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
     var wrapped=function(name){var ret=oldSwitch.apply(this,arguments);setTimeout(function(){if(name==="meta")render('metaPanelFull');else if(name==="dashboard")render('metaPanel')},130);return ret;};
     wrapped.__v49973=true;window.switchPanel=wrapped;
   }
-  function boot(){try{document.documentElement.dataset.v49973="meta-complete-roster"}catch(_){}render('metaPanel');if(metaVisible())render('metaPanelFull')}
+  function boot(){try{document.documentElement.dataset.v49973="meta-pending-card-polish"}catch(_){}render('metaPanel');if(metaVisible())render('metaPanelFull')}
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else setTimeout(boot,0);
   try{
     var list=document.querySelector('.aiq-build-list, .build-list, #changelogList, [data-build-list]');
-    if(list&&!list.querySelector('[data-aiq-v49973]')){
-      var li=document.createElement('li');li.setAttribute('data-aiq-v49973','');li.innerHTML='<small>v4.9.9.73</small><b>Meta complete roster display</b><span>Kept the stable v71 beta foundation and v72 Meta freeze protection, then made the Meta tab show every roster legend with clear pending labels for rows not returned by live meta data. No search, Worker, beta, nav, portrait, ranked, badge, LFG, support, or theme systems were changed.</span>';list.prepend(li);
+    if(list&&!list.querySelector('[data-aiq-v49974]')){
+      var li=document.createElement('li');li.setAttribute('data-aiq-v49974','');li.innerHTML='<small>v4.9.9.74</small><b>Meta pending card polish</b><span>Kept the v71 beta foundation, v72 Meta freeze protection, and v73 full roster display, then restored polished portrait pending cards for legends waiting on live meta rows. No search, Worker, beta, nav, ranked, badge, LFG, support, or theme systems were changed.</span>';list.prepend(li);
     }
   }catch(_){ }
 })();
