@@ -9508,5 +9508,211 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
 })();
 </script>
 
+
+
+<!-- === ApexIQ v4.9.9.63 Mobile Logo Icon Polish === -->
+<style id="apexiq-v49963-mobile-logo-icon-polish-css">
+/* v4.9.9.63: mobile uses the real singular A icon asset. Desktop keeps full ApexIQ PNG wordmark. */
+:root{
+  --aiq-v49963-icon-chip-bg: linear-gradient(135deg, rgba(255,255,255,.94), rgba(235,242,252,.86));
+  --aiq-v49963-icon-chip-border: color-mix(in srgb, var(--brand) 32%, rgba(255,255,255,.58));
+  --aiq-v49963-icon-chip-glow: color-mix(in srgb, var(--brand) 22%, transparent);
+}
+
+/* The old mobile full-wordmark helper from v61 must not consume vertical space anymore. */
+#aiqV49961MobileLogo,
+.aiq-v49961-mobile-logo{
+  display:none !important;
+  height:0 !important;
+  min-height:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+}
+
+/* Desktop/tablet remains full wordmark. */
+@media (min-width: 821px){
+  .brand-bug.apexiq-v49956-brand{
+    display:inline-flex !important;
+  }
+  .brand-bug.apexiq-v49956-brand .apexiq-v49956-logo-img{
+    object-fit:contain !important;
+  }
+}
+
+/* Mobile: compact A icon lives inside the nav as app identity/home anchor. */
+@media (max-width: 820px){
+  .broadcast-nav{
+    gap:7px !important;
+  }
+  .broadcast-nav .brand-bug.apexiq-v49956-brand{
+    display:flex !important;
+    flex:0 0 54px !important;
+    width:54px !important;
+    min-width:54px !important;
+    max-width:54px !important;
+    height:52px !important;
+    min-height:52px !important;
+    max-height:52px !important;
+    padding:7px !important;
+    margin:0 1px 0 0 !important;
+    align-items:center !important;
+    justify-content:center !important;
+    border-radius:18px !important;
+    background:var(--aiq-v49963-icon-chip-bg) !important;
+    border:1px solid var(--aiq-v49963-icon-chip-border) !important;
+    box-shadow:
+      0 10px 28px var(--aiq-v49963-icon-chip-glow),
+      inset 0 -2px 0 color-mix(in srgb, var(--brand-3) 26%, transparent) !important;
+    backdrop-filter:blur(14px) !important;
+    overflow:hidden !important;
+  }
+  :root[data-mode="dark"] .broadcast-nav .brand-bug.apexiq-v49956-brand{
+    background:linear-gradient(135deg, rgba(255,255,255,.95), rgba(234,241,251,.82)) !important;
+    box-shadow:
+      0 12px 30px color-mix(in srgb, var(--brand) 24%, transparent),
+      0 0 0 1px rgba(255,255,255,.05) inset,
+      inset 0 -2px 0 color-mix(in srgb, var(--brand-3) 28%, transparent) !important;
+  }
+  .broadcast-nav .brand-bug.apexiq-v49956-brand .apexiq-v49956-logo-img{
+    display:block !important;
+    width:33px !important;
+    height:33px !important;
+    max-width:33px !important;
+    max-height:33px !important;
+    object-fit:contain !important;
+    object-position:center !important;
+    filter:drop-shadow(0 7px 12px rgba(0,0,0,.18)) !important;
+  }
+  .broadcast-nav .tab-strip{
+    flex:1 1 auto !important;
+    width:auto !important;
+    min-width:0 !important;
+  }
+  .broadcast-nav .tab-button{
+    min-width:100px !important;
+  }
+  .broadcast-header{
+    margin-top:0 !important;
+  }
+}
+
+@media (max-width: 390px){
+  .broadcast-nav{
+    gap:6px !important;
+    left:8px !important;
+    right:8px !important;
+    padding:7px !important;
+  }
+  .broadcast-nav .brand-bug.apexiq-v49956-brand{
+    flex-basis:48px !important;
+    width:48px !important;
+    min-width:48px !important;
+    max-width:48px !important;
+    height:48px !important;
+    min-height:48px !important;
+    max-height:48px !important;
+    border-radius:16px !important;
+    padding:7px !important;
+  }
+  .broadcast-nav .brand-bug.apexiq-v49956-brand .apexiq-v49956-logo-img{
+    width:29px !important;
+    height:29px !important;
+    max-width:29px !important;
+    max-height:29px !important;
+  }
+  .broadcast-nav .tab-button{
+    min-width:94px !important;
+    padding:0 13px !important;
+  }
+}
+</style>
+<script id="apexiq-v49963-mobile-logo-icon-polish-js">
+(function(){
+  "use strict";
+  var BUILD="v4.9.9.63-mobile-logo-icon-polish";
+  var FULL_LOGO="assets/apexiq-logo.png";
+  var A_ICON="assets/apexiq-icon-a.png";
+  if(window.__apexiqV49963Booted)return;
+  window.__apexiqV49963Booted=true;
+
+  function all(sel,root){return Array.from((root||document).querySelectorAll(sel));}
+  function isMobile(){
+    try{return window.matchMedia && window.matchMedia("(max-width: 820px)").matches;}catch(_){return innerWidth<=820;}
+  }
+
+  function applyLogoMode(){
+    var mobile=isMobile();
+    var brand=document.querySelector(".brand-bug.apexiq-v49956-brand");
+    var img=brand&&brand.querySelector("img.apexiq-v49956-logo-img");
+    if(img){
+      var target=mobile?A_ICON:FULL_LOGO;
+      if(img.getAttribute("src")!==target)img.setAttribute("src",target);
+      img.setAttribute("alt",mobile?"ApexIQ":"ApexIQ");
+      img.setAttribute("decoding","async");
+      img.setAttribute("fetchpriority","high");
+    }
+    if(brand){
+      brand.setAttribute("aria-label",mobile?"ApexIQ home":"ApexIQ home");
+      brand.setAttribute("title",mobile?"ApexIQ":"ApexIQ");
+    }
+
+    /* v61 inserted a large mobile wordmark after the nav. Keep it disabled so mobile does not get a banner. */
+    all("#aiqV49961MobileLogo,.aiq-v49961-mobile-logo").forEach(function(el){
+      el.setAttribute("aria-hidden","true");
+      el.style.display="none";
+      el.style.height="0";
+      el.style.margin="0";
+      el.style.padding="0";
+      var old=el.querySelector&&el.querySelector("img");
+      if(old)old.setAttribute("src",A_ICON);
+    });
+
+    /* Favicon can use the icon; it is tiny and does not affect page layout. */
+    var fav=document.querySelector('link[rel="icon"]');
+    if(fav){
+      fav.setAttribute("href",A_ICON);
+      fav.setAttribute("type","image/png");
+    }
+  }
+
+  function patchBuildHub(){
+    var entry='<li data-aiq-v49963><small>v4.9.9.63</small><b>Mobile A-icon logo polish</b><span>Mobile now uses the compact singular ApexIQ A icon while desktop/tablet keeps the full real ApexIQ wordmark. The oversized mobile wordmark banner was removed, theme-safe chip styling remains, and no search, Worker, badge, LFG, support, meta, or theme logic was changed.</span></li>';
+    all("#aiqV49948BuildHub,#aiqV49948BuildHubSettings").forEach(function(hub){
+      var badge=hub.querySelector(".aiq-v49948-build-badge"); if(badge)badge.textContent="v4.9.9.63";
+      var list=hub.querySelector(".aiq-v49948-build-list"); if(list&&!list.querySelector("[data-aiq-v49963]"))list.insertAdjacentHTML("afterbegin",entry);
+    });
+  }
+
+  var resizeTimer=null;
+  function schedule(){
+    clearTimeout(resizeTimer);
+    resizeTimer=setTimeout(function(){applyLogoMode();patchBuildHub();},80);
+  }
+
+  var oldSwitch=window.switchPanel;
+  if(typeof oldSwitch==="function"&&!oldSwitch.__aiqV49963Wrapped){
+    var wrapped=function(){
+      var ret=oldSwitch.apply(this,arguments);
+      setTimeout(function(){applyLogoMode();patchBuildHub();},40);
+      return ret;
+    };
+    wrapped.__aiqV49963Wrapped=true;
+    window.switchPanel=wrapped;
+  }
+
+  function boot(){
+    document.documentElement.dataset.v49963="mobile-logo-icon-polish";
+    applyLogoMode();
+    patchBuildHub();
+    [150,500,1100,2200,3600].forEach(function(ms){setTimeout(function(){applyLogoMode();patchBuildHub();},ms);});
+  }
+  window.addEventListener("resize",schedule,{passive:true});
+  window.addEventListener("orientationchange",schedule,{passive:true});
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
+})();
+</script>
+
 </body>
 </html>
