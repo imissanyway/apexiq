@@ -7784,5 +7784,168 @@ html[data-aiq-beta="locked"] body{overflow:hidden;}
 })();
 </script>
 
+
+<!-- === ApexIQ v4.9.9.52 Badge dedupe + legend hydration speed polish === -->
+<style id="apexiq-v49952-badge-dedupe-hydration-css">
+/* v4.9.9.52: additive display/perceived-speed patch only. Search, Worker, LFG, beta, support, meta, and theme logic untouched. */
+.aiq-v49952-hidden-dup{display:none!important;}
+.aiq-v49952-legend-loading{border:1px solid var(--line);border-radius:18px;background:color-mix(in srgb,var(--surface-2) 88%,transparent);padding:16px;display:grid;gap:10px;overflow:hidden;position:relative;}
+.aiq-v49952-legend-loading::before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 0%,color-mix(in srgb,var(--brand-2) 12%,transparent) 45%,transparent 80%);transform:translateX(-100%);animation:aiqV49952Shimmer 1.25s linear infinite;pointer-events:none;}
+.aiq-v49952-legend-loading b{position:relative;color:var(--text);font-weight:1000;}
+.aiq-v49952-legend-loading p{position:relative;margin:0;color:var(--muted);line-height:1.4;}
+.aiq-v49952-skeleton-line{position:relative;height:12px;border-radius:999px;background:color-mix(in srgb,var(--text) 10%,transparent);overflow:hidden;}
+.aiq-v49952-skeleton-line.short{width:58%;}
+@keyframes aiqV49952Shimmer{to{transform:translateX(100%);}}
+</style>
+<script id="apexiq-v49952-badge-dedupe-legend-hydration-speed-js">
+(function(){
+  "use strict";
+  const BUILD="v4.9.9.52-badge-dedupe-legend-hydration-speed";
+  const renderCache=new Map();
+  let lastRenderKey="";
+  let dedupeTimer=0;
+  function $(s,r=document){return r.querySelector(s)}
+  function $all(s,r=document){return Array.from(r.querySelectorAll(s))}
+  function safe(v){return String(v??"").replace(/[&<>\"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
+  function norm(v){return String(v||"").toLowerCase().replace(/[^a-z0-9]/g,"")}
+  function getState(){try{return typeof state==="object"?state:null}catch(_){return null}}
+  function rowLike(x){return !!(x&&typeof x==="object"&&(Array.isArray(x.stats)||Array.isArray(x.trackers)||Array.isArray(x.data)||Array.isArray(x.values)||Array.isArray(x.badges)||Array.isArray(x.officialBadges)||Array.isArray(x.badgeSlots)||Array.isArray(x.legendBadges)||Array.isArray(x.alsBadges)||Array.isArray(x.collectionBadges)||Array.isArray(x.visualBadges)||Array.isArray(x.badgeRows)))}
+  function rowSignature(profile){
+    const pools=[profile?.allLegendStats,profile?.legendStats,profile?.legends,profile?.legendRows,profile?.trackerRows,profile?.profilePage?.legendStats,profile?.profile?.legendStats,profile?.rendered?.legendStats,profile?.rendered?.legendCards,profile?.rendered?.legendBadges,profile?.profilePage?.legendBadges].filter(Boolean);
+    let rows=0,stats=0,badges=0;
+    const walk=function(x,depth){
+      if(!x||depth>6)return;
+      if(Array.isArray(x)){for(const y of x)walk(y,depth+1);return;}
+      if(typeof x!=="object")return;
+      if(rowLike(x)){
+        rows++;
+        stats += (x.stats||x.trackers||x.data||x.values||[]).length||0;
+        badges += (x.badges||x.officialBadges||x.badgeSlots||x.legendBadges||x.alsBadges||x.collectionBadges||x.visualBadges||x.badgeRows||[]).length||0;
+      }
+      for(const v of Object.values(x))if(v&&typeof v==="object")walk(v,depth+1);
+    };
+    pools.forEach(p=>walk(p,0));
+    return {rows,stats,badges,key:[rows,stats,badges,profile?.fastMode?"fast":"full",profile?.uid||profile?.id||""].join(":")};
+  }
+  function profileKey(){
+    const st=getState()||{},p=st.profile||{};
+    const sig=rowSignature(p);
+    return [norm(st.player||p.player||p.name||p.displayName||""),String(st.platform||p.platform||"auto").toLowerCase(),sig.key].join("|");
+  }
+  function loadingHTML(){
+    return '<section class="aiq-v49952-legend-loading"><b>Hydrating legends…</b><p>Fast profile is loaded. Full ALS legend rows are still parsing, so ApexIQ is holding the roster area instead of looking frozen.</p><span class="aiq-v49952-skeleton-line"></span><span class="aiq-v49952-skeleton-line short"></span></section>';
+  }
+  function panelHasRealCards(){return !!($all("#legendsPreview .legend-card,#legendsPanel .legend-card").length)}
+  function applyCachedOrSkeleton(key){
+    const prev=$("#legendsPreview"),panel=$("#legendsPanel"),cached=renderCache.get(key);
+    if(cached){
+      if(prev&&cached.prev)prev.innerHTML=cached.prev;
+      if(panel&&cached.panel)panel.innerHTML=cached.panel;
+      scheduleDedupe(20);
+      return true;
+    }
+    const sig=rowSignature((getState()||{}).profile||{});
+    if(sig.rows===0&&!panelHasRealCards()){
+      if(prev)prev.innerHTML=loadingHTML();
+      if(panel)panel.innerHTML=loadingHTML();
+    }
+    return false;
+  }
+  function saveRendered(key){
+    const prev=$("#legendsPreview"),panel=$("#legendsPanel");
+    if(!prev&&!panel)return;
+    if(panelHasRealCards())renderCache.set(key,{time:Date.now(),prev:prev?prev.innerHTML:"",panel:panel?panel.innerHTML:""});
+    while(renderCache.size>8){const first=renderCache.keys().next().value;renderCache.delete(first);}
+  }
+  function typeFromNode(el){
+    const text=(el.getAttribute("alt")||el.getAttribute("title")||el.textContent||"").toLowerCase();
+    const src=(el.getAttribute("src")||"").toLowerCase();
+    const cls=(el.className||"").toString().toLowerCase();
+    if(/20b|20\s*b|twenty|wake|20b_collection/.test(text+" "+src+" "+cls))return "20b";
+    if(/4k|4\s*k|wrath|hammer|4k_collection|four/.test(text+" "+src+" "+cls))return "4k";
+    return "";
+  }
+  function railTypes(card){
+    const types=new Set();
+    $all(".aiq-v49948-badge-rail .aiq-v49948-badge-pill,.aiq-v49948-badge-rail img",card).forEach(function(n){
+      if(n.closest(".aiq-v49948-badge-pill.twenty"))types.add("20b");
+      if(n.closest(".aiq-v49948-badge-pill.fourk"))types.add("4k");
+      const t=typeFromNode(n);if(t)types.add(t);
+    });
+    return types;
+  }
+  function removeNodeOrWrapper(img,card){
+    const wrap=img.closest(".v49923BadgeChip,.badge-chip,.legendBadgePill,.apexiq-legend-badge-png,span,button");
+    if(wrap&&wrap!==card&&!wrap.closest(".aiq-v49948-badge-rail")){
+      const cleanText=(wrap.textContent||"").replace(/\s+/g," ").trim().toLowerCase();
+      const imgs=$all("img",wrap).length;
+      if(imgs<=1 && (!cleanText || /^(20b|4k|20 b|4 k)$/i.test(cleanText))){wrap.remove();return;}
+    }
+    img.remove();
+  }
+  function dedupeCard(card){
+    const rails=$all(":scope .aiq-v49948-badge-rail",card);
+    if(!rails.length)return;
+    const keep=rails[0];
+    rails.slice(1).forEach(r=>r.remove());
+    const seenRail=new Set();
+    $all(".aiq-v49948-badge-pill",keep).forEach(function(pill){
+      const t=pill.classList.contains("twenty")?"20b":(pill.classList.contains("fourk")?"4k":typeFromNode(pill));
+      if(!t)return;
+      if(seenRail.has(t))pill.remove();else seenRail.add(t);
+    });
+    const types=railTypes(card);
+    if(!types.size)return;
+    $all("img",card).forEach(function(img){
+      if(img.closest(".aiq-v49948-badge-rail"))return;
+      const t=typeFromNode(img);
+      if(t&&types.has(t))removeNodeOrWrapper(img,card);
+    });
+    // If an old chip lost all its image/text after duplicate cleanup, remove it.
+    $all(".v49923BadgeChip,.badge-chip,.legendBadgePill",card).forEach(function(chip){
+      if(chip.closest(".aiq-v49948-badge-rail"))return;
+      if(!(chip.textContent||"").trim()&&!chip.querySelector("img"))chip.remove();
+    });
+  }
+  function dedupeBadges(){
+    $all(".legend-card,.v49919LegendCard,.aiqLegendCard497,.v496LegendCard").forEach(dedupeCard);
+  }
+  function scheduleDedupe(ms=80){clearTimeout(dedupeTimer);dedupeTimer=setTimeout(function(){try{dedupeBadges()}catch(e){console.warn(BUILD,"badge dedupe",e)}},ms);}
+  function updateBuildHub(){
+    const entry='<li data-aiq-v49952><small>v4.9.9.52</small><b>Badge dedupe + legend hydration speed polish</b><span>Removed duplicate 20B/4K icon display on legend cards, kept verified badge icons as the single dedicated top display, added safer render guards/caching for legend card hydration, and improved the loading state for full ALS legend rows. Search, Worker, LFG, support, beta, meta, and theme internals were not changed.</span></li>';
+    $all("#aiqV49948BuildHub,#aiqV49948BuildHubSettings").forEach(function(hub){
+      const badge=hub.querySelector(".aiq-v49948-build-badge");if(badge)badge.textContent=BUILD;
+      const latest=hub.querySelector(".aiq-v49948-build-card:first-of-type .aiq-v49948-build-list");
+      if(latest&&!latest.querySelector("[data-aiq-v49952]"))latest.insertAdjacentHTML("afterbegin",entry);
+    });
+  }
+  const oldRenderLegends=window.renderLegends;
+  if(typeof oldRenderLegends==="function"){
+    window.renderLegends=function(){
+      const key=profileKey();
+      const sig=rowSignature((getState()||{}).profile||{});
+      if(key===lastRenderKey&&panelHasRealCards()){scheduleDedupe(30);return;}
+      if(sig.rows===0&&applyCachedOrSkeleton(key)){lastRenderKey=key;return;}
+      lastRenderKey=key;
+      const ret=oldRenderLegends.apply(this,arguments);
+      saveRendered(key);
+      scheduleDedupe(60);
+      return ret;
+    };
+  }
+  const oldSwitch=window.switchPanel;
+  if(typeof oldSwitch==="function"){
+    window.switchPanel=function(){const ret=oldSwitch.apply(this,arguments);setTimeout(function(){try{scheduleDedupe(40);updateBuildHub();}catch(e){console.warn(BUILD,e)}},80);return ret;};
+  }
+  function boot(){
+    document.documentElement.dataset.v49952="badge-dedupe-legend-hydration-speed";
+    updateBuildHub();
+    if(typeof window.renderLegends==="function")setTimeout(function(){try{window.renderLegends()}catch(e){console.warn(BUILD,"render guard",e)}},40);
+    [180,700,1600,3200].forEach(ms=>setTimeout(function(){try{dedupeBadges();updateBuildHub()}catch(e){console.warn(BUILD,e)}},ms));
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
+})();
+</script>
+
 </body>
 </html>
