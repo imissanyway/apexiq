@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ApexIQ — v4.9.9.67 Stable Nav + Loader Recovery</title>
+<title>ApexIQ — v4.9.9.58 Mobile Nav Restore + Portrait Fix</title>
 <link id="apexiq-v49956-favicon" rel="icon" type="image/png" href="assets/apexiq-logo.png">
 <!-- ApexIQ Predator Broadcast v4.9.9.10 Source Re-Extract + Edge Fix: artifact-cleanup-only badge asset refresh on top of the stable full badge system. -->
 <style>
@@ -3885,9 +3885,9 @@ html[data-v497="polish-performance-ui-freeze"] #searchForm{
 
   <header class="broadcast-header">
     <div>
-      <span class="eyebrow">Live Ready</span>
-      <h1>ApexIQ Live Profile</h1>
-      <p>Live Apex stats, legend cards, badge proof, ranked boards, meta intel, and squad tools in one clean dashboard.</p>
+      <span class="eyebrow">ApexIQ live profile package</span>
+      <h1>Predator Broadcast</h1>
+      <p>Clean broadcast-style Apex stats, legend cards, badge proof states, ranked boards, meta, packs, squad tools, and advanced theming.</p>
     </div>
     <form id="searchForm" class="search-console">
       <input id="playerInput" aria-label="Player name" placeholder="Player name">
@@ -7699,21 +7699,9 @@ html[data-aiq-beta="locked"] body{overflow:hidden;}
   const TICKET_KEY="apexiq:supportTickets:v49950";
   const CONFIG={enabled: (window.APEXIQ_BETA_GATE_ENABLED!==false && !/[?&]beta=off\b/i.test(location.search))};
   const CODES={
-    "AIQ-ORIGIN-7K2M":{name:"Coye / IMissAnyway",role:"Owner",admin:true,desc:"Founder · Product Lead · QA/API Testing Lead · Release Control"},
-    "AIQ-ANCHOR-9Q4T":{name:"Fastwagen",role:"Tester · Contributor · Asset Verification",admin:true,desc:"Sticker, badge, logo, UI, beta feedback, and asset verification"},
-    "AIQ-SENTINEL-3W8X":{name:"Deadkenn3dys",role:"Tester/Admin candidate",admin:true,desc:"Trusted beta testing and support/admin candidate"},
-    "AIQ-RIFT-7K2M":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
-    "AIQ-NOVA-9Q4T":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
-    "AIQ-PULSE-3W8X":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
-    "AIQ-VAULT-6D1P":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
-    "AIQ-ORBIT-5H7L":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
-    "AIQ-PHASE-2N9C":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
-    "AIQ-TRACK-8F4A":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
-    "AIQ-BOOST-1R6V":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
-    "AIQ-SCAN-4M2K":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
-    "AIQ-PRIME-7X9D":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
-    "AIQ-BEACON-3C5Q":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
-    "AIQ-LEGEND-6T8Z":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"}
+    IMISSANYWAY:{name:"Coye / IMissAnyway",role:"Owner",admin:true,desc:"Founder · Product Lead · QA & API Testing Lead"},
+    FASTWAGEN:{name:"Fastwagen",role:"Tester · Contributor · Asset Verification",admin:true,desc:"Sticker, badge, logo, UI, and beta verification"},
+    DEADKENN3DYS:{name:"Deadkenn3dys",role:"Tester/Admin candidate",admin:true,desc:"Trusted beta testing and support/admin candidate"}
   };
   const CATEGORIES=["Stats issue","Badge issue","LFG issue","Sticker/emoji issue","Theme/UI issue","Beta access","General feedback"];
   const STATUSES=["open","reviewing","fixed","closed"];
@@ -7741,7 +7729,7 @@ html[data-aiq-beta="locked"] body{overflow:hidden;}
     if(!CONFIG.enabled){document.documentElement.dataset.aiqBeta="off";const ex=$("#aiqV49950BetaGate");if(ex)ex.hidden=true;return;}
     let gate=$("#aiqV49950BetaGate");
     if(!gate){
-      document.body.insertAdjacentHTML("beforeend",`<div id="aiqV49950BetaGate" class="aiq-v49950-beta-overlay" role="dialog" aria-modal="true" aria-labelledby="aiqV49950BetaTitle"><section class="aiq-v49950-beta-card"><div class="aiq-v49950-beta-kicker"><span>ApexIQ private beta</span><span>v4.9.9.64</span></div><h2 id="aiqV49950BetaTitle">Private Beta Access</h2><p>ApexIQ is currently in a limited private beta. Enter your invite code to continue.</p><p class="aiq-v49950-note">Access is limited while live stats, badge proof, LFG, and mobile polish are being tested.</p><div class="aiq-v49950-beta-form"><input id="aiqV49950BetaCode" autocomplete="one-time-code" placeholder="Enter beta access code"><div class="aiq-v49950-beta-actions"><button type="button" id="aiqV49950BetaEnter" class="aiq-v49950-btn">Enter Beta</button><button type="button" id="aiqV49950BetaDev" class="aiq-v49950-btn ghost" title="Temporary local frontend gate only" hidden>Dev note</button></div><div id="aiqV49950BetaError" class="aiq-v49950-error"></div><div class="aiq-v49950-note">Private beta access is limited while ApexIQ testing continues. Server-side Worker/KV access validation is planned before wider release.</div></div></section></div>`);
+      document.body.insertAdjacentHTML("beforeend",`<div id="aiqV49950BetaGate" class="aiq-v49950-beta-overlay" role="dialog" aria-modal="true" aria-labelledby="aiqV49950BetaTitle"><section class="aiq-v49950-beta-card"><div class="aiq-v49950-beta-kicker"><span>ApexIQ private beta</span><span>v4.9.9.50</span></div><h2 id="aiqV49950BetaTitle">Beta access</h2><p>ApexIQ is in a controlled private beta while the Worker/KV access system, support tools, and final launch checks are being prepared.</p><div class="aiq-v49950-beta-form"><input id="aiqV49950BetaCode" autocomplete="one-time-code" placeholder="Enter beta access code"><div class="aiq-v49950-beta-actions"><button type="button" id="aiqV49950BetaEnter" class="aiq-v49950-btn">Enter ApexIQ</button><button type="button" id="aiqV49950BetaDev" class="aiq-v49950-btn ghost" title="Temporary local frontend gate only">Dev note</button></div><div id="aiqV49950BetaError" class="aiq-v49950-error"></div><div class="aiq-v49950-note"><b>Security note:</b> this frontend gate is only a beta-testing placeholder. Real access enforcement belongs in the Cloudflare Worker/KV layer and remains on the roadmap.</div></div></section></div>`);
       gate=$("#aiqV49950BetaGate");
       $("#aiqV49950BetaEnter")?.addEventListener("click",function(){const input=$("#aiqV49950BetaCode");const err=$("#aiqV49950BetaError");if(grant(input?.value)){if(err)err.textContent="";}else{if(err)err.textContent="Invalid beta code.";input?.focus();}});
       $("#aiqV49950BetaCode")?.addEventListener("keydown",function(e){if(e.key==="Enter")$("#aiqV49950BetaEnter")?.click();});
@@ -7788,24 +7776,7 @@ html[data-aiq-beta="locked"] body{overflow:hidden;}
   }
   function settingsHTML(){
     const r=role();
-    const debugPerf=/[?&]debug=perf/i.test(location.search);
-    return `<section id="aiqV49950SettingsCard" class="aiq-v49950-settings-card aiq-v49964-settings">
-      <div class="aiq-v49950-panel-kicker"><span>Settings</span><span>v4.9.9.64</span></div>
-      <h3>ApexIQ settings</h3>
-      <p>Theme, beta access, support, build notes, and tracking accuracy guidance in one place.</p>
-      <div class="aiq-v49964-settings-grid">
-        <article class="aiq-v49964-card"><b>Appearance</b><p>Use the Theme Studio and dark/light controls to tune the dashboard look. The ApexIQ logo wrapper, cards, borders, and glow follow your active theme.</p><small>Current theme controls stay in the existing Theme Studio.</small></article>
-        <article class="aiq-v49964-card"><b>ApexIQ Live API</b><p><strong>API status:</strong> Ready</p><p><strong>Endpoint:</strong> Private</p><small>Live profile requests run through the ApexIQ Live API. Raw endpoints stay hidden from the user interface.</small></article>
-        <article class="aiq-v49964-card"><b>Beta access</b><p><strong>Current access:</strong> ${r?`${safe(r.name)} — ${safe(r.role)}`:"not unlocked"}</p><p>Limited private beta access is active while live stats, badge proof, LFG, and mobile polish are being tested.</p><button type="button" id="aiqV49950ResetBeta" class="aiq-v49950-btn ghost">Reset beta access</button></article>
-        <article class="aiq-v49964-card"><b>Support / Admin</b><p>Submit bugs, badge issues, stat problems, beta access notes, or UI feedback. Admin inbox tools appear for authorized tester/admin roles.</p><button type="button" id="aiqV49950SettingsOpenSupport" class="aiq-v49950-btn">Open support desk</button></article>
-        <article class="aiq-v49964-card aiq-v49964-wide"><b>How ApexIQ tracking works</b><p><strong>Live data is only as accurate as the public profile and tracker data ApexIQ can verify.</strong></p><p>ApexIQ reads public Apex profile data through the ApexIQ Live API. The data available depends on what external stat sources can currently see, what trackers are visible on the player profile, and whether the player legend/profile data has refreshed recently.</p><ul><li>ApexIQ reads available profile stats, selected legend data, visible tracker rows, ranked board data, meta data, and confirmed badge-slot proof when available.</li><li>ApexIQ does not create fake stats or guess 20B/4K badges from kill or damage numbers.</li><li>Badge proof only counts when confirmed from badge-slot data.</li><li>Percentile chips are AIQ estimates based on available stat context and may change as better rank/percentile data becomes available.</li></ul></article>
-        <article class="aiq-v49964-card aiq-v49964-wide"><b>How to refresh your stats</b><ol><li>Open Apex Legends.</li><li>Equip the trackers you want ApexIQ to read on the legend you care about.</li><li>Select or play the legend so the profile updates publicly.</li><li>Play or finish a match if your stats have not refreshed yet.</li><li>Wait a few minutes for external stat sources to update.</li><li>Search your name again in ApexIQ and press Refresh if needed.</li></ol><p><strong>Best accuracy tips:</strong> spell the username exactly, choose the correct platform if Auto misses, equip important trackers, use the legend you want updated, and submit a support ticket with username/platform if a stat or badge looks wrong.</p></article>
-        <article class="aiq-v49964-card"><b>Private Beta Notes</b><ul><li>Live data can depend on external stat availability.</li><li>Badge proof only counts confirmed badge-slot data.</li><li>Some percentile values are AIQ estimates until official ranking data is available.</li><li>LFG posts are local/private-beta level until backend sync is added.</li><li>Worker/KV access validation is planned.</li></ul></article>
-        ${debugPerf?`<article class="aiq-v49964-card"><b>Performance diagnostics</b><p>Debug timings are enabled for this session. Timings show render checkpoints only and never expose raw endpoints.</p></article>`:""}
-        <article class="aiq-v49964-card"><b>About / build</b><p><strong>Current version:</strong> v4.9.9.64 private beta polish.</p><p>Changelog and roadmap below track every protected build milestone.</p></article>
-      </div>
-      <div class="aiq-v49950-role-grid aiq-v49964-role-grid"><article class="aiq-v49950-role-card"><b>Coye / IMissAnyway</b><span>Owner</span><small>Product lead, QA/API testing lead, roadmap, build approval, and final release control.</small></article><article class="aiq-v49950-role-card"><b>Fastwagen</b><span>Tester · Contributor · Asset Verification</span><small>Sticker, badge, logo, UI, beta feedback, and asset verification.</small></article><article class="aiq-v49950-role-card"><b>Deadkenn3dys</b><span>Tester/Admin candidate</span><small>Trusted tester role prepared for support/admin workflows.</small></article></div>
-    </section>`;
+    return `<section id="aiqV49950SettingsCard" class="aiq-v49950-settings-card"><div class="aiq-v49950-panel-kicker"><span>Private beta + support</span><span>${safe(BUILD)}</span></div><h3>Beta access and admin support</h3><p>This is the frontend beta/admin placeholder. It is useful for private testing, but real security still needs Worker/KV validation.</p><div class="aiq-v49950-role-grid"><article class="aiq-v49950-role-card"><b>Coye / IMissAnyway</b><span>Owner</span><small>Product lead, QA/API testing lead, roadmap, build approval, and final release control.</small></article><article class="aiq-v49950-role-card"><b>Fastwagen</b><span>Tester · Contributor · Asset Verification</span><small>Sticker, badge, logo, UI, beta feedback, and asset verification.</small></article><article class="aiq-v49950-role-card"><b>Deadkenn3dys</b><span>Tester/Admin candidate</span><small>Trusted tester role prepared for support/admin workflows.</small></article></div><p><b>Current access:</b> ${r?`${safe(r.name)} — ${safe(r.role)}`:"not unlocked"}</p><div class="aiq-v49950-support-actions"><button type="button" id="aiqV49950SettingsOpenSupport" class="aiq-v49950-btn">Open support desk</button><button type="button" id="aiqV49950ResetBeta" class="aiq-v49950-btn ghost">Reset beta access</button></div></section>`;
   }
   function ensureSettingsPanel(){
     const panel=$("#settingsPanel");if(!panel)return;
@@ -9740,381 +9711,6 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
   window.addEventListener("resize",schedule,{passive:true});
   window.addEventListener("orientationchange",schedule,{passive:true});
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
-})();
-</script>
-
-
-
-<!-- === ApexIQ v4.9.9.64 Beta release polish + tracking guide === -->
-<style id="apexiq-v49964-beta-release-polish-css">
-/* v4.9.9.64: copy/settings polish only. No search, Worker, badge, LFG, meta, or theme logic changes. */
-.aiq-v49964-settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px;}
-.aiq-v49964-card{border:1px solid color-mix(in srgb,var(--brand,#7c3aed) 18%,var(--line,#334155));background:linear-gradient(135deg,color-mix(in srgb,var(--surface-2,#111827) 96%,transparent),color-mix(in srgb,var(--brand,#7c3aed) 6%,transparent));border-radius:18px;padding:14px;display:grid;gap:8px;align-content:start;}
-.aiq-v49964-card b{color:var(--text,#f8fafc);font-size:1.02rem;}
-.aiq-v49964-card p,.aiq-v49964-card small,.aiq-v49964-card li{color:var(--muted,#94a3b8);line-height:1.45;}
-.aiq-v49964-card p{margin:0}.aiq-v49964-card ul,.aiq-v49964-card ol{margin:0;padding-left:1.15rem;display:grid;gap:5px;}
-.aiq-v49964-wide{grid-column:1/-1;}
-.aiq-v49964-role-grid{margin-top:12px;}
-.aiq-v49964-status-note{font-size:.86rem;color:var(--muted,#94a3b8)!important;}
-@media(max-width:760px){.aiq-v49964-settings-grid{grid-template-columns:1fr}.aiq-v49964-card{padding:13px;border-radius:16px}.aiq-v49964-card b{font-size:.98rem}}
-#aiqV49950BetaDev{display:none!important;}
-</style>
-<script id="apexiq-v49964-beta-release-polish-js">
-(function(){
-  "use strict";
-  const BUILD="v4.9.9.65-beta-enter-access-fix";
-  function $(s,r=document){return r.querySelector(s)}
-  function $all(s,r=document){return Array.from(r.querySelectorAll(s))}
-  function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]||c))}
-  function replaceTextNode(root,from,to){
-    try{
-      const w=document.createTreeWalker(root||document.body,NodeFilter.SHOW_TEXT,{acceptNode(n){return n.nodeValue&&n.nodeValue.includes(from)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT}});
-      const nodes=[];while(w.nextNode())nodes.push(w.currentNode);nodes.forEach(n=>{n.nodeValue=n.nodeValue.split(from).join(to)});
-    }catch(_){ }
-  }
-  function cleanHero(){
-    const header=$(".broadcast-header");
-    if(header){
-      const eyebrow=header.querySelector(".eyebrow"); if(eyebrow)eyebrow.textContent="Live Ready";
-      const h1=header.querySelector("h1"); if(h1&&/Predator Broadcast/i.test(h1.textContent||""))h1.textContent="ApexIQ Live Profile";
-      const p=header.querySelector("p"); if(p)p.textContent="Live Apex stats, legend cards, badge proof, ranked boards, meta intel, and squad tools in one clean dashboard.";
-    }
-    const btn=$("#searchButtonV49919,#searchForm button[type='submit'],#searchButton"); if(btn)btn.textContent="Search";
-  }
-  function cleanCopy(){
-    if(!document.body)return;
-    const pairs=[
-      ["Browser Run rendered ALS profile","Verified live profile"],
-      ["AIQ estimate until ALS rank data returns","AIQ percentile estimate"],
-      ["No stale rows or guessed badges","Waiting for verified legend rows. Badge proof only appears after confirmed data loads"],
-      ["Clean broadcast-style Apex stats, legend cards, badge proof states, ranked boards, meta, packs, squad tools, and advanced theming.","Live Apex stats, legend cards, badge proof, ranked boards, meta intel, and squad tools in one clean dashboard."],
-      ["Predator Broadcast","ApexIQ Live Profile"]
-    ];
-    pairs.forEach(([a,b])=>replaceTextNode(document.body,a,b));
-  }
-  function sanitizeStatus(){
-    $all(".toast,.status,.notice,.profile-status,.search-status,.api-status,.aiq-v49962-api-card,*").forEach(el=>{
-      if(!el||!el.textContent)return;
-      if(/workers\.dev|cloudflare|https?:\/\//i.test(el.textContent)){
-        el.innerHTML=el.innerHTML.replace(/https?:\/\/[^\s<)\]]+/gi,"ApexIQ Live API").replace(/[a-z0-9-]+\.workers\.dev/gi,"ApexIQ Live API");
-      }
-    });
-  }
-  function updateBuildHub(){
-    const entry=`<li data-aiq-v49964><small>v4.9.9.64</small><b>Beta release polish + tracking guide</b><span>Final copy pass, Settings cleanup, 15-code private beta setup, beta notes, and How ApexIQ tracking works guide. Data systems, Worker behavior, badges, LFG, meta, and theme logic were protected.</span></li>`;
-    $all("#aiqV49948BuildHub,#aiqV49948BuildHubSettings").forEach(hub=>{
-      const badge=hub.querySelector(".aiq-v49948-build-badge"); if(badge)badge.textContent=BUILD;
-      const latest=hub.querySelector(".aiq-v49948-build-card:first-of-type .aiq-v49948-build-list");
-      if(latest&&!latest.querySelector("[data-aiq-v49964]"))latest.insertAdjacentHTML("afterbegin",entry);
-      const roadmap=hub.querySelector(".aiq-v49948-build-card:nth-of-type(2) .aiq-v49948-build-list");
-      if(roadmap){
-        const items=[
-          ["data-aiq-road-mobile-brand","Mobile A-icon branding","Done. Mobile uses the compact ApexIQ A icon while desktop keeps the full wordmark."],
-          ["data-aiq-road-worker-private","Worker URL privacy cleanup","Done. Public UI shows ApexIQ Live API status only; raw endpoints stay private."],
-          ["data-aiq-road-cache","Legend performance cache","Done. Snapshot/portrait rendering uses safer session cache and diagnostics."],
-          ["data-aiq-road-proof","Badge locker proof sync","Done. AIQ badge progress counts verified unique 20B/4K badge-slot proof."],
-          ["data-aiq-road-guide","How ApexIQ tracking works guide","Done. Settings now explains tracking, refresh steps, badge proof, percentiles, and accuracy tips."],
-          ["data-aiq-road-kv","Worker/KV server-side access validation","Upcoming. Move beta codes, role validation, revocation, and protected API access into Worker/KV before wider release."],
-          ["data-aiq-road-lfg-sync","Public LFG backend sync","Upcoming. Move private beta/local LFG into backend-backed posts and moderation."],
-          ["data-aiq-road-profile-cards","Shareable profile cards","Upcoming. Generate clean profile cards for social sharing after beta stability."],
-          ["data-aiq-road-player-dna","Player DNA + ApexIQ score","Upcoming. Deeper account identity, score, legend fit, and badge power analysis. "]
-        ];
-        items.forEach(([attr,b,s])=>{if(!roadmap.querySelector(`[${attr}]`))roadmap.insertAdjacentHTML("beforeend",`<li ${attr}><b>${esc(b)}</b><span>${esc(s)}</span></li>`)});
-      }
-    });
-  }
-  function boot(){
-    document.documentElement.dataset.v49964="beta-release-polish";
-    cleanHero(); cleanCopy(); sanitizeStatus(); updateBuildHub();
-    [250,900,1800,3600].forEach(ms=>setTimeout(()=>{try{cleanHero();cleanCopy();sanitizeStatus();updateBuildHub();}catch(e){console.warn(BUILD,e)}},ms));
-  }
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
-})();
-</script>
-
-
-
-<!-- === ApexIQ v4.9.9.65 Beta enter/access hotfix === -->
-<script id="apexiq-v49965-beta-enter-access-fix-js">
-(function(){
-  "use strict";
-  const BUILD="v4.9.9.65-beta-enter-access-fix";
-  const TOKEN_KEY="apexiq:betaToken:v49950";
-  const ROLE_KEY="apexiq:betaRole:v49950";
-  const CODES={
-    "AIQ-ORIGIN-7K2M":{name:"Coye / IMissAnyway",role:"Owner",admin:true,desc:"Founder · Product Lead · QA/API Testing Lead · Release Control"},
-    "AIQ-ANCHOR-9Q4T":{name:"Fastwagen",role:"Tester · Contributor · Asset Verification",admin:true,desc:"Sticker, badge, logo, UI, beta feedback, and asset verification"},
-    "AIQ-SENTINEL-3W8X":{name:"Deadkenn3dys",role:"Tester/Admin candidate",admin:true,desc:"Trusted beta testing and support/admin candidate"},
-    "AIQ-RIFT-7K2M":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
-    "AIQ-NOVA-9Q4T":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
-    "AIQ-PULSE-3W8X":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
-    "AIQ-VAULT-6D1P":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
-    "AIQ-ORBIT-5H7L":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
-    "AIQ-PHASE-2N9C":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
-    "AIQ-TRACK-8F4A":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
-    "AIQ-BOOST-1R6V":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
-    "AIQ-SCAN-4M2K":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
-    "AIQ-PRIME-7X9D":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
-    "AIQ-BEACON-3C5Q":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"},
-    "AIQ-LEGEND-6T8Z":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta tester"}
-  };
-  function $(s,r=document){return r.querySelector(s)}
-  function normalizeCode(v){
-    return String(v||"")
-      .trim()
-      .toUpperCase()
-      .replace(/[\u2010\u2011\u2012\u2013\u2014\u2212]/g,"-")
-      .replace(/[^A-Z0-9-]/g,"");
-  }
-  function safeJSONSet(key,val){
-    try{localStorage.setItem(key,JSON.stringify(val));return true}catch(e){
-      try{sessionStorage.setItem(key,JSON.stringify(val));return true}catch(_){return false}
-    }
-  }
-  function showError(msg){
-    const err=$("#aiqV49950BetaError");
-    if(err)err.textContent=msg||"Invalid beta code.";
-  }
-  function unlockWith(code){
-    const c=normalizeCode(code);
-    const meta=CODES[c];
-    if(!meta){showError("Invalid beta code.");return false;}
-    const stamp=Date.now();
-    const ok1=safeJSONSet(TOKEN_KEY,{ok:true,code:c,ts:stamp,build:BUILD});
-    const ok2=safeJSONSet(ROLE_KEY,Object.assign({code:c,ts:stamp,build:BUILD},meta));
-    if(!ok1||!ok2){showError("Could not save beta access. Enable browser site storage, then try again.");return false;}
-    document.documentElement.dataset.aiqBeta="ok";
-    const gate=$("#aiqV49950BetaGate");
-    if(gate){gate.hidden=true;gate.setAttribute("aria-hidden","true");gate.style.display="none";}
-    const label=$("#aiqV49950PrivateLabel span");
-    if(label)label.textContent="Private Beta · "+meta.role;
-    showError("");
-    setTimeout(function(){try{window.dispatchEvent(new CustomEvent("apexiq:beta:granted",{detail:{role:meta.role}}))}catch(_){ }},0);
-    return true;
-  }
-  function bind(){
-    const input=$("#aiqV49950BetaCode");
-    const button=$("#aiqV49950BetaEnter");
-    if(button && !button.dataset.aiqV49965Bound){
-      button.dataset.aiqV49965Bound="1";
-      button.addEventListener("click",function(ev){
-        const val=($("#aiqV49950BetaCode")||{}).value||"";
-        if(unlockWith(val)){ev.preventDefault();ev.stopPropagation();}
-      },true);
-    }
-    if(input && !input.dataset.aiqV49965Bound){
-      input.dataset.aiqV49965Bound="1";
-      input.addEventListener("keydown",function(ev){
-        if(ev.key==="Enter"){
-          if(unlockWith(input.value)){ev.preventDefault();ev.stopPropagation();}
-        }
-      },true);
-      input.addEventListener("input",function(){
-        const cleaned=normalizeCode(input.value);
-        if(cleaned && cleaned!==input.value.toUpperCase().replace(/[\u2010\u2011\u2012\u2013\u2014\u2212]/g,"-")){
-          input.value=cleaned;
-        }
-      });
-    }
-  }
-  function boot(){bind();setTimeout(bind,150);setTimeout(bind,600);}
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
-  try{new MutationObserver(bind).observe(document.documentElement,{childList:true,subtree:true});}catch(_){ }
-  window.APEXIQ_BETA_GRANT_V49965=unlockWith;
-})();
-</script>
-
-
-
-<!-- === ApexIQ v4.9.9.67 Stable nav + loader rollback recovery === -->
-<style id="apexiq-v49967-stable-nav-loader-recovery-css">
-/* v4.9.9.67: rollback the v66 split-loader risk path, harden tab navigation, and defer ranked refresh. Scoped only. */
-html[data-aiq-v49967="stable-nav-loader-recovery"] .broadcast-nav .tab-button[data-go],
-html[data-aiq-v49967="stable-nav-loader-recovery"] .mobile-tabbar [data-go],
-html[data-aiq-v49967="stable-nav-loader-recovery"] .aiq-v49958-mobile-nav [data-go]{cursor:pointer;}
-html[data-aiq-v49967="stable-nav-loader-recovery"] [data-screen][hidden]{display:none!important;}
-html[data-aiq-v49967="stable-nav-loader-recovery"] #legendsPreview .legend-card .legend-visual img,
-html[data-aiq-v49967="stable-nav-loader-recovery"] #legendsPanel .legend-card .legend-visual img{
-  display:block!important;max-width:100%!important;max-height:100%!important;object-fit:contain!important;opacity:1!important;visibility:visible!important;
-}
-html[data-aiq-v49967="stable-nav-loader-recovery"] .aiq-v49967-stability-note{
-  border:1px solid color-mix(in srgb,var(--brand-2,#22d3ee) 24%,var(--line,#334155));
-  border-radius:16px;padding:11px 12px;background:color-mix(in srgb,var(--brand-2,#22d3ee) 8%,var(--surface,#0f172a));
-  color:var(--muted,#94a3b8);font-weight:850;line-height:1.35;margin-top:10px;
-}
-</style>
-<script id="apexiq-v49967-stable-nav-loader-recovery-js">
-(function(){
-  "use strict";
-  var BUILD="v4.9.9.67-stable-nav-loader-recovery";
-  if(window.__apexiqV49967Booted)return;
-  window.__apexiqV49967Booted=true;
-
-  function $(s,r){return (r||document).querySelector(s)}
-  function all(s,r){return Array.from((r||document).querySelectorAll(s))}
-  function safe(v){return String(v==null?"":v).replace(/[&<>\"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]||c})}
-  function activePanel(){
-    var shown=all('[data-screen]').find(function(s){return !s.hidden && s.style.display!=="none"});
-    if(shown)return shown.getAttribute('data-screen')||'dashboard';
-    var active=$('.tab-button.active[data-go],[data-go].active');
-    return active?active.getAttribute('data-go')||'dashboard':'dashboard';
-  }
-  function getPanel(panel){return $('[data-screen="'+String(panel||'dashboard').replace(/[^a-z0-9_-]/gi,'')+'"]')}
-  function hideFloatingPanels(){
-    try{var support=$('#aiqV49950SupportPanel');if(support){support.hidden=true;support.setAttribute('aria-hidden','true')}}catch(_){ }
-    try{var tip=$('#apexiqMiniBadgeTip');if(tip)tip.classList.remove('is-open')}catch(_){ }
-  }
-  function renderForPanel(panel){
-    try{
-      if(panel==='dashboard'){
-        if(typeof window.renderProfile==='function')window.renderProfile();
-        if(typeof window.renderLegends==='function')window.renderLegends();
-        if(typeof window.renderRanked==='function')window.renderRanked('rankedPanel');
-        if(typeof window.renderMeta==='function')window.renderMeta('metaPanel');
-      }else if(panel==='legends'){
-        if(typeof window.renderLegends==='function')window.renderLegends();
-      }else if(panel==='ranked'){
-        if(typeof window.renderRanked==='function')window.renderRanked('rankedPanelFull');
-        window.__apexiqV49967RankedUserOpened=true;
-        setTimeout(function(){try{if(typeof window.loadRanked==='function')window.loadRanked(false)}catch(e){console.warn(BUILD,'ranked open load',e)}},220);
-      }else if(panel==='meta'){
-        if(typeof window.renderMeta==='function')window.renderMeta('metaPanelFull');
-      }else if(panel==='badges'){
-        if(typeof window.renderBadgesPanel==='function')window.renderBadgesPanel();
-      }else if(panel==='packs'){
-        if(typeof window.renderPacks==='function')window.renderPacks();
-      }else if(panel==='squad'){
-        if(typeof window.renderSquad==='function')window.renderSquad();
-      }else if(panel==='settings'){
-        if(typeof window.renderSettings==='function')window.renderSettings();
-      }
-    }catch(e){console.warn(BUILD,'renderForPanel',panel,e)}
-    schedulePortraits();
-  }
-  function scrollPanel(panel,fromUser){
-    if(!fromUser)return;
-    var target=getPanel(panel)||$('.stage')||document.body;
-    try{
-      var y=Math.max(0,target.getBoundingClientRect().top+window.scrollY-94);
-      window.scrollTo({top:y,behavior:'auto'});
-    }catch(_){try{target.scrollIntoView({block:'start',behavior:'auto'})}catch(__){}}
-  }
-
-  var oldSwitch=window.switchPanel;
-  var switching=false;
-  function stableSwitch(panel,fromUser){
-    panel=String(panel||'dashboard').toLowerCase();
-    if(!getPanel(panel))panel='dashboard';
-    hideFloatingPanels();
-    if(!switching && typeof oldSwitch==='function'){
-      switching=true;
-      try{oldSwitch.call(window,panel)}catch(e){console.warn(BUILD,'old switch fallback',e)}
-      switching=false;
-    }
-    all('[data-screen]').forEach(function(screen){
-      var show=screen.getAttribute('data-screen')===panel;
-      screen.hidden=!show;
-      if(show)screen.removeAttribute('hidden');
-    });
-    all('[data-go]').forEach(function(btn){btn.classList.toggle('active',btn.getAttribute('data-go')===panel)});
-    renderForPanel(panel);
-    scrollPanel(panel,fromUser);
-    return panel;
-  }
-  window.switchPanel=function(panel){return stableSwitch(panel,false)};
-  window.apexiqStableSwitchPanelV49967=function(panel){return stableSwitch(panel,true)};
-
-  function bindNav(){
-    all('.broadcast-nav [data-go], .tab-button[data-go], .aiq-v49958-mobile-nav [data-go], .mobile-tabbar [data-go], [data-aiq-mobile-nav] [data-go]').forEach(function(btn){
-      if(btn.dataset.aiqV49967Bound)return;
-      btn.dataset.aiqV49967Bound='1';
-      btn.addEventListener('click',function(ev){
-        var panel=btn.getAttribute('data-go');
-        if(!panel)return;
-        ev.preventDefault();ev.stopPropagation();
-        if(ev.stopImmediatePropagation)ev.stopImmediatePropagation();
-        stableSwitch(panel,true);
-      },true);
-    });
-  }
-
-  // Stop the dashboard from kicking off a heavy ranked refresh while the user is still landing on the site.
-  // Ranked still renders cached rows immediately and still refreshes on the Ranked tab or Retry ranked.
-  var oldLoadRanked=window.loadRanked;
-  if(typeof oldLoadRanked==='function' && !oldLoadRanked.__aiqV49967Wrapped){
-    var wrappedRanked=function(fresh){
-      var explicit=fresh===true || activePanel()==='ranked' || window.__apexiqV49967RankedUserOpened===true;
-      if(!explicit){
-        try{if(typeof window.renderRanked==='function'){window.renderRanked('rankedPanel');window.renderRanked('rankedPanelFull')}}catch(_){ }
-        return Promise.resolve(null);
-      }
-      return oldLoadRanked.apply(this,arguments);
-    };
-    wrappedRanked.__aiqV49967Wrapped=true;
-    window.loadRanked=wrappedRanked;
-  }
-
-  function schedulePortraits(){
-    [40,180,650,1400].forEach(function(ms){setTimeout(forcePortraits,ms)});
-  }
-  function firstStickerFor(legend){
-    try{
-      var key=String(legend||'').toLowerCase().replace(/[^a-z0-9]/g,'');
-      var pack=(Array.isArray(window.PACK_DATA)?window.PACK_DATA:(typeof PACK_DATA!=='undefined'?PACK_DATA:[])).find(function(p){return String(p&&p.name||'').toLowerCase().replace(/[^a-z0-9]/g,'')===key});
-      return (pack&&Array.isArray(pack.stickers)&&pack.stickers[0]&&pack.stickers[0].src)||'';
-    }catch(_){return ''}
-  }
-  function cardLegend(card){
-    var raw=card&&card.getAttribute&&card.getAttribute('data-legend');
-    if(!raw){var h=card&&card.querySelector&&card.querySelector('.legend-title h3,h3');raw=h?h.textContent:''}
-    return String(raw||'').replace(/\s*·.*$/,'').trim();
-  }
-  function forcePortraits(){
-    try{
-      all('#legendsPreview .legend-card,#legendsPanel .legend-card').forEach(function(card){
-        var visual=card.querySelector('.legend-visual');if(!visual)return;
-        var legend=cardLegend(card);if(!legend)return;
-        var img=visual.querySelector('img');
-        var src=firstStickerFor(legend);
-        if(src && (!img || !img.getAttribute('src') || (img.complete && img.naturalWidth===0))){
-          visual.innerHTML='<img class="aiq-v49959-portrait aiq-v49960-portrait" loading="eager" decoding="async" src="'+safe(src)+'" alt="'+safe(legend)+'">';
-        }else if(img){
-          img.loading='eager';img.decoding='async';img.classList.add('aiq-v49959-portrait','aiq-v49960-portrait');
-        }
-        visual.classList.add('aiq-v49959-has-portrait','aiq-v49960-has-portrait');
-      });
-    }catch(e){console.warn(BUILD,'portrait pass',e)}
-  }
-
-  function patchSettings(){
-    try{
-      var panel=$('#settingsPanel');if(!panel||panel.querySelector('[data-aiq-v49967-note]'))return;
-      panel.insertAdjacentHTML('afterbegin','<div class="aiq-v49967-stability-note" data-aiq-v49967-note><b>Stability recovery active.</b> ApexIQ is back on the single-file app path. Ranked refresh is deferred until the Ranked tab or Retry button so the dashboard does not skip while loading.</div>');
-    }catch(_){ }
-  }
-  var oldRenderSettings=window.renderSettings;
-  if(typeof oldRenderSettings==='function'&&!oldRenderSettings.__aiqV49967Wrapped){
-    var wrappedSettings=function(){var ret=oldRenderSettings.apply(this,arguments);setTimeout(patchSettings,0);return ret};
-    wrappedSettings.__aiqV49967Wrapped=true;window.renderSettings=wrappedSettings;
-  }
-
-  function patchBuildHub(){
-    try{
-      var entry='<li data-aiq-v49967><small>v4.9.9.67</small><b>Stable nav + loader recovery</b><span>Rolled back the risky split-loader path, restored single-file routing, hardened tab navigation, made Squad open the actual workspace instead of stray floating panels, deferred ranked refresh until requested, and reran scoped portrait recovery without touching Worker, search, badges, LFG, support storage, meta, or theme internals.</span></li>';
-      all('#aiqV49948BuildHub,#aiqV49948BuildHubSettings').forEach(function(hub){
-        var badge=hub.querySelector('.aiq-v49948-build-badge');if(badge)badge.textContent='v4.9.9.67';
-        var list=hub.querySelector('.aiq-v49948-build-list');if(list&&!list.querySelector('[data-aiq-v49967]'))list.insertAdjacentHTML('afterbegin',entry);
-      });
-    }catch(_){ }
-  }
-  function boot(){
-    document.documentElement.dataset.aiqV49967='stable-nav-loader-recovery';
-    bindNav();patchBuildHub();forcePortraits();
-    [120,450,1100,2400,4200].forEach(function(ms){setTimeout(function(){bindNav();patchBuildHub();forcePortraits();if(activePanel()==='settings')patchSettings();},ms)});
-    try{if(activePanel()==='dashboard'&&typeof window.renderRanked==='function')window.renderRanked('rankedPanel')}catch(_){ }
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-  try{new MutationObserver(function(){bindNav();schedulePortraits()}).observe(document.documentElement,{childList:true,subtree:true})}catch(_){ }
 })();
 </script>
 

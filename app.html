@@ -1,4 +1,20 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ApexIQ redirect</title>
-<script>(function(){var q=location.search||"?v=49967";if(!/[?&]v=/.test(q))q+=(q?"&":"?")+"v=49967";q=q.replace(/([?&])v=[^&]*/,'$1v=49967');location.replace('./index.html'+q+(location.hash||''));})();</script>
-<meta http-equiv="refresh" content="0;url=./index.html?v=49967"></head><body><p>Opening ApexIQ…</p></body></html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ApexIQ Redirect</title>
+  <meta name="robots" content="noindex">
+  <script>
+    (function(){
+      var qs = window.location.search || "";
+      var hash = window.location.hash || "";
+      window.location.replace("./index.html" + qs + hash);
+    })();
+  </script>
+</head>
+<body style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;padding:24px;">
+  <p>Redirecting to ApexIQ…</p>
+  <p><a href="./index.html">Open ApexIQ</a></p>
+</body>
+</html>
