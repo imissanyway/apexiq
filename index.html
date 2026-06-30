@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ApexIQ — v4.9.9.12 Stability Fix</title>
+<title>ApexIQ — v4.9.9.54 Logo Theme Integration</title>
+<link id="apexiq-v49954-favicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%2307172b%22%2F%3E%3Cpath%20d%3D%22M14%2050%2032%2010l18%2040h-9l-3.4-8H26.4L23%2050h-9Zm16-16h4l-2-5-2%205Z%22%20fill%3D%22%23f8fbff%22%2F%3E%3Cpath%20d%3D%22M26%2042h12l3.4%208H22.6L26%2042Z%22%20fill%3D%22%238b5cf6%22%2F%3E%3Cpath%20d%3D%22M42%2050h8l-4-9-4%209Z%22%20fill%3D%22%2300e5ff%22%2F%3E%3C%2Fsvg%3E">
 <!-- ApexIQ Predator Broadcast v4.9.9.10 Source Re-Extract + Edge Fix: artifact-cleanup-only badge asset refresh on top of the stable full badge system. -->
 <style>
 
@@ -3797,7 +3798,10 @@ html[data-v497="polish-performance-ui-freeze"] #searchForm{
 <body>
 <div class="app">
   <nav class="broadcast-nav" aria-label="ApexIQ navigation">
-    <a class="brand-bug" href="#" onclick="switchPanel('dashboard');return false;"><b>AIQ LIVE</b><span>Broadcast Final</span></a>
+    <a class="brand-bug apexiq-v49954-brand" href="#" onclick="switchPanel('dashboard');return false;" aria-label="ApexIQ home">
+      <span class="apexiq-v49954-wordmark" aria-hidden="true"><span class="apexiq-v49954-base">Apex</span><span class="apexiq-v49954-iq"><span>I</span><span class="apexiq-v49954-q">Q</span></span></span>
+      <span class="apexiq-v49954-status">Broadcast Final</span>
+    </a>
     <div class="tab-strip">
       <button class="tab-button" data-go="dashboard">Dashboard</button>
       <button class="tab-button" data-go="legends">Legends</button>
@@ -8148,6 +8152,128 @@ html[data-aiq-beta="locked"] body{overflow:hidden;}
   if(typeof oldSwitch==="function")window.switchPanel=function(){const ret=oldSwitch.apply(this,arguments);setTimeout(patchAll,60);return ret;};
   function boot(){document.documentElement.dataset.v49953="badge-locker-proof-sync";[0,250,900,1800,3200].forEach(ms=>setTimeout(patchAll,ms));}
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
+})();
+</script>
+
+
+<!-- === ApexIQ v4.9.9.54 Logo + theme integration === -->
+<style id="apexiq-v49954-logo-theme-css">
+/* v4.9.9.54: theme-reactive logo polish only. Search, Worker, LFG, badges, support, beta, meta, and theme internals untouched. */
+:root{
+  --logo-text:color-mix(in srgb,var(--text) 92%,var(--brand) 8%);
+  --logo-accent:var(--brand);
+  --logo-accent-2:var(--brand-2);
+  --logo-accent-3:var(--brand-3);
+  --logo-glow:color-mix(in srgb,var(--brand) 30%,transparent);
+}
+:root[data-mode="dark"]{
+  --logo-text:color-mix(in srgb,#f8fbff 88%,var(--brand) 12%);
+}
+.brand-bug.apexiq-v49954-brand{
+  min-height:44px !important;
+  min-width:178px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:8px !important;
+  padding:0 13px !important;
+  border-radius:14px !important;
+  border:1px solid color-mix(in srgb,var(--logo-accent) 28%,var(--line)) !important;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--surface-2) 96%,transparent),color-mix(in srgb,var(--logo-accent) 9%,var(--surface))) !important;
+  color:var(--logo-text) !important;
+  box-shadow:0 12px 28px color-mix(in srgb,var(--logo-glow) 36%,transparent) !important;
+  overflow:hidden !important;
+}
+.apexiq-v49954-wordmark{
+  display:inline-flex !important;
+  align-items:baseline !important;
+  white-space:nowrap !important;
+  letter-spacing:-.075em !important;
+  line-height:1 !important;
+  font-weight:1000 !important;
+  font-size:1.28rem !important;
+  color:var(--logo-text) !important;
+  text-shadow:0 0 20px color-mix(in srgb,var(--logo-glow) 50%,transparent) !important;
+}
+.apexiq-v49954-base{color:var(--logo-text) !important;}
+.apexiq-v49954-iq{
+  display:inline-flex !important;
+  align-items:baseline !important;
+  margin-left:.03em !important;
+  letter-spacing:-.09em !important;
+  background:linear-gradient(135deg,var(--logo-accent),var(--logo-accent-2) 70%,var(--logo-accent-3)) !important;
+  -webkit-background-clip:text !important;
+  background-clip:text !important;
+  color:transparent !important;
+}
+.apexiq-v49954-q{
+  position:relative !important;
+  display:inline-block !important;
+}
+.apexiq-v49954-q::after{
+  content:"";
+  position:absolute;
+  width:.46em;
+  height:.13em;
+  right:-.20em;
+  bottom:.03em;
+  border-radius:999px;
+  transform:rotate(42deg);
+  background:linear-gradient(90deg,var(--logo-accent-2),var(--logo-accent-3));
+  box-shadow:0 0 12px color-mix(in srgb,var(--logo-accent-2) 45%,transparent);
+}
+.apexiq-v49954-status{
+  display:inline-flex !important;
+  align-items:center !important;
+  min-height:22px !important;
+  padding-left:8px !important;
+  border-left:1px solid color-mix(in srgb,var(--logo-accent) 28%,transparent) !important;
+  font-size:.56rem !important;
+  line-height:1 !important;
+  text-transform:uppercase !important;
+  letter-spacing:.16em !important;
+  color:color-mix(in srgb,var(--logo-text) 68%,var(--muted)) !important;
+  opacity:.82 !important;
+}
+.brand-bug.apexiq-v49954-brand:hover{
+  border-color:color-mix(in srgb,var(--logo-accent) 55%,var(--line)) !important;
+  transform:translateY(-1px);
+}
+@media(max-width:1180px){
+  .brand-bug.apexiq-v49954-brand{min-width:144px !important;padding:0 11px !important;}
+  .apexiq-v49954-wordmark{font-size:1.12rem !important;}
+  .apexiq-v49954-status{display:none !important;}
+}
+@media(max-width:820px){
+  .brand-bug.apexiq-v49954-brand{display:none !important;}
+}
+</style>
+<script id="apexiq-v49954-logo-theme-js">
+(function(){
+  "use strict";
+  const BUILD="v4.9.9.54-logo-theme-integration";
+  function $(s,r=document){return r.querySelector(s)}
+  function $all(s,r=document){return Array.from(r.querySelectorAll(s))}
+  function safeText(t){return String(t||"")}
+  function patchBuildHub(){
+    const entry='<li data-aiq-v49954><small>v4.9.9.54</small><b>Logo + theme integration</b><span>Replaced the old AIQ LIVE nav bug with a clean ApexIQ wordmark that reacts to active theme colors through CSS variables, added a lightweight inline SVG favicon, and kept search, Worker, badges, LFG, support, beta, meta, and theme internals untouched.</span></li>';
+    const done='<li data-aiq-v49954-roadmap><b>Logo + theme integration — done</b><span>The main nav logo is now a CSS-variable wordmark using --logo-text, --logo-accent, --logo-accent-2, and --logo-glow so it adapts with the theme changer. Future polish can add exported SVG/PNG brand packs.</span></li>';
+    $all('#aiqV49948BuildHub,#aiqV49948BuildHubSettings').forEach(function(hub){
+      const badge=hub.querySelector('.aiq-v49948-build-badge');
+      if(badge)badge.textContent=BUILD;
+      const lists=$all('.aiq-v49948-build-list',hub);
+      if(lists[0]&&!lists[0].querySelector('[data-aiq-v49954]'))lists[0].insertAdjacentHTML('afterbegin',entry);
+      if(lists[1]){
+        $all('li',lists[1]).forEach(function(li){
+          const b=li.querySelector('b');
+          if(/logo\s*\+\s*theme\s*integration/i.test(safeText(b&&b.textContent)))li.remove();
+        });
+        if(!lists[1].querySelector('[data-aiq-v49954-roadmap]'))lists[1].insertAdjacentHTML('afterbegin',done);
+      }
+    });
+  }
+  function boot(){document.documentElement.dataset.v49954="logo-theme-integration";[0,250,900,1800].forEach(function(ms){setTimeout(patchBuildHub,ms)});}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
 </script>
 
