@@ -6529,16 +6529,47 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
   function pickText(v){const s=scalar(v).replace("%","").trim();return num(s)>0?s+"%":"—"}
 
   let metaLock=false;
+  let metaRenderToken=0;
+  function metaScreenVisible(){
+    const s=document.querySelector('.screen[data-screen="meta"]');
+    return !!s && !s.hidden;
+  }
+  function metaNotice(live,mode){
+    const copy=mode==="full"
+      ? (live?"Live meta rows loaded.":"Meta fallback active.") + " Pick rate, trend, average rank, and average level are rendered only while this tab is open."
+      : "Meta preview is idle until the Meta tab is opened.";
+    return `<div class="v49930MetaNotice"><b>${live?"Meta ready":"Meta preview"}</b> ${safe(copy)}</div>`;
+  }
+  function metaPreviewHTML(rows,live){
+    return `${metaNotice(live,"preview")}<div class="meta-list">${rows.slice(0,6).map((m,i)=>`<article class="meta-row"><b>${i+1}</b><span>${safe(m.legend)}</span><em>${safe(pickText(m.pickRate))}</em></article>`).join("")}</div>`;
+  }
+  function metaCardHTML(m,i){
+    return `<article class="v49930MetaCard">${m.img?`<img class="v49930MetaBg" loading="lazy" decoding="async" src="${safe(m.img)}" alt="${safe(m.legend)}">`:""}<div class="v49930MetaShade"></div><div class="v49930MetaContent"><div><div class="v49930MetaTop"><b>${safe(m.legend)}</b><span>#${i+1}</span></div><div class="v49930Pick">${safe(pickText(m.pickRate))}</div><div class="v49930Trend ${trendClass(m.trend)}">${safe(m.trend||"—")}</div></div><div class="v49930Facts"><span><em>Avg rank</em><strong>${safe(m.avgRank||"—")}</strong></span><span><em>Avg level</em><strong>${safe(m.avgLevel||"—")}</strong></span></div></div></article>`;
+  }
   function renderMetaV30(id){
-    const target=byId(id); if(!target||metaLock)return;
-    metaLock=true;
-    try{
-      const raw=usableMetaRows(window.state?.meta||{});
-      const rows=mergeMeta(raw);
-      const live=raw.some(r=>num(r.pickRate)>0);
-      target.dataset.v49930="1";
-      target.innerHTML=`<div class="v49930MetaNotice"><b>${live?"Live meta rows loaded.":"Meta fallback active."}</b> Showing pick rate, trend, average rank, and average level. Fallback prevents the Meta panel from going blank.</div><div class="v49930MetaGrid">${rows.slice(0,28).map((m,i)=>`<article class="v49930MetaCard">${m.img?`<img class="v49930MetaBg" loading="lazy" src="${safe(m.img)}" alt="${safe(m.legend)}">`:""}<div class="v49930MetaShade"></div><div class="v49930MetaContent"><div><div class="v49930MetaTop"><b>${safe(m.legend)}</b><span>#${i+1}</span></div><div class="v49930Pick">${safe(pickText(m.pickRate))}</div><div class="v49930Trend ${trendClass(m.trend)}">${safe(m.trend||"—")}</div></div><div class="v49930Facts"><span><em>Avg rank</em><strong>${safe(m.avgRank||"—")}</strong></span><span><em>Avg level</em><strong>${safe(m.avgLevel||"—")}</strong></span></div></div></article>`).join("")}</div>`;
-    }finally{setTimeout(()=>{metaLock=false},0)}
+    const target=byId(id); if(!target)return;
+    const raw=usableMetaRows(window.state?.meta||{});
+    const rows=mergeMeta(raw);
+    const live=raw.some(r=>num(r.pickRate)>0);
+    target.dataset.v49930="1";
+    if(id==="metaPanel" || !metaScreenVisible()){
+      target.innerHTML=metaPreviewHTML(rows,live);
+      return;
+    }
+    const token=String(++metaRenderToken);
+    target.dataset.v49972Token=token;
+    target.innerHTML=`${metaNotice(live,"full")}<div class="v49930MetaGrid" data-v49972-meta-grid></div>`;
+    const grid=target.querySelector('[data-v49972-meta-grid]');
+    const list=rows.slice(0,28);
+    let i=0;
+    function pump(){
+      if(!grid || target.dataset.v49972Token!==token || !metaScreenVisible())return;
+      const end=Math.min(i+6,list.length);
+      grid.insertAdjacentHTML("beforeend",list.slice(i,end).map((m,idx)=>metaCardHTML(m,i+idx)).join(""));
+      i=end;
+      if(i<list.length)setTimeout(pump,50);
+    }
+    if(window.requestAnimationFrame)requestAnimationFrame(pump); else setTimeout(pump,0);
   }
 
   function statKey(legend,label,value){return [legend,label,value].map(norm).join("|")}
@@ -6591,33 +6622,28 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
     });
   }
 
-  // Wrap global calls so original renderAll/loadAll cannot leave Meta blank.
+  // v4.9.9.72: Meta stability guard. Keep Meta idle unless the Meta tab is actually open.
   const oldRenderAll=window.renderAll;
   if(typeof oldRenderAll==="function"){
-    window.renderAll=function(){oldRenderAll(); renderMetaV30("metaPanel"); renderMetaV30("metaPanelFull"); setTimeout(addPercentRows,30);}
+    window.renderAll=function(){oldRenderAll(); renderMetaV30("metaPanel"); if(metaScreenVisible())renderMetaV30("metaPanelFull"); setTimeout(addPercentRows,80);}
   }
   const oldLoadAll=window.loadAll;
   if(typeof oldLoadAll==="function"){
-    window.loadAll=async function(fresh=false){await oldLoadAll(fresh); renderMetaV30("metaPanel"); renderMetaV30("metaPanelFull"); setTimeout(addPercentRows,30);}
+    window.loadAll=async function(fresh=false){await oldLoadAll(fresh); renderMetaV30("metaPanel"); if(metaScreenVisible())renderMetaV30("metaPanelFull"); setTimeout(addPercentRows,80);}
   }
   const oldSwitch=window.switchPanel;
   if(typeof oldSwitch==="function"){
-    window.switchPanel=function(name){oldSwitch(name); setTimeout(()=>{renderMetaV30("metaPanel"); renderMetaV30("metaPanelFull"); addPercentRows();},40);}
+    window.switchPanel=function(name){oldSwitch(name); setTimeout(()=>{if(name==="meta")renderMetaV30("metaPanelFull"); else if(name==="dashboard")renderMetaV30("metaPanel"); addPercentRows();},90);}
   }
   window.renderMeta=function(id){renderMetaV30(id)};
 
-  function watch(id){
-    const t=byId(id); if(!t)return;
-    new MutationObserver(()=>{if(!metaLock&&t.dataset.v49930!=="1")setTimeout(()=>renderMetaV30(id),15)}).observe(t,{childList:true,subtree:false});
-  }
   function boot(){
-    document.documentElement.dataset.v49930="clean-meta-percent-restore";
+    document.documentElement.dataset.v49930="clean-meta-percent-restore-v72";
     if(window.state && (!state.meta || typeof state.meta!=="object")) state.meta={ok:true,legends:META_SNAPSHOT,source:"client fallback"};
-    watch("metaPanel"); watch("metaPanelFull");
-    renderMetaV30("metaPanel"); renderMetaV30("metaPanelFull");
-    addPercentRows();
-    setTimeout(()=>{renderMetaV30("metaPanel"); renderMetaV30("metaPanelFull"); addPercentRows();},300);
-    setInterval(()=>{renderMetaV30("metaPanel"); renderMetaV30("metaPanelFull"); addPercentRows();},1500);
+    renderMetaV30("metaPanel");
+    if(metaScreenVisible())renderMetaV30("metaPanelFull");
+    const idle=window.requestIdleCallback||function(fn){return setTimeout(fn,250)};
+    idle(addPercentRows);
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
 })();
@@ -9308,9 +9334,17 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
     t.dataset.aiqV49961="1";
     t.innerHTML='<div class="aiq-v49961-meta-note">'+(live?'Live pick-rate data loaded.':'Live meta fallback active until the live endpoint responds.')+'</div><div class="aiq-v49961-meta-grid '+(full?'full':'preview')+'">'+rows.slice(0,limit).map(function(m,i){return '<article class="aiq-v49961-meta-card">'+(m.img?'<img loading="lazy" decoding="async" src="'+safe(m.img)+'" alt="'+safe(m.legend)+'">':'<b>#'+safe(i+1)+'</b>')+'<span><b>'+safe(m.legend)+'</b><small>'+safe(m.trend&&m.trend!=="—"?m.trend:m.source||"")+'</small></span><strong>'+safe(formatRate(m.pickRate||m.rate||"—"))+'</strong></article>';}).join("")+'</div>';
   }
-  function renderMetaPanels(){renderMetaV61("metaPanel",false);renderMetaV61("metaPanelFull",true);}
-
   function activePanel(){var s=document.querySelector(".screen:not([hidden])");return s&&s.dataset?s.dataset.screen:""}
+  function renderMetaPanels(){
+    if(typeof window.renderMeta==="function"){
+      window.renderMeta("metaPanel");
+      if(activePanel()==="meta")window.renderMeta("metaPanelFull");
+      return;
+    }
+    renderMetaV61("metaPanel",false);
+    if(activePanel()==="meta")renderMetaV61("metaPanelFull",true);
+  }
+
   function compactSlots(){
     all("#legendsPreview .legend-card .slot-grid,#legendsPanel .legend-card .slot-grid").forEach(function(grid){
       var spans=all(":scope > span",grid).filter(function(x){return !x.classList.contains("aiq-v49961-more-slot")});
@@ -9336,7 +9370,7 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
 
   var oldSwitch=window.switchPanel;
   if(typeof oldSwitch==="function"){
-    window.switchPanel=function(panel){var ret=oldSwitch.apply(this,arguments);if(panel==="meta")setTimeout(function(){renderMetaV61("metaPanelFull",true)},50);if(panel==="dashboard")setTimeout(function(){renderMetaV61("metaPanel",false)},50);if(panel==="legends"||panel==="dashboard")tidyLegendCards();return ret;};
+    window.switchPanel=function(panel){var ret=oldSwitch.apply(this,arguments);if(panel==="meta")setTimeout(function(){if(typeof window.renderMeta==="function")window.renderMeta("metaPanelFull");else renderMetaV61("metaPanelFull",true)},90);if(panel==="dashboard")setTimeout(function(){if(typeof window.renderMeta==="function")window.renderMeta("metaPanel");else renderMetaV61("metaPanel",false)},90);if(panel==="legends"||panel==="dashboard")tidyLegendCards();return ret;};
   }
   var oldRenderAll=window.renderAll;
   if(typeof oldRenderAll==="function"){
@@ -9349,7 +9383,7 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
   // Keep the original status/search flow intact; this observer only cleans the public success wording.
   function observeNotice(){
     var root=document.body;if(!root||typeof MutationObserver==="undefined")return;
-    var mo=new MutationObserver(function(){sanitizeSearchNotice();if(activePanel()==="meta")renderMetaV61("metaPanelFull",true);});
+    var mo=new MutationObserver(function(){sanitizeSearchNotice();});
     mo.observe(root,{childList:true,subtree:true,characterData:true});
   }
   function updateBuildHub(){
@@ -9357,9 +9391,9 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
     all('#aiqV49948BuildHub,#aiqV49948BuildHubSettings').forEach(function(hub){var badge=hub.querySelector('.aiq-v49948-build-badge');if(badge)badge.textContent='v4.9.9.61';var list=hub.querySelector('.aiq-v49948-build-list');if(list&&!list.querySelector('[data-aiq-v49961]'))list.insertAdjacentHTML('afterbegin',entry);});
   }
   function boot(){
-    document.documentElement.dataset.v49961="mobile-ui-meta-worker-card-polish";
+    document.documentElement.dataset.v49961="mobile-ui-meta-worker-card-polish-v72-stable";
     ensureMobileLogo();updateBuildHub();renderMetaPanels();tidyLegendCards();sanitizeSearchNotice();observeNotice();
-    [250,900,1800,3200].forEach(function(ms){setTimeout(function(){ensureMobileLogo();updateBuildHub();renderMetaPanels();tidyLegendCards();sanitizeSearchNotice();},ms)});
+    [250,900,1800,3200].forEach(function(ms){setTimeout(function(){ensureMobileLogo();updateBuildHub();tidyLegendCards();sanitizeSearchNotice();},ms)});
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
 })();
@@ -9723,6 +9757,15 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
   window.addEventListener("resize",schedule,{passive:true});
   window.addEventListener("orientationchange",schedule,{passive:true});
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
+})();
+</script>
+
+
+
+<!-- === ApexIQ v4.9.9.72 Meta tab freeze fix from v71 === -->
+<script id="apexiq-v49972-meta-tab-freeze-fix-note">
+(function(){
+  try{document.documentElement.dataset.v49972="meta-tab-freeze-fix-from-v71";}catch(_){}
 })();
 </script>
 
