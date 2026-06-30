@@ -8370,5 +8370,258 @@ html[data-aiq-beta="locked"] body{overflow:hidden;}
 })();
 </script>
 
+
+
+<!-- === ApexIQ v4.9.9.57 Logo + nav comfort polish === -->
+<style id="apexiq-v49957-logo-nav-comfort-css">
+/* v4.9.9.57: UI/layout polish only. Keeps the real selected PNG logo; no SVG remake and no logo recolor. */
+:root{
+  --logo-chip-bg-comfort: linear-gradient(135deg, rgba(248,251,255,.96), rgba(226,233,245,.88));
+  --logo-chip-border-comfort: color-mix(in srgb, var(--brand, #235bff) 42%, rgba(255,255,255,.52));
+  --logo-chip-shadow-comfort: 0 12px 30px color-mix(in srgb, var(--brand, #235bff) 18%, transparent), inset 0 0 0 1px rgba(255,255,255,.38);
+  --utility-chip-bg: color-mix(in srgb, var(--surface-2) 72%, transparent);
+}
+:root[data-mode="dark"]{
+  --logo-chip-bg-comfort: linear-gradient(135deg, rgba(255,255,255,.95), rgba(218,229,244,.88));
+  --logo-chip-border-comfort: color-mix(in srgb, var(--brand, #235bff) 46%, rgba(255,255,255,.36));
+  --logo-chip-shadow-comfort: 0 14px 34px color-mix(in srgb, var(--brand, #235bff) 24%, transparent), 0 0 0 1px color-mix(in srgb, var(--brand-2, #ff264a) 16%, transparent) inset;
+  --utility-chip-bg: color-mix(in srgb, var(--surface) 74%, transparent);
+}
+.broadcast-nav{
+  grid-template-columns:auto minmax(0,1fr) auto !important;
+  gap:10px !important;
+  padding:9px !important;
+  align-items:center !important;
+}
+.tab-strip{
+  grid-template-columns:repeat(8,minmax(78px,1fr)) !important;
+  gap:7px !important;
+  min-width:0 !important;
+}
+.tab-button{
+  min-height:42px !important;
+  padding:0 10px !important;
+  font-size:.86rem !important;
+  border-radius:13px !important;
+}
+.nav-actions{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:6px !important;
+  padding:4px !important;
+  border:1px solid color-mix(in srgb, var(--line) 80%, transparent) !important;
+  background:var(--utility-chip-bg) !important;
+  border-radius:16px !important;
+  backdrop-filter:blur(12px) !important;
+  box-shadow:0 8px 22px rgba(0,0,0,.08) !important;
+}
+.nav-actions .icon-button{
+  width:39px !important;
+  height:39px !important;
+  min-width:39px !important;
+  border-radius:12px !important;
+  font-size:1rem !important;
+  opacity:.86 !important;
+}
+.nav-actions .icon-button:hover{opacity:1 !important;transform:translateY(-1px) !important;}
+.brand-bug.apexiq-v49956-brand{
+  min-height:48px !important;
+  min-width:212px !important;
+  max-width:264px !important;
+  padding:4px 9px !important;
+  border-radius:16px !important;
+  background:var(--logo-chip-bg-comfort) !important;
+  border:1px solid var(--logo-chip-border-comfort) !important;
+  box-shadow:var(--logo-chip-shadow-comfort) !important;
+  position:relative !important;
+}
+.brand-bug.apexiq-v49956-brand::after{
+  content:"" !important;
+  position:absolute !important;
+  left:12px !important;
+  right:12px !important;
+  bottom:4px !important;
+  height:2px !important;
+  border-radius:999px !important;
+  background:linear-gradient(90deg, transparent, var(--brand, #235bff), var(--brand-2, #ff264a), transparent) !important;
+  opacity:.58 !important;
+  pointer-events:none !important;
+}
+.apexiq-v49956-logo-img{
+  width:clamp(154px, 12vw, 214px) !important;
+  max-height:34px !important;
+  filter:drop-shadow(0 1px 0 rgba(255,255,255,.36)) drop-shadow(0 0 10px color-mix(in srgb, var(--brand, #235bff) 16%, transparent)) !important;
+}
+.aiq-v49950-support-toggle{
+  z-index:9400 !important;
+  width:48px !important;
+  height:48px !important;
+  border-radius:16px !important;
+  right:18px !important;
+  bottom:calc(env(safe-area-inset-bottom,0px) + 118px) !important;
+  box-shadow:0 18px 48px rgba(0,0,0,.30) !important;
+}
+.aiq-v49950-support-panel{
+  z-index:9401 !important;
+  bottom:calc(env(safe-area-inset-bottom,0px) + 180px) !important;
+  max-height:min(660px,calc(100vh - 218px)) !important;
+}
+.aiq-v49944-dock-toggle{
+  z-index:9300 !important;
+  width:52px !important;
+  height:52px !important;
+  right:18px !important;
+  bottom:calc(env(safe-area-inset-bottom,0px) + 44px) !important;
+  border-radius:17px !important;
+}
+.aiq-v49944-dock{
+  z-index:9301 !important;
+  bottom:calc(env(safe-area-inset-bottom,0px) + 112px) !important;
+  max-height:min(690px,calc(100vh - 146px)) !important;
+}
+html:not([data-aiq-active-panel="squad"]) #aiqV49944DockToggle{display:none !important;}
+html:not([data-aiq-active-panel="squad"]) #aiqV49944Dock{display:none !important;}
+@media(max-width:1180px){
+  .broadcast-nav{gap:8px !important;}
+  .brand-bug.apexiq-v49956-brand{min-width:176px !important;max-width:210px !important;min-height:46px !important;padding:4px 8px !important;}
+  .apexiq-v49956-logo-img{width:160px !important;max-height:31px !important;}
+  .tab-button{font-size:.82rem !important;padding:0 8px !important;}
+  .nav-actions .icon-button{width:38px !important;height:38px !important;min-width:38px !important;}
+}
+@media(max-width:860px){
+  .broadcast-nav{
+    top:8px !important;
+    grid-template-columns:auto minmax(0,1fr) !important;
+    gap:7px !important;
+    padding:8px !important;
+    border-radius:18px !important;
+  }
+  .brand-bug.apexiq-v49956-brand{
+    min-width:148px !important;
+    max-width:168px !important;
+    min-height:43px !important;
+    padding:4px 7px !important;
+    border-radius:14px !important;
+  }
+  .brand-bug.apexiq-v49956-brand::after{left:10px !important;right:10px !important;bottom:3px !important;opacity:.50 !important;}
+  .apexiq-v49956-logo-img{width:138px !important;max-height:28px !important;}
+  .tab-strip{
+    grid-column:1 / -1 !important;
+    display:flex !important;
+    overflow-x:auto !important;
+    gap:6px !important;
+    padding:2px 2px 5px !important;
+    scrollbar-width:none !important;
+    -webkit-overflow-scrolling:touch !important;
+  }
+  .tab-strip::-webkit-scrollbar{display:none !important;}
+  .tab-button{
+    min-width:88px !important;
+    min-height:39px !important;
+    font-size:.78rem !important;
+    border-radius:12px !important;
+    flex:0 0 auto !important;
+  }
+  .nav-actions{
+    justify-self:end !important;
+    padding:0 !important;
+    gap:5px !important;
+    border:0 !important;
+    background:transparent !important;
+    box-shadow:none !important;
+    backdrop-filter:none !important;
+  }
+  #gearButton{display:none !important;}
+  #themeToggle{width:38px !important;height:38px !important;min-width:38px !important;border-radius:12px !important;opacity:.70 !important;}
+  #aiqV49950PrivateLabel{display:none !important;}
+  .aiq-v49950-support-toggle{
+    left:calc(env(safe-area-inset-left,0px) + 12px) !important;
+    right:auto !important;
+    bottom:calc(env(safe-area-inset-bottom,0px) + 92px) !important;
+    width:42px !important;
+    height:42px !important;
+    border-radius:14px !important;
+    font-size:.95rem !important;
+    opacity:.92 !important;
+  }
+  .aiq-v49950-support-panel{
+    left:10px !important;
+    right:10px !important;
+    bottom:calc(env(safe-area-inset-bottom,0px) + 144px) !important;
+    width:auto !important;
+    max-height:calc(100vh - 188px) !important;
+    border-radius:22px !important;
+    padding:14px !important;
+  }
+  .aiq-v49944-dock-toggle{
+    right:calc(env(safe-area-inset-right,0px) + 12px) !important;
+    bottom:calc(env(safe-area-inset-bottom,0px) + 92px) !important;
+    width:42px !important;
+    height:42px !important;
+    border-radius:14px !important;
+    font-size:1rem !important;
+  }
+  .aiq-v49944-dock{
+    left:10px !important;
+    right:10px !important;
+    bottom:calc(env(safe-area-inset-bottom,0px) + 144px) !important;
+    width:auto !important;
+    max-height:calc(100vh - 188px) !important;
+    border-radius:22px !important;
+  }
+}
+@media(max-width:520px){
+  .broadcast-nav{grid-template-columns:minmax(0,1fr) !important;}
+  .brand-bug.apexiq-v49956-brand{justify-self:start !important;min-width:136px !important;max-width:154px !important;min-height:42px !important;}
+  .apexiq-v49956-logo-img{width:128px !important;max-height:26px !important;}
+  .nav-actions{display:none !important;}
+  .tab-button{min-width:82px !important;}
+}
+</style>
+<script id="apexiq-v49957-logo-nav-comfort-js">
+(function(){
+  "use strict";
+  const BUILD="v4.9.9.57-logo-nav-comfort-polish";
+  function $(s,r=document){return r.querySelector(s)}
+  function all(s,r=document){return Array.from(r.querySelectorAll(s))}
+  function activePanel(){
+    const btn=$('[data-go].active');
+    if(btn&&btn.dataset&&btn.dataset.go)return btn.dataset.go;
+    const screen=all('[data-screen]').find(function(el){return !el.hidden});
+    return (screen&&screen.dataset&&screen.dataset.screen)||"dashboard";
+  }
+  function comfortSync(){
+    const panel=activePanel();
+    document.documentElement.dataset.aiqActivePanel=panel;
+    const dockToggle=$("#aiqV49944DockToggle"), dock=$("#aiqV49944Dock");
+    if(dockToggle){dockToggle.setAttribute("aria-label","Open ApexIQ emoji dock");dockToggle.title="Emoji dock";dockToggle.hidden=panel!=="squad";}
+    if(dock&&panel!=="squad")dock.hidden=true;
+    const support=$("#aiqV49950SupportToggle");
+    if(support){support.textContent="?";support.title="ApexIQ support";support.setAttribute("aria-label","Open ApexIQ support");}
+  }
+  function patchBuildHub(){
+    const entry='<li data-aiq-v49957><small>v4.9.9.57</small><b>Logo + nav comfort polish</b><span>Improved the real PNG ApexIQ logo wrapper for dark-mode readability, increased logo confidence without recoloring the image, reduced nav utility clutter, hid mobile beta/admin crowding, and made support/emoji bubbles less intrusive. Search, Worker, badges, LFG posting, support data, beta access, meta, and theme logic were not rewritten.</span></li>';
+    all('#aiqV49948BuildHub,#aiqV49948BuildHubSettings').forEach(function(hub){
+      const badge=hub.querySelector('.aiq-v49948-build-badge');
+      if(badge)badge.textContent=BUILD;
+      const list=hub.querySelector('.aiq-v49948-build-card:first-of-type .aiq-v49948-build-list');
+      if(list&&!list.querySelector('[data-aiq-v49957]'))list.insertAdjacentHTML('afterbegin',entry);
+    });
+  }
+  function boot(){document.documentElement.dataset.v49957="logo-nav-comfort-polish";comfortSync();patchBuildHub();}
+  const prevSwitch=window.switchPanel;
+  if(typeof prevSwitch==="function"&&!prevSwitch.__aiqV49957){
+    const wrapped=function(){const ret=prevSwitch.apply(this,arguments);setTimeout(comfortSync,0);setTimeout(comfortSync,180);return ret;};
+    wrapped.__aiqV49957=true;
+    window.switchPanel=wrapped;
+  }
+  document.addEventListener('click',function(){setTimeout(comfortSync,40);},true);
+  const mo=new MutationObserver(function(){clearTimeout(window.__aiqV49957ComfortT);window.__aiqV49957ComfortT=setTimeout(boot,120)});
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){boot();try{mo.observe(document.body,{childList:true,subtree:true})}catch(_){}});else{boot();try{mo.observe(document.body,{childList:true,subtree:true})}catch(_){}}
+  [250,900,1800,3200].forEach(function(ms){setTimeout(boot,ms)});
+})();
+</script>
+
 </body>
 </html>
