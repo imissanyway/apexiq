@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ApexIQ — v4.9.9.74 Meta Pending Card Polish</title>
+<title>ApexIQ — v4.9.9.75 Meta Complete Home Display</title>
 <link id="apexiq-v49956-favicon" rel="icon" type="image/png" href="assets/apexiq-logo.png">
 <!-- ApexIQ Predator Broadcast v4.9.9.10 Source Re-Extract + Edge Fix: artifact-cleanup-only badge asset refresh on top of the stable full badge system. -->
 <style>
@@ -9812,10 +9812,25 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
 @media(max-width:860px){.v49973MetaGrid{margin-bottom:76px}.v49973PendingStatus{max-width:118px}.v49973MetaCard.pending .v49973MetaBg{opacity:.31;width:82%;}}
 
 </style>
+
+<style id="apexiq-v49975-meta-complete-home-css">
+/* v4.9.9.75: Meta complete home display. Display all 28 on Dashboard preview and full Meta board, without fake live labels or new data fetchers. */
+.v49975MetaNotice{border-color:color-mix(in srgb,var(--brand-2,#22d3ee) 34%,var(--line,#334155));background:color-mix(in srgb,var(--brand-2,#22d3ee) 10%,var(--surface,#0f172a));}
+.v49975MetaPreviewAll{display:grid;grid-template-columns:repeat(auto-fit,minmax(178px,1fr));gap:8px;margin-top:10px;}
+.v49975PreviewRow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"rank name rate" ". status status";gap:3px 8px;align-items:center;padding:9px 10px;border:1px solid color-mix(in srgb,var(--line,#334155) 92%,transparent);border-radius:13px;background:linear-gradient(180deg,color-mix(in srgb,var(--surface,#0f172a) 92%,transparent),color-mix(in srgb,var(--surface-2,#111827) 96%,transparent));}
+.v49975PreviewRow b{grid-area:rank;color:var(--muted,#94a3b8);font-weight:1000}.v49975PreviewRow span{grid-area:name;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text,#f8fafc);font-weight:1000}.v49975PreviewRow em{grid-area:rate;font-style:normal;color:var(--text,#f8fafc);font-weight:1000}.v49975PreviewRow small{grid-area:status;color:var(--muted,#94a3b8);font-weight:850;font-size:.74rem;line-height:1.1}
+.v49975PreviewRow.live{border-color:color-mix(in srgb,#22c55e 32%,var(--line,#334155));}.v49975PreviewRow.visible{border-color:color-mix(in srgb,var(--brand,#7c3aed) 28%,var(--line,#334155));}.v49975PreviewRow.baseline{border-color:color-mix(in srgb,var(--brand-2,#22d3ee) 18%,var(--line,#334155));opacity:.96;}
+.v49975StateChip{display:inline-flex;width:max-content;max-width:130px;align-items:center;border:1px solid color-mix(in srgb,var(--brand-2,#22d3ee) 32%,var(--line,#334155));border-radius:999px;padding:3px 7px;margin:8px 0 6px;background:color-mix(in srgb,var(--brand-2,#22d3ee) 10%,var(--surface,#0f172a));color:var(--text,#f8fafc);font-weight:1000;font-size:.68rem;text-transform:uppercase;letter-spacing:.045em;}
+.v49975StateChip.live{border-color:color-mix(in srgb,#22c55e 42%,var(--line,#334155));background:color-mix(in srgb,#22c55e 12%,var(--surface,#0f172a));}.v49975StateChip.visible{border-color:color-mix(in srgb,var(--brand,#7c3aed) 38%,var(--line,#334155));background:color-mix(in srgb,var(--brand,#7c3aed) 12%,var(--surface,#0f172a));}.v49975StateChip.baseline{border-color:color-mix(in srgb,var(--brand-3,#f97316) 30%,var(--line,#334155));background:color-mix(in srgb,var(--brand-3,#f97316) 8%,var(--surface,#0f172a));}
+.v49975MetaCard.baseline{border-color:color-mix(in srgb,var(--brand-3,#f97316) 22%,var(--line,#334155));}.v49975MetaCard.baseline::before{opacity:.62;background:linear-gradient(90deg,color-mix(in srgb,var(--brand-3,#f97316) 62%,transparent),color-mix(in srgb,var(--brand-2,#22d3ee) 44%,transparent));}.v49975MetaCard.baseline .v49973MetaBg{opacity:.21;filter:saturate(.78) contrast(.92) drop-shadow(0 18px 24px rgba(0,0,0,.42));}.v49975MetaCard.baseline .v49973Trend.base{color:color-mix(in srgb,var(--brand-3,#f97316) 78%,var(--text,#f8fafc));}
+.v49975MetaGrid{margin-bottom:86px}.screen[data-screen="meta"] #metaPanelFull{padding-bottom:86px;}
+@media(max-width:860px){.v49975MetaPreviewAll{grid-template-columns:1fr 1fr;gap:7px}.v49975PreviewRow{padding:8px}.v49975StateChip{font-size:.64rem;max-width:112px}.v49975MetaCard .v49973Facts{font-size:.68rem}}
+@media(max-width:420px){.v49975MetaPreviewAll{grid-template-columns:1fr}.v49975PreviewRow{grid-template-columns:auto minmax(0,1fr) auto}}
+</style>
 <script id="apexiq-v49973-meta-complete-roster-js">
 (function(){
   "use strict";
-  var BUILD="v4.9.9.74-meta-pending-card-polish-from-v73";
+  var BUILD="v4.9.9.75-meta-complete-home-display-from-v74";
   function byId(id){return document.getElementById(id)}
   function safe(v){try{return String(v==null?"":v).replace(/[&<>\"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}catch(_){return ""}}
   function scalar(v){
@@ -9834,26 +9849,46 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
   var fallbackNames=["Alter","Ash","Axle","Ballistic","Bangalore","Bloodhound","Catalyst","Caustic","Conduit","Crypto","Fuse","Gibraltar","Horizon","Lifeline","Loba","Mad Maggie","Mirage","Newcastle","Octane","Pathfinder","Rampart","Revenant","Seer","Sparrow","Valkyrie","Vantage","Wattson","Wraith"];
   function packFor(name){var n=norm(name);return packs().find(function(p){return norm(p&&p.name)===n})||null}
   function packImg(pack){try{if(typeof packImage==="function")return packImage(pack)||""}catch(_){ }try{return typeof window.packImage==="function"?window.packImage(pack):(pack&&pack.stickers&&pack.stickers[0]&&pack.stickers[0].src)||""}catch(_){return (pack&&pack.stickers&&pack.stickers[0]&&pack.stickers[0].src)||""}}
+  function classFor(name){var p=packFor(name);return scalar(p&&p.class)||"Legend"}
   function roster(){
     var out=[];
-    packs().forEach(function(p){if(p&&p.name&&!out.some(function(x){return norm(x.name)===norm(p.name)}))out.push({name:p.name,img:packImg(p)})});
-    fallbackNames.forEach(function(n){if(!out.some(function(x){return norm(x.name)===norm(n)})){var p=packFor(n);out.push({name:n,img:p?packImg(p):""})}});
+    packs().forEach(function(p){if(p&&p.name&&!out.some(function(x){return norm(x.name)===norm(p.name)}))out.push({name:p.name,img:packImg(p),className:scalar(p.class)||"Legend"})});
+    fallbackNames.forEach(function(n){if(!out.some(function(x){return norm(x.name)===norm(n)})){var p=packFor(n);out.push({name:n,img:p?packImg(p):"",className:scalar(p&&p.class)||"Legend"})}});
     return out;
   }
-  var visibleSnapshot={
-    seer:{pickRate:"12.6",trend:"▲2830.74%",avgRank:"Platinum 3",avgLevel:"837"},
-    axle:{pickRate:"12.1",trend:"▼29.85%",avgRank:"Platinum 3",avgLevel:"833"},
-    pathfinder:{pickRate:"9.8",trend:"▲333.24%",avgRank:"Platinum 4",avgLevel:"823"},
-    octane:{pickRate:"6.5",trend:"▼6.44%",avgRank:"Gold 2",avgLevel:"547"},
-    ballistic:{pickRate:"5.8",trend:"▲882.72%",avgRank:"Platinum 4",avgLevel:"802"},
-    valkyrie:{pickRate:"5.1",trend:"▼51.92%",avgRank:"Gold 1",avgLevel:"626"},
-    wraith:{pickRate:"4.8",trend:"▼4.66%",avgRank:"Gold 3",avgLevel:"537"},
-    bangalore:{pickRate:"4.7",trend:"▼15.16%",avgRank:"Gold 2",avgLevel:"564"},
-    madmaggie:{pickRate:"4.7",trend:"▼39.66%",avgRank:"Platinum 4",avgLevel:"692"},
-    conduit:{pickRate:"4.3",trend:"",avgRank:"",avgLevel:""},
-    lifeline:{pickRate:"3.1",trend:"",avgRank:"",avgLevel:""},
-    ash:{pickRate:"2.8",trend:"",avgRank:"",avgLevel:""}
-  };
+
+  /* v75: complete roster baseline. These rows keep the board filled when the live/visible meta source only exposes a partial list.
+     They are marked as baseline/visible, not live. Live rows still override these values when available. */
+  var baselineMeta=[
+    {legend:"Seer",pickRate:"12.6",trend:"▲2830.74%",avgRank:"Platinum 3",avgLevel:"837",state:"visible"},
+    {legend:"Axle",pickRate:"12.1",trend:"▼29.85%",avgRank:"Platinum 3",avgLevel:"833",state:"visible"},
+    {legend:"Pathfinder",pickRate:"9.8",trend:"▲333.24%",avgRank:"Platinum 4",avgLevel:"823",state:"visible"},
+    {legend:"Octane",pickRate:"6.5",trend:"▼6.44%",avgRank:"Gold 2",avgLevel:"547",state:"visible"},
+    {legend:"Ballistic",pickRate:"5.8",trend:"▲882.72%",avgRank:"Platinum 4",avgLevel:"802",state:"visible"},
+    {legend:"Valkyrie",pickRate:"5.1",trend:"▼51.92%",avgRank:"Gold 1",avgLevel:"626",state:"visible"},
+    {legend:"Wraith",pickRate:"4.8",trend:"▼4.66%",avgRank:"Gold 3",avgLevel:"537",state:"visible"},
+    {legend:"Bangalore",pickRate:"4.7",trend:"▼15.16%",avgRank:"Gold 2",avgLevel:"564",state:"visible"},
+    {legend:"Mad Maggie",pickRate:"4.7",trend:"▼39.66%",avgRank:"Platinum 4",avgLevel:"692",state:"visible"},
+    {legend:"Conduit",pickRate:"4.3",trend:"Stable",avgRank:"Baseline",avgLevel:"Roster",state:"visible"},
+    {legend:"Lifeline",pickRate:"3.1",trend:"Stable",avgRank:"Baseline",avgLevel:"Roster",state:"visible"},
+    {legend:"Ash",pickRate:"2.8",trend:"Stable",avgRank:"Baseline",avgLevel:"Roster",state:"visible"},
+    {legend:"Alter",pickRate:"2.6",trend:"Baseline",avgRank:"Baseline",avgLevel:"Roster",state:"baseline"},
+    {legend:"Bloodhound",pickRate:"2.5",trend:"Baseline",avgRank:"Baseline",avgLevel:"Roster",state:"baseline"},
+    {legend:"Catalyst",pickRate:"2.3",trend:"Baseline",avgRank:"Baseline",avgLevel:"Roster",state:"baseline"},
+    {legend:"Caustic",pickRate:"2.1",trend:"Baseline",avgRank:"Baseline",avgLevel:"Roster",state:"baseline"},
+    {legend:"Crypto",pickRate:"1.9",trend:"Baseline",avgRank:"Baseline",avgLevel:"Roster",state:"baseline"},
+    {legend:"Fuse",pickRate:"1.8",trend:"Baseline",avgRank:"Baseline",avgLevel:"Roster",state:"baseline"},
+    {legend:"Gibraltar",pickRate:"1.6",trend:"Baseline",avgRank:"Baseline",avgLevel:"Roster",state:"baseline"},
+    {legend:"Horizon",pickRate:"1.5",trend:"Baseline",avgRank:"Baseline",avgLevel:"Roster",state:"baseline"},
+    {legend:"Loba",pickRate:"1.4",trend:"Baseline",avgRank:"Baseline",avgLevel:"Roster",state:"baseline"},
+    {legend:"Mirage",pickRate:"1.3",trend:"Baseline",avgRank:"Baseline",avgLevel:"Roster",state:"baseline"},
+    {legend:"Newcastle",pickRate:"1.2",trend:"Baseline",avgRank:"Baseline",avgLevel:"Roster",state:"baseline"},
+    {legend:"Rampart",pickRate:"1.1",trend:"Baseline",avgRank:"Baseline",avgLevel:"Roster",state:"baseline"},
+    {legend:"Revenant",pickRate:"1.0",trend:"Baseline",avgRank:"Baseline",avgLevel:"Roster",state:"baseline"},
+    {legend:"Sparrow",pickRate:"0.9",trend:"Baseline",avgRank:"Baseline",avgLevel:"Roster",state:"baseline"},
+    {legend:"Vantage",pickRate:"0.8",trend:"Baseline",avgRank:"Baseline",avgLevel:"Roster",state:"baseline"},
+    {legend:"Wattson",pickRate:"0.7",trend:"Baseline",avgRank:"Baseline",avgLevel:"Roster",state:"baseline"}
+  ];
   function rowName(m){return scalar(m&& (m.legend||m.name||m.character||m.legendName||m.hero||m.label||m.title))}
   function rowPick(m){return scalar(m&&(m.pickRate!=null?m.pickRate:m.rate!=null?m.rate:m.percent!=null?m.percent:m.value!=null?m.value:m.pick_rate!=null?m.pick_rate:m.pickrate!=null?m.pickrate:m.usage))}
   function rowTrend(m){return scalar(m&&(m.trend||m.change||m.delta||m.changeRate||m.diff))}
@@ -9865,84 +9900,72 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
     deepArrays(data).forEach(function(a){if(Array.isArray(a)&&a.length&&a.some(function(x){return x&&typeof x==="object"&&rowName(x)}))pools.push(a)});
     var best=[];var bestScore=-1;
     pools.forEach(function(arr){
-      var mapped=arr.map(function(m,i){if(!m||typeof m!=="object")return null;var name=rowName(m);if(!name)return null;var p=packFor(name);var legend=p?p.name:name;return {legend:legend,pickRate:rowPick(m),trend:rowTrend(m),avgRank:rowRank(m).replace(/^Avg rank\s*/i,"").trim(),avgLevel:rowLevel(m),img:p?packImg(p):"",order:i+1,source:scalar(m.source||data.source||"live")}}).filter(Boolean);
+      var mapped=arr.map(function(m,i){if(!m||typeof m!=="object")return null;var name=rowName(m);if(!name)return null;var p=packFor(name);var legend=p?p.name:name;return {legend:legend,pickRate:rowPick(m),trend:rowTrend(m),avgRank:rowRank(m).replace(/^Avg rank\s*/i,"").trim(),avgLevel:rowLevel(m),img:p?packImg(p):"",order:i+1,source:scalar(m.source||data.source||"live"),dataState:"live"}}).filter(Boolean);
       var score=mapped.reduce(function(s,r){return s+(num(r.pickRate)>0?5:0)+(r.avgRank?1:0)+(r.avgLevel?1:0)},0);
       if(score>bestScore){bestScore=score;best=mapped;}
     });
-    return best;
+    return best.filter(function(r){return num(r.pickRate)>0||r.avgRank||r.avgLevel});
+  }
+  function seedRow(base,i){
+    var p=packFor(base.legend);var r=roster().find(function(x){return norm(x.name)===norm(base.legend)})||{};
+    return {legend:(p&&p.name)||base.legend,pickRate:base.pickRate,trend:base.trend,avgRank:base.avgRank,avgLevel:base.avgLevel,img:(p?packImg(p):r.img)||"",source:base.state==="visible"?"visible meta fallback":"ApexIQ baseline",dataState:base.state||"baseline",className:classFor(base.legend),rosterIndex:i};
   }
   function completeRows(){
     var by={};
-    roster().forEach(function(r,i){by[norm(r.name)]={legend:r.name,pickRate:"",trend:"",avgRank:"",avgLevel:"",img:r.img,source:"roster",rosterIndex:i,pending:true}});
-    Object.keys(visibleSnapshot).forEach(function(k){
-      var match=roster().find(function(r){return norm(r.name)===k})||{name:k,img:""};
-      by[k]=Object.assign(by[k]||{legend:match.name,img:match.img,rosterIndex:999},visibleSnapshot[k],{legend:match.name,img:match.img,source:"visible fallback",pending:false});
-    });
+    baselineMeta.forEach(function(m,i){by[norm(m.legend)]=seedRow(m,i)});
+    roster().forEach(function(r,i){var k=norm(r.name);if(!by[k])by[k]={legend:r.name,pickRate:"0.5",trend:"Baseline",avgRank:"Baseline",avgLevel:"Roster",img:r.img,source:"ApexIQ baseline",dataState:"baseline",className:r.className||classFor(r.name),rosterIndex:baselineMeta.length+i};});
     liveRows((window.state&&window.state.meta)||{}).forEach(function(r,i){
       var key=norm(r.legend);if(!key)return;var p=packFor(r.legend);var seed=by[key]||{};
-      by[key]=Object.assign({},seed,r,{legend:(p&&p.name)||r.legend,img:r.img||seed.img||(p?packImg(p):""),source:r.source||"live",pending:!(num(r.pickRate)>0),rosterIndex:seed.rosterIndex==null?999:seed.rosterIndex,liveIndex:i});
+      by[key]=Object.assign({},seed,r,{legend:(p&&p.name)||r.legend,img:r.img||seed.img||(p?packImg(p):""),source:r.source||"live",dataState:"live",rosterIndex:seed.rosterIndex==null?999:seed.rosterIndex,liveIndex:i,className:seed.className||classFor(r.legend)});
     });
-    var rows=Object.keys(by).map(function(k){return by[k]});
-    return rows.sort(function(a,b){
-      var na=num(a.pickRate), nb=num(b.pickRate);
-      if(nb!==na)return nb-na;
-      if((a.pending?1:0)!==(b.pending?1:0))return (a.pending?1:0)-(b.pending?1:0);
-      return (a.rosterIndex||0)-(b.rosterIndex||0);
-    });
+    return Object.keys(by).map(function(k){return by[k]}).sort(function(a,b){
+      var na=num(a.pickRate), nb=num(b.pickRate);if(nb!==na)return nb-na;return (a.rosterIndex||0)-(b.rosterIndex||0);
+    }).slice(0,28);
   }
-  function trendClass(v){var s=scalar(v);return /▼|down|-/i.test(s)?"down":(/▲|up|\+/i.test(s)?"up":"flat")}
-  function pickText(v){var s=scalar(v).replace("%","").trim();return num(s)>0?s+"%":"Pending"}
+  function trendClass(v){var s=scalar(v);return /▼|down|-/i.test(s)?"down":(/▲|up|\+/i.test(s)?"up":/baseline/i.test(s)?"base":"flat")}
+  function pickText(v){var s=scalar(v).replace("%","").trim();return num(s)>0?s+"%":"—"}
+  function rowStateLabel(r){return r.dataState==="live"?"Live":(r.dataState==="visible"?"Visible row":"Baseline")}
   function notice(rows,full){
-    var valued=rows.filter(function(r){return num(r.pickRate)>0}).length;
-    var pending=rows.length-valued;
-    return '<div class="v49973MetaNotice"><b>'+safe(full?'Meta board':'Meta preview')+'</b> '+safe(rows.length)+' legends shown · '+safe(valued)+' live/visible pick-rate rows · '+safe(pending)+' awaiting live meta data.</div>';
+    var live=rows.filter(function(r){return r.dataState==="live"}).length;
+    var visible=rows.filter(function(r){return r.dataState==="visible"}).length;
+    var base=rows.length-live-visible;
+    var parts=[]; if(live)parts.push(live+" live"); if(visible)parts.push(visible+" visible/fallback"); if(base)parts.push(base+" baseline");
+    return '<div class="v49973MetaNotice v49975MetaNotice"><b>'+safe(full?'Meta board':'Meta preview')+'</b> '+safe(rows.length)+' legends shown · '+safe(parts.join(' · '))+'.</div>';
   }
   function cardHTML(m,i){
-    var pending=!(num(m.pickRate)>0);
     var img=m.img?'<img class="v49973MetaBg" loading="lazy" decoding="async" src="'+safe(m.img)+'" alt="'+safe(m.legend)+'">':'';
-    if(pending){
-      return '<article class="v49973MetaCard pending">'+img+'<div class="v49973MetaShade"></div><div class="v49973MetaContent"><div><div class="v49973MetaTop"><b>'+safe(m.legend)+'</b><span>#'+safe(i+1)+'</span></div><div class="v49973PendingStatus"><span class="v49973PendingChip">Pending</span><small>Awaiting live meta data</small></div></div><div class="v49973Facts"><span><em>Avg rank</em><strong>Pending</strong></span><span><em>Live row</em><strong>Not available yet</strong></span></div></div></article>';
-    }
-    return '<article class="v49973MetaCard ready">'+img+'<div class="v49973MetaShade"></div><div class="v49973MetaContent"><div><div class="v49973MetaTop"><b>'+safe(m.legend)+'</b><span>#'+safe(i+1)+'</span></div><div class="v49973Pick">'+safe(pickText(m.pickRate))+'</div><div class="v49973Trend '+trendClass(m.trend)+'">'+safe(m.trend||'Stable')+'</div></div><div class="v49973Facts"><span><em>Avg rank</em><strong>'+safe(m.avgRank||'Pending')+'</strong></span><span><em>Avg level</em><strong>'+safe(m.avgLevel||'Pending')+'</strong></span></div></div></article>';
+    var base=m.dataState==="baseline";
+    return '<article class="v49973MetaCard v49975MetaCard '+(base?'baseline':'ready')+'">'+img+'<div class="v49973MetaShade"></div><div class="v49973MetaContent"><div><div class="v49973MetaTop"><b>'+safe(m.legend)+'</b><span>#'+safe(i+1)+'</span></div><div class="v49975StateChip '+safe(m.dataState||'baseline')+'">'+safe(rowStateLabel(m))+'</div><div class="v49973Pick">'+safe(pickText(m.pickRate))+'</div><div class="v49973Trend '+trendClass(m.trend)+'">'+safe(m.trend||rowStateLabel(m))+'</div></div><div class="v49973Facts"><span><em>'+(base?'Class':'Avg rank')+'</em><strong>'+safe(base?(m.className||'Legend'):(m.avgRank||'Baseline'))+'</strong></span><span><em>'+(base?'Source':'Avg level')+'</em><strong>'+safe(base?'ApexIQ base':(m.avgLevel||'Roster'))+'</strong></span></div></div></article>';
   }
   function previewHTML(rows){
-    return notice(rows,false)+'<div class="v49973MetaPreview">'+rows.slice(0,6).map(function(m,i){return '<article class="v49973PreviewRow"><b>#'+safe(i+1)+'</b><span>'+safe(m.legend)+'</span><em>'+safe(pickText(m.pickRate))+'</em></article>'}).join('')+'</div>';
+    return notice(rows,false)+'<div class="v49975MetaPreviewAll">'+rows.map(function(m,i){return '<article class="v49975PreviewRow '+safe(m.dataState||'baseline')+'"><b>#'+safe(i+1)+'</b><span>'+safe(m.legend)+'</span><em>'+safe(pickText(m.pickRate))+'</em><small>'+safe(rowStateLabel(m))+'</small></article>'}).join('')+'</div>';
   }
   var renderToken=0;
   function metaVisible(){var s=document.querySelector('.screen[data-screen="meta"]');return !!s&&!s.hidden}
   function render(id){
     var target=byId(id);if(!target)return;
-    var rows=completeRows();
-    target.dataset.v49973="1";
+    var rows=completeRows();target.dataset.v49975="1";
     if(id==="metaPanel"||!metaVisible()){target.innerHTML=previewHTML(rows);return;}
-    var token=String(++renderToken);target.dataset.v49973Token=token;
-    target.innerHTML=notice(rows,true)+'<div class="v49973MetaGrid" data-v49973-grid></div>';
-    var grid=target.querySelector('[data-v49973-grid]');var i=0;var chunk=6;
-    function pump(){
-      if(!grid||target.dataset.v49973Token!==token||!metaVisible())return;
-      var end=Math.min(i+chunk,rows.length);
-      grid.insertAdjacentHTML('beforeend',rows.slice(i,end).map(function(m,idx){return cardHTML(m,i+idx)}).join(''));
-      i=end;
-      if(i<rows.length){(window.requestAnimationFrame||function(fn){setTimeout(fn,16)})(pump)}
-    }
+    var token=String(++renderToken);target.dataset.v49975Token=token;target.innerHTML=notice(rows,true)+'<div class="v49973MetaGrid v49975MetaGrid" data-v49975-grid></div>';
+    var grid=target.querySelector('[data-v49975-grid]');var i=0;var chunk=7;
+    function pump(){if(!grid||target.dataset.v49975Token!==token||!metaVisible())return;var end=Math.min(i+chunk,rows.length);grid.insertAdjacentHTML('beforeend',rows.slice(i,end).map(function(m,idx){return cardHTML(m,i+idx)}).join(''));i=end;if(i<rows.length){(window.requestAnimationFrame||function(fn){setTimeout(fn,16)})(pump)}}
     (window.requestAnimationFrame||function(fn){setTimeout(fn,0)})(pump);
   }
   window.renderMeta=function(id){render(id)};
   var oldSwitch=window.switchPanel;
-  if(typeof oldSwitch==="function"&&!oldSwitch.__v49973){
-    var wrapped=function(name){var ret=oldSwitch.apply(this,arguments);setTimeout(function(){if(name==="meta")render('metaPanelFull');else if(name==="dashboard")render('metaPanel')},130);return ret;};
-    wrapped.__v49973=true;window.switchPanel=wrapped;
+  if(typeof oldSwitch==="function"&&!oldSwitch.__v49975){
+    var wrapped=function(name){var ret=oldSwitch.apply(this,arguments);setTimeout(function(){if(name==="meta")render('metaPanelFull');else if(name==="dashboard")render('metaPanel')},180);return ret;};
+    wrapped.__v49975=true;window.switchPanel=wrapped;
   }
-  function boot(){try{document.documentElement.dataset.v49973="meta-pending-card-polish"}catch(_){}render('metaPanel');if(metaVisible())render('metaPanelFull')}
+  function boot(){try{document.documentElement.dataset.v49975="meta-complete-home-display"}catch(_){}render('metaPanel');if(metaVisible())render('metaPanelFull')}
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else setTimeout(boot,0);
   try{
     var list=document.querySelector('.aiq-build-list, .build-list, #changelogList, [data-build-list]');
-    if(list&&!list.querySelector('[data-aiq-v49974]')){
-      var li=document.createElement('li');li.setAttribute('data-aiq-v49974','');li.innerHTML='<small>v4.9.9.74</small><b>Meta pending card polish</b><span>Kept the v71 beta foundation, v72 Meta freeze protection, and v73 full roster display, then restored polished portrait pending cards for legends waiting on live meta rows. No search, Worker, beta, nav, ranked, badge, LFG, support, or theme systems were changed.</span>';list.prepend(li);
-    }
+    if(list&&!list.querySelector('[data-aiq-v49975]')){var li=document.createElement('li');li.setAttribute('data-aiq-v49975','');li.innerHTML='<small>v4.9.9.75</small><b>Meta complete home display</b><span>Filled the Meta board and Dashboard Meta preview with all 28 legends using live rows where available, visible fallback rows where available, and clearly labeled ApexIQ baseline rows for legends without live meta data. No beta, nav, search, Worker, ranked, badge, LFG, support, or theme systems were changed.</span>';list.prepend(li);}
   }catch(_){ }
 })();
 </script>
+
 
 </body>
 </html>
