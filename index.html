@@ -10045,8 +10045,8 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
 </script>
 
 
-<!-- === ApexIQ v4.9.9.89 Worker-backed Beta Access + Welcome + Admin Panel === -->
-<style id="apexiq-v49989-beta-admin-css">
+<!-- === ApexIQ v4.9.9.90 Worker-backed Beta Access + Welcome Auto-Only Polish === -->
+<style id="apexiq-v49990-beta-admin-css">
 /* v4.9.9.89: beta gate/welcome/admin UI only. Meta, ranked, search, legends, badges, LFG, stickers, and themes untouched. */
 .aiq-v49989-field-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .aiq-v49989-field-grid.full{grid-template-columns:1fr;}
@@ -10070,15 +10070,15 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
 .aiq-v49989-status{min-height:22px;color:var(--brand-2,#22d3ee);font-weight:900;overflow-wrap:anywhere;}.aiq-v49989-status.err{color:#fca5a5;}.aiq-v49989-code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:1000;letter-spacing:.04em;}
 @media(max-width:860px){.aiq-v49989-field-grid,.aiq-v49989-sections,.aiq-v49989-admin-grid{grid-template-columns:1fr;}.aiq-v49989-card,.aiq-v49989-admin-panel{padding:18px;border-radius:22px;}.aiq-v49989-admin-head{display:grid}.aiq-v49989-admin-shell{padding:10px}.aiq-v49989-table-wrap{max-height:58vh}}
 </style>
-<script id="apexiq-v49989-beta-admin-js">
+<script id="apexiq-v49990-beta-admin-js">
 (function(){
   "use strict";
-  const BUILD="v4.9.9.89-beta-welcome-admin-worker";
+  const BUILD="v4.9.9.90-beta-welcome-auto-only-polish";
   const ADMIN_EMAIL="coyemicthell@gmail.com";
   const SESSION_KEY="apexiq:betaSession:v49989";
   const ADMIN_SESSION_KEY="apexiq:adminSession:v49989";
   const DEVICE_KEY="apexiq_beta_device_id";
-  const WELCOME_KEY="apexiq:betaWelcomeSeen:v49989";
+  const WELCOME_KEY="apexiq:betaWelcomeSeen:v49990";
   const TARGET_EMAIL="coyemicthell@gmail.com";
   function $(s,r){return (r||document).querySelector(s)}
   function $all(s,r){return Array.from((r||document).querySelectorAll(s))}
@@ -10130,7 +10130,7 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
   }
   function lock(){document.documentElement.dataset.aiqBeta="locked";renderGate()}
   function setStatus(id,text,err){const el=$("#"+id);if(el){el.textContent=text||"";el.classList.toggle("err",!!err)}}
-  function gateHTML(){return '<section class="aiq-v49950-beta-card"><div class="aiq-v49950-beta-kicker"><span>ApexIQ private beta</span><span>Invite only</span></div><h2 id="aiqV49950BetaTitle">Access key required</h2><p>Enter the Apex username your key was assigned to, then enter your access key. Each key can be used on up to 2 devices.</p><div class="aiq-v49950-beta-form"><div class="aiq-v49989-field-grid full"><label>Apex username<input id="aiqV49989BetaUsername" autocomplete="username" placeholder="Example: IMissAnyway"></label><label>Access key<input id="aiqV49989BetaCode" autocomplete="one-time-code" autocapitalize="characters" placeholder="AIX-XXXX-XXXX"></label></div><div class="aiq-v49950-beta-actions"><button type="button" id="aiqV49989BetaEnter" class="aiq-v49950-btn">Unlock ApexIQ</button><button type="button" id="aiqV49989RequestBtn" class="aiq-v49950-btn ghost">Request access key</button><button type="button" id="aiqV49989BetaInfo" class="aiq-v49950-btn ghost">Beta rules</button></div><div id="aiqV49989BetaError" class="aiq-v49950-error"></div><div class="aiq-v49950-note">Early testers help check stats, badges, Meta, LFG, and mobile stability before public release. Do not share your key.</div></div></section>'}
+  function gateHTML(){return '<section class="aiq-v49950-beta-card"><div class="aiq-v49950-beta-kicker"><span>ApexIQ private beta</span><span>Invite only</span></div><h2 id="aiqV49950BetaTitle">Access key required</h2><p>Enter the Apex username your key was assigned to, then enter your access key. Each key can be used on up to 2 devices.</p><div class="aiq-v49950-beta-form"><div class="aiq-v49989-field-grid full"><label>Apex username<input id="aiqV49989BetaUsername" autocomplete="username" placeholder="Your assigned Apex username"></label><label>Access key<input id="aiqV49989BetaCode" autocomplete="one-time-code" autocapitalize="characters" placeholder="AIX-XXXX-XXXX"></label></div><div class="aiq-v49950-beta-actions"><button type="button" id="aiqV49989BetaEnter" class="aiq-v49950-btn">Unlock ApexIQ</button><button type="button" id="aiqV49989RequestBtn" class="aiq-v49950-btn ghost">Request access key</button></div><div id="aiqV49989BetaError" class="aiq-v49950-error"></div><div class="aiq-v49950-note">The welcome guide appears automatically after a verified tester login. Early testers help check stats, badges, Meta, LFG, and mobile stability before public release. Do not share your key.</div></div></section>'}
   function ensureGate(){
     let gate=$("#aiqV49950BetaGate");
     if(!gate){document.body.insertAdjacentHTML("beforeend",'<div id="aiqV49950BetaGate" class="aiq-v49950-beta-overlay" role="dialog" aria-modal="true" aria-labelledby="aiqV49950BetaTitle"></div>');gate=$("#aiqV49950BetaGate")}
@@ -10169,13 +10169,14 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
     $("#aiqV49989BetaCode",gate)?.addEventListener("keydown",e=>{if(e.key==="Enter")login()});
     $("#aiqV49989BetaUsername",gate)?.addEventListener("keydown",e=>{if(e.key==="Enter")login()});
     $("#aiqV49989RequestBtn",gate)?.addEventListener("click",requestAccess);
-    $("#aiqV49989BetaInfo",gate)?.addEventListener("click",()=>showWelcome(true));
   }
-  function welcomeHTML(){return '<div id="aiqV49989Welcome" class="aiq-v49989-modal" role="dialog" aria-modal="true"><section class="aiq-v49989-card"><div class="aiq-v49989-kicker"><span>Private beta</span><span>Original tester group</span></div><h2>Welcome to the ApexIQ Private Beta</h2><p>Thanks for helping test ApexIQ. This first tester group is helping shape the site before public release, and early testers will receive special ApexIQ badges later.</p><div class="aiq-v49989-sections"><article class="aiq-v49989-section"><b>Feature pool</b><ul><li>Player search and profile dashboard</li><li>Legend stat cards</li><li>Badge tracking</li><li>Ranked leaderboard</li><li>Meta pick rates</li><li>LFG / squad tools</li><li>Sticker/emoji dock</li><li>Themes and mobile layout</li></ul></article><article class="aiq-v49989-section"><b>Beta rules</b><ul><li>Do not share your access key.</li><li>Your key is locked to your Apex username.</li><li>Your key works on up to 2 devices.</li><li>Report bugs with device/browser and what you clicked.</li><li>Features may change during beta.</li><li>Abuse/spam can get a key disabled.</li></ul></article><article class="aiq-v49989-section"><b>Accurate stats tips</b><ul><li>Enter your Apex username exactly how it appears in-game.</li><li>Try platform variations if your profile does not load.</li><li>Make sure your profile is public/trackable where possible.</li><li>Search again after playing if stats look outdated.</li><li>Some third-party stats update slowly.</li><li>Send screenshots with username/platform if stats look wrong.</li></ul></article><article class="aiq-v49989-section"><b>Testing notes</b><ul><li>Refresh Meta only when needed.</li><li>Check mobile scrolling and tab switching.</li><li>Try LFG/stickers if you use them.</li><li>Tell Coye what feels confusing or useful.</li></ul></article></div><label class="aiq-v49989-check"><input id="aiqV49989WelcomeDontShow" type="checkbox"> Don’t show again on this device</label><div class="aiq-v49950-beta-actions"><button type="button" id="aiqV49989WelcomeStart" class="aiq-v49950-btn">Start Testing</button></div></section></div>'}
+  function welcomeHTML(){return '<div id="aiqV49989Welcome" class="aiq-v49989-modal" role="dialog" aria-modal="true"><section class="aiq-v49989-card"><div class="aiq-v49989-kicker"><span>Private beta</span><span>Verified tester login</span></div><h2>Welcome to the ApexIQ Private Beta</h2><p>Thanks for helping test ApexIQ. This first tester group is helping shape the site before public release, and early testers will receive special ApexIQ badges later.</p><p>This guide only appears after a real beta login on this device. Use it as the quick start for testing profiles, legends, stats, Meta, LFG, and mobile stability.</p><div class="aiq-v49989-sections"><article class="aiq-v49989-section"><b>What to test</b><ul><li>Search an Apex profile from the top search bar.</li><li>Check the profile dashboard after the search finishes.</li><li>Open Legends and review legend cards, trackers, badges, and images.</li><li>Open Ranked and switch platform boards.</li><li>Open Meta and use Refresh Meta only when the board looks stale.</li><li>Try LFG / squad tools and sticker/emoji posting if you use them.</li><li>Switch tabs on mobile and watch for freezing, black screens, or bad spacing.</li></ul></article><article class="aiq-v49989-section"><b>Beta rules</b><ul><li>Do not share your access key.</li><li>Your key is locked to your assigned Apex username.</li><li>Your key works on up to 2 devices.</li><li>Report bugs with your device, browser, username, platform, and what you clicked.</li><li>Features may change during beta.</li><li>Abuse, spam, or code sharing can get a key disabled.</li></ul></article><article class="aiq-v49989-section"><b>How ApexIQ gets cleaner stats</b><ul><li>Search the Apex username exactly how it appears in-game.</li><li>Pick the right platform. If nothing loads, try the other platform option that matches the account.</li><li>Some public stat sources only expose the trackers currently visible on the player banner.</li><li>For better legend-specific stats, switch to the legend in Apex first, equip the trackers you want shown if possible, then search again in ApexIQ.</li><li>If you are checking multiple legends, switch legends in Apex, wait a little, then refresh/search that profile again.</li><li>After playing matches, search again or refresh ApexIQ because third-party stats can update slowly.</li></ul></article><article class="aiq-v49989-section"><b>When stats look wrong</b><ul><li>Try searching again after changing platform or spelling.</li><li>Make sure the profile is public/trackable where possible.</li><li>Wait a few minutes after changing legends or finishing matches.</li><li>Do not spam Refresh Meta; it is only for the Meta board.</li><li>Send Coye a screenshot with the Apex username, platform, device/browser, and what looks wrong.</li><li>Tell Coye what feels confusing, useful, too slow, or missing.</li></ul></article></div><label class="aiq-v49989-check"><input id="aiqV49989WelcomeDontShow" type="checkbox"> Don’t show again on this device</label><div class="aiq-v49950-beta-actions"><button type="button" id="aiqV49989WelcomeStart" class="aiq-v49950-btn">Start Testing</button></div></section></div>'}
   function showWelcome(force){
+    const s=session();
+    if(!sessionFresh(s))return;
     if(!force&&localStorage.getItem(WELCOME_KEY))return;
     $("#aiqV49989Welcome")?.remove();document.body.insertAdjacentHTML("beforeend",welcomeHTML());
-    $("#aiqV49989WelcomeStart")?.addEventListener("click",function(){if($("#aiqV49989WelcomeDontShow")?.checked||!force)localStorage.setItem(WELCOME_KEY,"1");$("#aiqV49989Welcome")?.remove()});
+    $("#aiqV49989WelcomeStart")?.addEventListener("click",function(){localStorage.setItem(WELCOME_KEY,"1");$("#aiqV49989Welcome")?.remove()});
   }
   async function verifyExisting(){
     const s=session();
@@ -10189,7 +10190,7 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
   function ensureAdminShell(){let shell=$("#aiqV49989AdminShell");if(!shell){document.body.insertAdjacentHTML("beforeend",adminShellHTML());shell=$("#aiqV49989AdminShell");$("#aiqV49989AdminClose")?.addEventListener("click",()=>{shell.hidden=true;if(location.search.includes("admin=1")){history.replaceState(null,"",location.pathname+location.hash)}})}shell.hidden=false;return shell}
   function adminLoginHTML(){return '<div class="aiq-v49989-admin-grid"><article class="aiq-v49989-admin-card"><h3>Admin login</h3><div class="aiq-v49989-admin-form"><label>Admin email<input id="aiqV49989AdminEmail" type="email" value="'+safe(ADMIN_EMAIL)+'"></label><label>Admin secret<input id="aiqV49989AdminSecret" type="password" placeholder="APEXIQ_ADMIN_SECRET"></label><button type="button" id="aiqV49989AdminLogin" class="aiq-v49950-btn">Open admin tools</button><div id="aiqV49989AdminStatus" class="aiq-v49989-status"></div></div></article><article class="aiq-v49989-admin-card"><h3>Setup required</h3><p class="aiq-v49989-mini">This panel is Worker/KV-backed. Set the Cloudflare secret <b>APEXIQ_ADMIN_SECRET</b> and bind a KV namespace as <b>APEXIQ_BETA_KV</b>.</p></article></div>'}
   async function adminLogin(){const email=$("#aiqV49989AdminEmail")?.value?.trim()||"";const secret=$("#aiqV49989AdminSecret")?.value||"";setStatus("aiqV49989AdminStatus","Verifying admin…",false);try{const data=await post("/api/beta/admin/login",{email,secret});writeJSON(ADMIN_SESSION_KEY,{token:data.adminToken,expiresAt:data.expiresAt,email,ts:Date.now()});setStatus("aiqV49989AdminStatus","Admin unlocked.",false);await renderAdminTools()}catch(e){setStatus("aiqV49989AdminStatus",e.message||"Admin login failed.",true)}}
-  function adminToolsHTML(){return '<div class="aiq-v49989-admin-grid"><article class="aiq-v49989-admin-card"><h3>Add Beta User</h3><div class="aiq-v49989-admin-form"><label>Apex username<input id="aiqV49989CreateUsername" placeholder="IMissAnyway"></label><label>Platform<select id="aiqV49989CreatePlatform"><option>PC</option><option>PlayStation</option><option>Xbox</option><option>Switch</option><option>Auto</option></select></label><label>Role<select id="aiqV49989CreateRole"><option>tester</option><option>admin</option><option>founder</option></select></label><label>Badge label<select id="aiqV49989CreateBadge"><option>Original Beta Tester</option><option>Founding Tester</option><option>Admin Tester</option></select></label><label>Max devices<input id="aiqV49989CreateMax" type="number" min="1" max="5" value="2"></label><label>Notes<textarea id="aiqV49989CreateNotes" placeholder="Optional notes"></textarea></label><button type="button" id="aiqV49989CreateBtn" class="aiq-v49950-btn">Generate Access Key</button><div id="aiqV49989CreateStatus" class="aiq-v49989-status"></div></div><hr style="border-color:var(--line);width:100%"><h3>Bulk Codes</h3><div class="aiq-v49989-admin-form"><label>Count<select id="aiqV49989BulkCount"><option>1</option><option>5</option><option>10</option><option>25</option></select></label><button type="button" id="aiqV49989BulkBtn" class="aiq-v49950-btn ghost">Generate disabled unassigned codes</button><div id="aiqV49989BulkStatus" class="aiq-v49989-status"></div></div></article><article class="aiq-v49989-admin-card"><div class="aiq-v49989-admin-head" style="margin:0"><h3>Existing Beta Users</h3><button type="button" id="aiqV49989RefreshUsers" class="aiq-v49950-btn ghost">Refresh</button></div><div id="aiqV49989UsersStatus" class="aiq-v49989-status"></div><div id="aiqV49989Users"></div></article></div>'}
+  function adminToolsHTML(){return '<div class="aiq-v49989-admin-grid"><article class="aiq-v49989-admin-card"><h3>Add Beta User</h3><div class="aiq-v49989-admin-form"><label>Apex username<input id="aiqV49989CreateUsername" placeholder="Exact Apex username"></label><label>Platform<select id="aiqV49989CreatePlatform"><option>PC</option><option>PlayStation</option><option>Xbox</option><option>Switch</option><option>Auto</option></select></label><label>Role<select id="aiqV49989CreateRole"><option>tester</option><option>admin</option><option>founder</option></select></label><label>Badge label<select id="aiqV49989CreateBadge"><option>Original Beta Tester</option><option>Founding Tester</option><option>Admin Tester</option></select></label><label>Max devices<input id="aiqV49989CreateMax" type="number" min="1" max="5" value="2"></label><label>Notes<textarea id="aiqV49989CreateNotes" placeholder="Optional notes"></textarea></label><button type="button" id="aiqV49989CreateBtn" class="aiq-v49950-btn">Generate Access Key</button><div id="aiqV49989CreateStatus" class="aiq-v49989-status"></div></div><hr style="border-color:var(--line);width:100%"><h3>Bulk Codes</h3><div class="aiq-v49989-admin-form"><label>Count<select id="aiqV49989BulkCount"><option>1</option><option>5</option><option>10</option><option>25</option></select></label><button type="button" id="aiqV49989BulkBtn" class="aiq-v49950-btn ghost">Generate disabled unassigned codes</button><div id="aiqV49989BulkStatus" class="aiq-v49989-status"></div></div></article><article class="aiq-v49989-admin-card"><div class="aiq-v49989-admin-head" style="margin:0"><h3>Existing Beta Users</h3><button type="button" id="aiqV49989RefreshUsers" class="aiq-v49950-btn ghost">Refresh</button></div><div id="aiqV49989UsersStatus" class="aiq-v49989-status"></div><div id="aiqV49989Users"></div></article></div>'}
   async function renderAdminTools(){const body=$("#aiqV49989AdminBody");if(!body)return;body.innerHTML=adminToolsHTML();bindAdminTools();await loadUsers()}
   function bindAdminTools(){
     $("#aiqV49989CreateBtn")?.addEventListener("click",createUser);
@@ -10217,3 +10218,197 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
 
 </body>
 </html>
+
+
+<!-- === ApexIQ v4.9.9.91 Beta Request Form + Admin Requests === -->
+<style id="apexiq-v49991-beta-request-css">
+/* v4.9.9.91: beta request/admin-request UI only. No Meta, ranked, search, legends, badges, LFG, stickers, or theme changes. */
+.aiq-v49991-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0;}
+.aiq-v49991-form-grid.full{grid-template-columns:1fr;}
+.aiq-v49991-form-grid label{display:grid;gap:6px;color:var(--muted,#94a3b8);font-size:.83rem;font-weight:900;}
+.aiq-v49991-form-grid input,.aiq-v49991-form-grid select,.aiq-v49991-form-grid textarea{width:100%;min-height:46px;border-radius:15px;border:1px solid var(--line,#334155);background:var(--surface-2,#111827);color:var(--text,#f8fafc);padding:12px 14px;font:inherit;outline:none;}
+.aiq-v49991-form-grid textarea{min-height:88px;resize:vertical;}
+.aiq-v49991-request-list{display:grid;gap:10px;max-height:52vh;overflow:auto;}
+.aiq-v49991-request-row{border:1px solid var(--line,#334155);border-radius:16px;padding:12px;background:color-mix(in srgb,var(--surface,#0f172a) 86%,transparent);display:grid;gap:8px;}
+.aiq-v49991-request-row b{color:var(--text,#f8fafc)}
+.aiq-v49991-request-row small{color:var(--muted,#94a3b8);line-height:1.35;}
+.aiq-v49991-request-actions{display:flex;gap:7px;flex-wrap:wrap;}
+.aiq-v49991-request-actions button{min-height:32px;border-radius:10px;padding:0 9px;font-size:.78rem;}
+@media(max-width:720px){.aiq-v49991-form-grid{grid-template-columns:1fr}}
+</style>
+<script id="apexiq-v49991-beta-request-js">
+(function(){
+  "use strict";
+  const BUILD="v4.9.9.91-beta-request-form-admin-requests";
+  const ADMIN_SESSION_KEY="apexiq:adminSession:v49989";
+  function $(s,r){return (r||document).querySelector(s)}
+  function safe(v){return String(v??"").replace(/[&<>\"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
+  function readJSON(k,fb){try{const v=localStorage.getItem(k);return v?JSON.parse(v):fb}catch(_){return fb}}
+  function root(){try{if(typeof apiRoot==="function")return apiRoot().replace(/\/$/,"")}catch(_){ }try{if(typeof state==="object"&&state.proxy)return String(state.proxy).replace(/\/$/,"")}catch(_){ }try{if(typeof DEFAULT_WORKER==="string")return DEFAULT_WORKER.replace(/\/$/,"")}catch(_){ }return (window.APEXIQ_WORKER_URL||localStorage.getItem("apexiqApiProxy")||"https://cool-wildflower-1646.pwr97pnmkn.workers.dev").replace(/\/$/,"")}
+  async function post(path,body,token){const headers={"Content-Type":"application/json","Accept":"application/json"};if(token)headers.Authorization="Bearer "+token;const res=await fetch(root()+path,{method:"POST",headers,cache:"no-store",body:JSON.stringify(body||{})});const text=await res.text();let data={};try{data=JSON.parse(text)}catch(_){data={ok:false,error:"ApexIQ Live API returned non-JSON."}}if(!res.ok||data.ok===false||data.error)throw new Error(data.error||("HTTP "+res.status));return data}
+  async function get(path,token){const headers={"Accept":"application/json"};if(token)headers.Authorization="Bearer "+token;const res=await fetch(root()+path,{headers,cache:"no-store"});const text=await res.text();let data={};try{data=JSON.parse(text)}catch(_){data={ok:false,error:"ApexIQ Live API returned non-JSON."}}if(!res.ok||data.ok===false||data.error)throw new Error(data.error||("HTTP "+res.status));return data}
+  function adminToken(){const s=readJSON(ADMIN_SESSION_KEY,null);if(!s||!s.token)return "";if(Date.parse(s.expiresAt||"")<Date.now())return "";return s.token}
+  function requestModalHTML(){return '<div id="aiqV49991RequestModal" class="aiq-v49989-modal" role="dialog" aria-modal="true"><section class="aiq-v49989-card"><div class="aiq-v49989-kicker"><span>ApexIQ private beta</span><span>Request access</span></div><h2>Request an access key</h2><p>Fill this out inside ApexIQ. It will be saved for Coye in the admin panel, so it should not open Outlook or your mail app.</p><div class="aiq-v49991-form-grid"><label>Your name<input id="aiqV49991ReqName" placeholder="Your name"></label><label>Email to send the key to<input id="aiqV49991ReqEmail" type="email" placeholder="you@example.com"></label><label>Apex username<input id="aiqV49991ReqUsername" placeholder="Exact Apex username"></label><label>Platform<select id="aiqV49991ReqPlatform"><option>PC</option><option>PlayStation</option><option>Xbox</option><option>Switch</option><option>Not sure</option></select></label><label>Main legend<input id="aiqV49991ReqLegend" placeholder="Example: Wraith, Octane, Valkyrie"></label><label>Device you will test on<input id="aiqV49991ReqDevice" placeholder="iPhone, Android, PC Chrome, etc."></label></div><div class="aiq-v49991-form-grid full"><label>Notes<textarea id="aiqV49991ReqNotes" placeholder="Anything Coye should know?"></textarea></label></div><label class="aiq-v49989-check"><input id="aiqV49991ReqAgree" type="checkbox"> I agree not to share the access key. I understand it is locked to my Apex username and up to 2 devices.</label><div class="aiq-v49950-beta-actions"><button id="aiqV49991ReqSubmit" type="button" class="aiq-v49950-btn">Send request</button><button id="aiqV49991ReqClose" type="button" class="aiq-v49950-btn ghost">Cancel</button></div><div id="aiqV49991ReqStatus" class="aiq-v49989-status"></div></section></div>'}
+  function openRequestForm(){let modal=$("#aiqV49991RequestModal");if(!modal){document.body.insertAdjacentHTML("beforeend",requestModalHTML());modal=$("#aiqV49991RequestModal");$("#aiqV49991ReqClose")?.addEventListener("click",()=>modal.remove());$("#aiqV49991ReqSubmit")?.addEventListener("click",submitRequest);const pre=$("#aiqV49989BetaUsername")?.value?.trim()||$("#playerInput")?.value?.trim()||"";if(pre)$("#aiqV49991ReqUsername").value=pre;}$("#aiqV49991ReqStatus").textContent="";$("#aiqV49991ReqStatus").classList.remove("err");$("#aiqV49991ReqEmail")?.focus()}
+  async function submitRequest(){const status=$("#aiqV49991ReqStatus");const body={name:$("#aiqV49991ReqName")?.value?.trim()||"",email:$("#aiqV49991ReqEmail")?.value?.trim()||"",apexUsername:$("#aiqV49991ReqUsername")?.value?.trim()||"",platform:$("#aiqV49991ReqPlatform")?.value||"Auto",mainLegend:$("#aiqV49991ReqLegend")?.value?.trim()||"",device:$("#aiqV49991ReqDevice")?.value?.trim()||"",notes:$("#aiqV49991ReqNotes")?.value?.trim()||"",agreedNoShare:!!$("#aiqV49991ReqAgree")?.checked};if(status){status.textContent="Sending request…";status.classList.remove("err")}try{const data=await post("/api/beta/request-access",body);if(status)status.textContent=data.message||"Request sent. Coye can review it in the admin panel.";setTimeout(()=>$("#aiqV49991RequestModal")?.remove(),1300)}catch(e){if(status){status.textContent=e.message||"Could not send request right now.";status.classList.add("err")}}}
+  function patchRequestButton(){const btn=$("#aiqV49989RequestBtn");if(!btn||btn.dataset.v49991)return;const clone=btn.cloneNode(true);clone.dataset.v49991="1";clone.textContent="Request access key";clone.addEventListener("click",function(e){e.preventDefault();e.stopPropagation();openRequestForm();});btn.replaceWith(clone)}
+  function requestCardHTML(){return '<article id="aiqV49991RequestsCard" class="aiq-v49989-admin-card" style="grid-column:1/-1"><div class="aiq-v49989-admin-head" style="margin:0"><div><h3>Access Requests</h3><p class="aiq-v49989-mini">Requests submitted from the beta gate form. Create a code, then send it to the email shown.</p></div><button id="aiqV49991RefreshRequests" type="button" class="aiq-v49950-btn ghost">Refresh requests</button></div><div id="aiqV49991RequestsStatus" class="aiq-v49989-status"></div><div id="aiqV49991RequestsList" class="aiq-v49991-request-list"></div></article>'}
+  function patchAdminRequests(){const grid=$("#aiqV49989AdminBody .aiq-v49989-admin-grid");if(!grid||$("#aiqV49991RequestsCard"))return;grid.insertAdjacentHTML("beforeend",requestCardHTML());$("#aiqV49991RefreshRequests")?.addEventListener("click",loadRequests);loadRequests();}
+  async function loadRequests(){const token=adminToken();const status=$("#aiqV49991RequestsStatus");const list=$("#aiqV49991RequestsList");if(!token||!list)return;if(status){status.textContent="Loading requests…";status.classList.remove("err")}try{const data=await get("/api/beta/admin/requests",token);const reqs=data.requests||[];if(status)status.textContent=reqs.length+" request(s) loaded.";renderRequests(reqs)}catch(e){if(status){status.textContent=e.message||"Could not load requests.";status.classList.add("err")}}}
+  function renderRequests(reqs){const list=$("#aiqV49991RequestsList");if(!list)return;if(!reqs.length){list.innerHTML='<p class="aiq-v49989-mini">No access requests yet.</p>';return}list.innerHTML=reqs.map(r=>'<div class="aiq-v49991-request-row" data-id="'+safe(r.id)+'" data-username="'+safe(r.apexUsername)+'" data-platform="'+safe(r.platform)+'" data-email="'+safe(r.email)+'" data-legend="'+safe(r.mainLegend)+'" data-device="'+safe(r.device)+'"><div><b>'+safe(r.apexUsername||"No username")+'</b> <small>'+safe(r.status||"new")+' · '+safe(r.platform||"Auto")+' · '+safe(r.createdAt||"")+'</small></div><small>Email: '+safe(r.email||"—")+' · Name: '+safe(r.name||"—")+' · Main: '+safe(r.mainLegend||"—")+' · Device: '+safe(r.device||"—")+'</small><small>'+safe(r.notes||"")+'</small><div class="aiq-v49991-request-actions"><button class="aiq-v49950-btn ghost" data-req-act="copy">Copy info</button><button class="aiq-v49950-btn ghost" data-req-act="create">Create code</button><button class="aiq-v49950-btn ghost" data-req-act="reviewed">Mark reviewed</button><button class="aiq-v49950-btn ghost" data-req-act="denied">Deny</button></div></div>').join("");list.onclick=requestAction}
+  async function requestAction(e){const btn=e.target.closest("button[data-req-act]");if(!btn)return;const row=btn.closest("[data-id]");const token=adminToken();if(!row||!token)return;const id=row.dataset.id;const act=btn.dataset.reqAct;const username=row.dataset.username||"";const platform=row.dataset.platform||"Auto";const email=row.dataset.email||"";const legend=row.dataset.legend||"";const device=row.dataset.device||"";try{if(act==="copy"){await navigator.clipboard.writeText(["ApexIQ beta request", "Apex username: "+username, "Email: "+email, "Platform: "+platform, "Main legend: "+legend, "Device: "+device].join("\n"));return}if(act==="create"){const data=await post("/api/beta/admin/create",{assignedUsername:username,platform,role:"tester",badge:"Original Beta Tester",maxDevices:2,notes:"Request email: "+email+" | Main: "+legend+" | Device: "+device},token);await post("/api/beta/admin/request-update",{id,status:"approved"},token);alert("Generated code for "+username+":\n"+data.code+"\n\nSend it to: "+email);try{await navigator.clipboard.writeText(data.code)}catch(_){ }if(window.location.search.includes("admin=1"))loadRequests();return}if(act==="reviewed"||act==="denied"){await post("/api/beta/admin/request-update",{id,status:act},token);loadRequests();return}}catch(err){alert(err.message||"Request action failed.")}}
+  function start(){patchRequestButton();patchAdminRequests();}
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});else start();
+  new MutationObserver(function(){patchRequestButton();patchAdminRequests();}).observe(document.documentElement,{childList:true,subtree:true});
+  window.apexiqOpenBetaRequestFormV49991=openRequestForm;
+})();
+</script>
+
+
+<!-- === ApexIQ v4.9.9.92 Text overlap fix + Meta warm cache + Badge guide polish === -->
+<style id="apexiq-v49992-copy-meta-badge-css">
+/* v4.9.9.92: scoped text-spacing, meta warm status, and badges-panel presentation only. */
+.broadcast-header h1{
+  line-height:.96 !important;
+  letter-spacing:-.07em !important;
+  margin:.12rem 0 .42rem !important;
+  max-width:100% !important;
+}
+.broadcast-header p{
+  display:block !important;
+  clear:both !important;
+  line-height:1.32 !important;
+  margin-top:.15rem !important;
+  max-width:760px !important;
+}
+@media (min-width:900px){
+  .broadcast-header h1{font-size:clamp(3.1rem,5.2vw,5.6rem) !important;}
+}
+@media (max-width:899px){
+  .broadcast-header h1{font-size:clamp(2.6rem,13vw,4.4rem) !important;}
+  .broadcast-header p{font-size:1rem !important;}
+}
+.aiq-v49992-badge-shell{display:grid;gap:16px;}
+.aiq-v49992-badge-hero{border:1px solid var(--line,#334155);border-radius:24px;background:linear-gradient(180deg,color-mix(in srgb,var(--surface,#0f172a) 92%,transparent),color-mix(in srgb,var(--surface-2,#111827) 94%,transparent));padding:18px;box-shadow:0 22px 65px rgba(0,0,0,.18);}
+.aiq-v49992-badge-kicker{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;color:var(--brand-3,#f472b6);font-size:.74rem;font-weight:1000;letter-spacing:.14em;text-transform:uppercase;}
+.aiq-v49992-badge-hero h3{margin:0;font-size:clamp(1.7rem,4vw,3rem);line-height:1;letter-spacing:-.055em;}
+.aiq-v49992-badge-hero p{margin:8px 0 0;color:var(--muted,#94a3b8);line-height:1.48;max-width:980px;}
+.aiq-v49992-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}
+.aiq-v49992-stat{border:1px solid var(--line,#334155);border-radius:18px;background:rgba(255,255,255,.045);padding:13px;min-width:0;}
+.aiq-v49992-stat span{display:block;color:var(--muted,#94a3b8);font-size:.72rem;font-weight:900;text-transform:uppercase;letter-spacing:.1em;}
+.aiq-v49992-stat b{display:block;margin-top:6px;font-size:1.55rem;line-height:1;letter-spacing:-.04em;}
+.aiq-v49992-stat small{display:block;margin-top:5px;color:var(--muted,#94a3b8);line-height:1.25;}
+.aiq-v49992-guide{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.aiq-v49992-guide article{border:1px solid var(--line,#334155);border-radius:18px;background:rgba(255,255,255,.04);padding:14px;}
+.aiq-v49992-guide b{display:block;margin-bottom:6px;}
+.aiq-v49992-guide ul{margin:0;padding-left:18px;color:var(--muted,#94a3b8);line-height:1.45;}
+.aiq-v49992-filter{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.aiq-v49992-filter button{border:1px solid var(--line,#334155);background:var(--surface-2,#111827);color:var(--text,#f8fafc);border-radius:999px;min-height:36px;padding:0 12px;font-weight:900;cursor:pointer;}
+.aiq-v49992-filter button.active{background:var(--brand,#22c55e);border-color:transparent;color:#fff;box-shadow:0 12px 26px color-mix(in srgb,var(--brand,#22c55e) 24%,transparent);}
+.aiq-v49992-badge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:12px;}
+.aiq-v49992-badge-card{display:grid;grid-template-columns:64px minmax(0,1fr);gap:13px;border:1px solid var(--line,#334155);border-radius:20px;background:rgba(255,255,255,.045);padding:14px;min-width:0;}
+.aiq-v49992-badge-card.unlocked{border-color:rgba(34,197,94,.48);background:linear-gradient(180deg,rgba(34,197,94,.12),rgba(255,255,255,.045));}
+.aiq-v49992-badge-card img{width:58px;height:58px;object-fit:contain;filter:drop-shadow(0 9px 14px rgba(0,0,0,.28));}
+.aiq-v49992-badge-card h4{margin:0;font-size:1rem;line-height:1.1;overflow-wrap:anywhere;}
+.aiq-v49992-badge-card p{margin:5px 0;color:var(--muted,#94a3b8);font-size:.86rem;line-height:1.35;}
+.aiq-v49992-pill-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.aiq-v49992-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border:1px solid rgba(148,163,184,.28);border-radius:999px;background:rgba(15,23,42,.50);font-size:.72rem;font-weight:900;color:var(--text,#f8fafc);white-space:nowrap;}
+.aiq-v49992-pill.earned{border-color:rgba(34,197,94,.5);background:rgba(34,197,94,.16);}
+.aiq-v49992-progress{height:8px;border-radius:999px;background:rgba(148,163,184,.22);overflow:hidden;margin-top:10px;}
+.aiq-v49992-progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand,#22c55e),var(--brand-3,#f472b6));}
+.aiq-v49992-source{margin-top:8px;font-size:.75rem;color:var(--muted,#94a3b8);line-height:1.35;}
+.aiq-v49992-empty{padding:14px;border:1px solid rgba(96,165,250,.28);background:rgba(96,165,250,.10);border-radius:18px;color:var(--muted,#94a3b8);line-height:1.45;}
+@media(max-width:900px){.aiq-v49992-stats,.aiq-v49992-guide{grid-template-columns:1fr 1fr}.aiq-v49992-badge-grid{grid-template-columns:1fr}}
+@media(max-width:620px){.aiq-v49992-stats,.aiq-v49992-guide{grid-template-columns:1fr}.aiq-v49992-badge-card{grid-template-columns:54px minmax(0,1fr);padding:12px}.aiq-v49992-badge-card img{width:50px;height:50px}}
+</style>
+<script id="apexiq-v49992-meta-prefetch-badge-guide-js">
+(function(){
+  "use strict";
+  if(window.__apexiqV49992MetaPrefetchBadgeGuide)return;
+  window.__apexiqV49992MetaPrefetchBadgeGuide=true;
+  var BUILD="v4.9.9.92-meta-speed-badge-guide";
+  var META_CACHE_KEY="apexiq:metaWarmCache:v49992";
+  var BADGE_FILTER_KEY="apexiq:badgeFilter:v49992";
+  function $(s,r){return (r||document).querySelector(s)}
+  function $all(s,r){return Array.from((r||document).querySelectorAll(s))}
+  function safe(v){return String(v==null?"":v).replace(/[&<>\"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
+  function norm(v){return String(v||"").toLowerCase().replace(/[^a-z0-9]/g,"")}
+  function num(v){var n=Number(String(v==null?"":v).replace(/,/g,""));return Number.isFinite(n)?n:0}
+  function fmt(v){try{return Number(v).toLocaleString()}catch(_){return String(v||0)}}
+  function readJSON(k,fb){try{var v=localStorage.getItem(k);return v?JSON.parse(v):fb}catch(_){return fb}}
+  function writeJSON(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(_){return false}}
+  function getState(){try{return window.state||state||{}}catch(_){return {}}}
+  function root(){try{if(typeof apiRoot==="function")return apiRoot().replace(/\/$/,"")}catch(_){ }try{var st=getState();if(st&&st.proxy)return String(st.proxy).replace(/\/$/,"")}catch(_){ }try{if(typeof DEFAULT_WORKER==="string")return DEFAULT_WORKER.replace(/\/$/,"")}catch(_){ }return (window.APEXIQ_WORKER_URL||localStorage.getItem("apexiqApiProxy")||"https://cool-wildflower-1646.pwr97pnmkn.workers.dev").replace(/\/$/,"")}
+  function betaUnlocked(){try{if(document.documentElement.dataset.aiqBeta==="ok")return true;var gate=$("#aiqV49950BetaGate");return !gate||gate.hidden}catch(_){return true}}
+  function metaRows(data){var raw=data&&(data.pickrates||data.pickRates||data.rows||data.legends||data.meta)||[];return Array.isArray(raw)?raw:[]}
+  async function prefetchMeta(reason){
+    if(!betaUnlocked())return null;
+    var st=window.__aiqMetaFetchState||(window.__aiqMetaFetchState={inFlight:false,promise:null,hasLoaded:false,lastFetchedAt:0,lastData:null,lastError:""});
+    if(st.inFlight||st.hasLoaded||Date.now()-(st.lastFetchedAt||0)<300000)return st.lastData||null;
+    var cached=readJSON(META_CACHE_KEY,null);
+    if(cached&&cached.data&&metaRows(cached.data).length&&Date.now()-(cached.ts||0)<1800000){
+      try{var app=getState();app.meta=cached.data;st.lastData=cached.data;st.hasLoaded=true;st.lastFetchedAt=cached.ts||Date.now();}catch(_){ }
+      return cached.data;
+    }
+    st.inFlight=true;
+    try{
+      var res=await fetch(root()+"/api/meta?prefetch=1",{cache:"no-store",headers:{Accept:"application/json"}});
+      var data=await res.json();
+      if(data&&metaRows(data).length){
+        try{var app2=getState();app2.meta=data;app2.metaError="";}catch(_){ }
+        st.lastData=data;st.hasLoaded=true;st.lastFetchedAt=Date.now();writeJSON(META_CACHE_KEY,{ts:Date.now(),data:data,reason:reason||"site-load"});
+        return data;
+      }
+    }catch(e){try{st.lastError=e&&e.message?e.message:String(e)}catch(_){ }}
+    finally{st.inFlight=false;st.promise=null;}
+    return null;
+  }
+  function scheduleMetaWarm(){
+    if(window.__aiqV49992MetaWarmScheduled)return;
+    window.__aiqV49992MetaWarmScheduled=true;
+    [450,1400,3200].forEach(function(ms){setTimeout(function(){prefetchMeta("warm-"+ms)},ms)});
+  }
+  var oldSwitch=window.switchPanel;
+  if(typeof oldSwitch==="function"&&!oldSwitch.__aiqV49992Wrapped){
+    var wrapped=function(panel){var ret=oldSwitch.apply(this,arguments);if(panel==="meta"){setTimeout(function(){if(window.apexiqLoadMeta)window.apexiqLoadMeta(false)},70)}else{setTimeout(scheduleMetaWarm,120)}return ret;};
+    wrapped.__aiqV49992Wrapped=true;window.switchPanel=wrapped;
+  }
+  var oldRenderMeta=window.renderMeta;
+  if(typeof oldRenderMeta==="function"&&!oldRenderMeta.__aiqV49992Wrapped){
+    var renderWrapped=function(id){var st=window.__aiqMetaFetchState,app=getState();if(st&&st.lastData&&!app.meta)try{app.meta=st.lastData}catch(_){ }return oldRenderMeta.apply(this,arguments)};
+    renderWrapped.__aiqV49992Wrapped=true;window.renderMeta=renderWrapped;
+  }
+
+  function manifest(){try{var el=$("#apexiqBadgeManifestV498");var m=JSON.parse(el&&el.textContent||"{}");return Array.isArray(m.badges)?m.badges:[]}catch(_){return []}}
+  function flatten(input,out){out=out||[];if(!input)return out;if(Array.isArray(input)){input.forEach(function(x){flatten(x,out)});return out;}if(typeof input==="object")out.push(input);return out;}
+  function statRows(profile){return flatten([profile&&profile.allLegendStats,profile&&profile.legendStats,profile&&profile.legends,profile&&profile.legendRows,profile&&profile.trackerRows,profile&&profile.profilePage&&profile.profilePage.legendStats,profile&&profile.rendered&&profile.rendered.legendCards]).filter(Boolean)}
+  function rowStats(row){return flatten([row&&row.stats,row&&row.trackers,row&&row.data,row&&row.values]).map(function(s){return {label:String(s&& (s.label||s.name||s.key||s.stat)||""),value:s&&(s.value||s.total||s.val||s.amount)||0}})}
+  function badgeText(row){var bits=[];flatten([row&&row.badges,row&&row.officialBadges,row&&row.badgeSlots,row&&row.legendBadges,row&&row.alsBadges,row&&row.visualBadges,row&&row.badgeRows]).forEach(function(b){bits.push(String((b&&(b.name||b.label||b.rawName||b.type||b.id))||""))});return bits.join(" | ")}
+  function counts(profile){
+    var rows=statRows(profile||{}), c={rows:rows.length,twenty:new Set(),fourk:new Set(),kills:0,damage:0,wins:0,weapon:{},ability:{},rank:String((profile&&profile.rank)||""),rp:num((profile&& (profile.rp||profile.rankScore))||0),trueLvl:num((typeof trueLevel==="function"?trueLevel(profile||{}):((profile&&profile.trueLevel)||0))),ownedBadges:0};
+    rows.forEach(function(r){var legend=String((r&&(r.legend||r.name||r.character||r.legendName))||"");var txt=(badgeText(r)+" | "+rowStats(r).map(function(s){return s.label}).join(" | ")).toLowerCase();if(/wake|20\s*kill|twenty/.test(txt)&&legend)c.twenty.add(norm(legend));if(/wrath|4k|4000/.test(txt)&&legend)c.fourk.add(norm(legend));c.ownedBadges+=(txt?txt.split("|").filter(Boolean).length:0);rowStats(r).forEach(function(s){var lab=s.label.toLowerCase(), val=num(s.value);if(/\bkills?\b/.test(lab)&&!/weapon|smg|ar|shotgun|sniper|marksman/.test(lab))c.kills+=val;if(/damage/.test(lab))c.damage+=val;if(/wins?/.test(lab))c.wins+=val;if(/smg|submachine/.test(lab))c.weapon.smg=(c.weapon.smg||0)+val;if(/\bar\b|assault rifle/.test(lab))c.weapon.ar=(c.weapon.ar||0)+val;if(/shotgun/.test(lab))c.weapon.shotgun=(c.weapon.shotgun||0)+val;if(/sniper|marksman/.test(lab))c.weapon.sniper=(c.weapon.sniper||0)+val;if(/revive|respawn/.test(lab))c.ability.revive=(c.ability.revive||0)+val;if(/scan|recon/.test(lab))c.ability.recon=(c.ability.recon||0)+val;if(/shield|block|protect/.test(lab))c.ability.shield=(c.ability.shield||0)+val;if(/tactical|ultimate|ability|grenade|explosive|movement|distance/.test(lab))c.ability.ability=(c.ability.ability||0)+val;});});
+    c.ownedBadges=c.twenty.size+c.fourk.size+Math.min(c.ownedBadges,999);return c;
+  }
+  function reqVal(t){return String(t&&t.requires).toLowerCase()==="all_legends"?28:num(t&&t.requires)}
+  function metric(id,c){id=String(id||"");if(id==="20b_collection")return c.twenty.size;if(id==="4k_collection")return c.fourk.size;if(id==="career_killer")return c.kills;if(id==="damage_dealer")return c.damage;if(id==="win_stacker")return c.wins;if(/legend|roster/.test(id))return c.rows;if(id==="badge_hunter")return c.ownedBadges;if(id==="smg_reaper")return c.weapon.smg||0;if(id==="ar_ace")return c.weapon.ar||0;if(id==="shotgun_brutality")return c.weapon.shotgun||0;if(id==="sniper_deadeye")return c.weapon.sniper||0;if(id==="revive_angel")return c.ability.revive||0;if(id==="recon_scanner")return c.ability.recon||0;if(id==="shield_savior")return c.ability.shield||0;if(/explosive|tactical|movement/.test(id))return c.ability.ability||0;if(id==="ranked_climber")return c.rp||(/silver/i.test(c.rank)?3000:/gold/i.test(c.rank)?5000:/plat/i.test(c.rank)?8000:/diamond/i.test(c.rank)?12000:/master|pred/i.test(c.rank)?15000:0);if(/diamond/.test(id))return /diamond|master|pred/i.test(c.rank)?1:0;if(/master/.test(id))return /master|pred/i.test(c.rank)?1:0;if(/predator/.test(id))return /pred/i.test(c.rank)?1:0;if(id==="prestige_ascendant")return c.trueLvl;return 0}
+  function tierState(b,value){var tiers=(b.tiers||[]).slice().sort(function(a,b){return reqVal(a)-reqVal(b)});var earned=null,next=tiers[0]||null;tiers.forEach(function(t){if(value>=reqVal(t)){earned=t;next=null}else if(!earned&&!next){next=t}});if(!next){for(var i=0;i<tiers.length;i++){if(value<reqVal(tiers[i])){next=tiers[i];break}}}return {earned:earned,next:next,tiers:tiers,asset:(earned||next||tiers[0]||{}).asset||""};}
+  function sourceLabel(b){var s=String(b.sourceType||b.metric||"").replace(/_/g," ");if(/als wake/i.test(s))return "Verified from ALS Wake / 20-kill badge rows.";if(/als wrath/i.test(s))return "Verified from ALS Wrath / 4K badge rows.";if(/tracker|account/i.test(s))return "Calculated from returned account or tracker stats when public data exposes it.";if(/proof|manual|collection/i.test(s))return "Proof/manual badge: requires approved evidence or future ApexIQ records.";if(/rank/i.test(s))return "Calculated from ranked data when the profile exposes rank/RP.";return s?"Source: "+s+".":"Source depends on returned profile data."}
+  function tierText(t){var r=reqVal(t);return safe(t.label||("Tier "+(t.tier||"")))+" · "+(String(t.requires).toLowerCase()==="all_legends"?"all 28 legends":fmt(r));}
+  function cardHTML(b,c){var v=metric(b.id,c), st=tierState(b,v), tier=st.earned||st.next||{}, req=reqVal(tier)||1, pct=Math.max(0,Math.min(100,req?Math.round((v/req)*100):0)), unlocked=!!st.earned;return '<article class="aiq-v49992-badge-card '+(unlocked?'unlocked':'locked')+'" data-cat="'+safe(b.category||'Other')+'"><div>'+(st.asset?'<img loading="lazy" src="'+safe(st.asset)+'" alt="'+safe(b.name)+'">':'')+'</div><div><h4>'+safe(b.name)+'</h4><p>'+(unlocked?'Unlocked '+safe(st.earned.label||'tier'):'Locked · next '+safe((st.next||{}).label||'Tier I'))+' · '+fmt(v)+' / '+(String((tier||{}).requires).toLowerCase()==='all_legends'?'28':fmt(req))+'</p><p>'+safe(b.description||'ApexIQ badge progress line.')+'</p><div class="aiq-v49992-progress" aria-hidden="true"><span style="width:'+pct+'%"></span></div><div class="aiq-v49992-pill-row">'+st.tiers.map(function(t){return '<span class="aiq-v49992-pill '+(v>=reqVal(t)?'earned':'')+'">'+tierText(t)+'</span>'}).join('')+'</div><div class="aiq-v49992-source">'+safe(sourceLabel(b))+'</div></div></article>'}
+  function renderBadgeGuide(){
+    var panel=$("#badgesPanel");if(!panel)return;
+    var badges=manifest(), st=getState(), profile=st.profile||{}, c=counts(profile), enriched=badges.map(function(b){var v=metric(b.id,c), ts=tierState(b,v);return {b:b,value:v,unlocked:!!ts.earned,max:!!(ts.earned&&/iv/i.test(ts.earned.label||""))}}), unlocked=enriched.filter(function(x){return x.unlocked}).length, max=enriched.filter(function(x){return x.max}).length;
+    var cats=["All"].concat(Array.from(new Set(badges.map(function(b){return b.category||"Other"}))));var active=localStorage.getItem(BADGE_FILTER_KEY)||"All";if(cats.indexOf(active)<0)active="All";
+    var shown=active==="All"?badges:badges.filter(function(b){return (b.category||"Other")===active});
+    panel.innerHTML='<section class="aiq-v49992-badge-shell"><div class="aiq-v49992-badge-hero"><div class="aiq-v49992-badge-kicker"><span>ApexIQ badge locker</span><span>'+safe(profile&&((profile.name||profile.player)||'Profile'))+'</span></div><h3>Badges, tiers, and requirements</h3><p>The locker shows every ApexIQ badge family, what each tier requires, how progress is counted, and whether the badge is automatic or proof/manual. Search a profile first for live progress; requirements still show even when no profile is loaded.</p></div><div class="aiq-v49992-stats"><div class="aiq-v49992-stat"><span>Unlocked</span><b>'+unlocked+'</b><small>of '+badges.length+' badge lines</small></div><div class="aiq-v49992-stat"><span>20B legends</span><b>'+c.twenty.size+'</b><small>verified Wake / 20-kill rows</small></div><div class="aiq-v49992-stat"><span>4K legends</span><b>'+c.fourk.size+'</b><small>verified Wrath / 4K rows</small></div><div class="aiq-v49992-stat"><span>Max tier</span><b>'+max+'</b><small>Tier IV badge lines</small></div></div><div class="aiq-v49992-guide"><article><b>How badge progress works</b><ul><li>Automatic badges use returned profile, legend, rank, tracker, or ALS badge-slot data.</li><li>20B and 4K collections require verified legend badge proof, not guessed stat numbers.</li><li>Weapon/ability badges only progress when the public stat source exposes those trackers.</li><li>Proof/manual badges stay locked until ApexIQ has approved evidence or an internal record.</li></ul></article><article><b>How to get cleaner badge reads</b><ul><li>Search the exact Apex username and correct platform.</li><li>In Apex, switch to the legend you want checked, equip useful trackers/badges, then search again.</li><li>If checking multiple legends, switch legends in-game and refresh/search ApexIQ after each update.</li><li>If a badge looks wrong, send a screenshot with username, platform, legend, and what should unlock.</li></ul></article></div><div class="aiq-v49992-filter">'+cats.map(function(cat){return '<button type="button" data-aiq-badge-filter="'+safe(cat)+'" class="'+(cat===active?'active':'')+'">'+safe(cat)+'</button>'}).join('')+'</div>'+(shown.length?'<div class="aiq-v49992-badge-grid">'+shown.map(function(b){return cardHTML(b,c)}).join('')+'</div>':'<div class="aiq-v49992-empty">No badge families in this filter.</div>')+'</section>';
+  }
+  window.apexiqRenderBadgeGuideV49992=renderBadgeGuide;
+  var oldBadges=window.renderBadgesPanel;
+  window.renderBadgesPanel=function(){try{return renderBadgeGuide()}catch(e){console.warn(BUILD,e);if(typeof oldBadges==="function")return oldBadges.apply(this,arguments)}};
+  document.addEventListener("click",function(e){var b=e.target&&e.target.closest&&e.target.closest("[data-aiq-badge-filter]");if(!b)return;localStorage.setItem(BADGE_FILTER_KEY,b.getAttribute("data-aiq-badge-filter")||"All");renderBadgeGuide()},true);
+  function removeRulesButton(){try{$all("#aiqV49989RulesBtn,.aiq-v49950-beta-actions button").forEach(function(b){if(/beta rules/i.test(b.textContent||"")||b.id==="aiqV49989RulesBtn")b.remove()})}catch(_){ }}
+  function boot(){removeRulesButton();scheduleMetaWarm();if(!$("[data-screen='badges']")?.hidden)renderBadgeGuide();}
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
+  new MutationObserver(function(){removeRulesButton();if(betaUnlocked())scheduleMetaWarm()}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
