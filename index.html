@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ApexIQ — v4.9.9.78 Meta Original Restore + Freeze Fix</title>
+<title>ApexIQ — v4.9.9.58 Mobile Nav Restore + Portrait Fix</title>
 <link id="apexiq-v49956-favicon" rel="icon" type="image/png" href="assets/apexiq-logo.png">
 <!-- ApexIQ Predator Broadcast v4.9.9.10 Source Re-Extract + Edge Fix: artifact-cleanup-only badge asset refresh on top of the stable full badge system. -->
 <style>
@@ -5778,7 +5778,7 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
   document.addEventListener("click",function(e){
     const mini=e.target.closest("[data-aiq-mini-badge]");
     if(mini){const tip=byId("apexiqMiniBadgeTip");if(tip){tip.textContent=mini.getAttribute("data-aiq-mini-badge")||mini.title||"";tip.classList.add("is-open")}}
-    const metaBtn=e.target.closest('[data-go="meta"]'); if(metaBtn)setTimeout(()=>apexiqLoadMeta(false),60);
+    const metaBtn=e.target.closest('[data-go="meta"]'); if(metaBtn&&window.__apexiqV49979OpenMeta)setTimeout(()=>window.__apexiqV49979OpenMeta(),60);
   },true);
 
   function bootPatch(){
@@ -5787,7 +5787,7 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
     if(typeof renderProfile==="function")renderProfile();
     if(typeof renderLegends==="function")renderLegends();
     if(typeof renderSettings==="function")renderSettings();
-    /* v4.9.9.78: Meta is lazy-loaded only when the Meta tab opens. */
+    /* v49979: meta boot fetch disabled; renderer is lazy */
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",bootPatch,{once:true});else bootPatch();
 })();
@@ -6441,10 +6441,180 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
 <script id="apexiq-v49930-clean-meta-percent-js">
 (function(){
   "use strict";
-  /* v4.9.9.78: disabled legacy v49930 Meta auto-render loop.
-     The old script installed MutationObserver + setInterval full Meta re-renders.
-     Meta rendering is restored through the original v49921 path and guarded below. */
-  try{document.documentElement.dataset.v49930="disabled-by-v49978-meta-freeze-fix";}catch(_){}
+
+  function byId(id){return document.getElementById(id)}
+  function safe(v){try{return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}catch(_){return ""}}
+  function scalar(v){
+    if(v===undefined||v===null)return "";
+    if(typeof v==="string"||typeof v==="number"||typeof v==="boolean")return String(v);
+    if(Array.isArray(v)){for(const x of v){const s=scalar(x); if(s&&s!=="[object Object]")return s} return ""}
+    if(typeof v==="object"){
+      for(const k of ["pickRate","rate","value","percent","text","label","name","legend","avgRank","averageRank","avgLevel","averageLevel","level","trend","change","delta","topPercent","percentile","rank"]) {
+        const s=scalar(v[k]); if(s&&s!=="[object Object]")return s;
+      }
+    }
+    return "";
+  }
+  function norm(v){return scalar(v).toLowerCase().replace(/[^a-z0-9]/g,"")}
+  function num(v){const n=Number(scalar(v).replace("%","").replace(/,/g,"").replace(/[^\d.-]/g,""));return Number.isFinite(n)?n:0}
+  function packs(){return typeof PACK_DATA!=="undefined"?PACK_DATA:[]}
+  function packFor(name){return packs().find(p=>norm(p.name)===norm(name))}
+  function packImg(pack){try{return typeof packImage==="function"?packImage(pack):pack?.stickers?.[0]?.src||""}catch(_){return pack?.stickers?.[0]?.src||""}}
+
+  const META_SNAPSHOT = [{"legend": "Seer", "pickRate": "12.6", "trend": "▲2830.74%", "avgRank": "Platinum 3", "avgLevel": "837"}, {"legend": "Axle", "pickRate": "12.1", "trend": "▼29.85%", "avgRank": "Platinum 3", "avgLevel": "833"}, {"legend": "Pathfinder", "pickRate": "9.8", "trend": "▲333.24%", "avgRank": "Platinum 4", "avgLevel": "823"}, {"legend": "Octane", "pickRate": "6.5", "trend": "▼6.44%", "avgRank": "Gold 2", "avgLevel": "547"}, {"legend": "Ballistic", "pickRate": "5.8", "trend": "▲882.72%", "avgRank": "Platinum 4", "avgLevel": "802"}, {"legend": "Valkyrie", "pickRate": "5.1", "trend": "▼51.92%", "avgRank": "Gold 1", "avgLevel": "626"}, {"legend": "Wraith", "pickRate": "4.8", "trend": "▼4.66%", "avgRank": "Gold 3", "avgLevel": "537"}, {"legend": "Bangalore", "pickRate": "4.7", "trend": "▼15.16%", "avgRank": "Gold 2", "avgLevel": "564"}, {"legend": "Mad Maggie", "pickRate": "4.7", "trend": "▼39.66%", "avgRank": "Platinum 4", "avgLevel": "692"}, {"legend": "Conduit", "pickRate": "4.3", "trend": "—", "avgRank": "—", "avgLevel": "—"}, {"legend": "Lifeline", "pickRate": "3.1", "trend": "—", "avgRank": "—", "avgLevel": "—"}, {"legend": "Ash", "pickRate": "2.8", "trend": "—", "avgRank": "—", "avgLevel": "—"}];
+
+  // Exact values from user-provided ALS stat screenshots. Used before estimation.
+  const EXACT_STAT_PERCENT = {
+    "axle|brkills|3942":{top:"1.4",rank:"627",real:true},
+    "axle|brdamage|1226659":{top:"1.7",rank:"249",real:true},
+    "axle|brkillsaskillleader|886":{top:"37.7",real:true},
+    "octane|brdamage|550814":{top:"15.7",real:true},
+    "octane|stimdistancetraveled|293115":{top:"22.2",real:true},
+    "octane|brseason9wins|5":{top:"57.6",real:true},
+    "bangalore|doubletimedistance|15164":{top:"65.1",real:true},
+    "bangalore|rollingthunderdamage|6350":{top:"92.9",real:true},
+    "bloodhound|eyeenemiesscanned|228":{top:"92.5",real:true},
+    "caustic|brkills|1458":{top:"7.1",real:true},
+    "caustic|brdamage|528222":{top:"6.3",real:true}
+  };
+
+  function deepArrays(obj,out=[],depth=0){
+    if(!obj||depth>5)return out;
+    if(Array.isArray(obj)){out.push(obj); obj.forEach(x=>deepArrays(x,out,depth+1)); return out}
+    if(typeof obj==="object")Object.values(obj).forEach(v=>deepArrays(v,out,depth+1));
+    return out;
+  }
+  function rowName(m){return scalar(m?.legend||m?.name||m?.character||m?.legendName||m?.hero||m?.label||m?.title)}
+  function rowPick(m){return scalar(m?.pickRate??m?.rate??m?.percent??m?.value??m?.pick_rate??m?.pickrate??m?.usage)}
+  function rowTrend(m){return scalar(m?.trend||m?.change||m?.delta||m?.changeRate||m?.diff)}
+  function rowRank(m){return scalar(m?.avgRank||m?.averageRank||m?.rankAvg||m?.avg_rank||m?.rank_average)}
+  function rowLevel(m){return scalar(m?.avgLevel||m?.averageLevel||m?.avgLvl||m?.avg_level||m?.level_average||m?.level)}
+
+  function usableMetaRows(data){
+    const direct=[data?.legends,data?.meta,data?.pickrates,data?.pickRates,data?.rows,data?.data,data?.items,data?.result,data?.payload?.legends,data?.payload?.rows].filter(Array.isArray);
+    const arrays=[...direct,...deepArrays(data).filter(a=>a.length&&a.some(x=>x&&typeof x==="object"&&rowName(x)))];
+    let best=[];
+    for(const arr of arrays){
+      const mapped=arr.map((m,i)=>{
+        if(!m||typeof m!=="object")return null;
+        const name=rowName(m); if(!name)return null;
+        const p=packFor(name), legend=p?.name||name;
+        return {legend,pickRate:rowPick(m),trend:rowTrend(m),avgRank:rowRank(m).replace(/^Avg rank\s*/i,"").trim(),avgLevel:rowLevel(m),img:p?packImg(p):"",order:i+1,source:scalar(m.source||data?.source||"live")};
+      }).filter(Boolean);
+      const score=mapped.reduce((s,r)=>s+(num(r.pickRate)>0?3:0)+(r.avgRank?1:0)+(r.avgLevel?1:0),0);
+      const bestScore=best.reduce((s,r)=>s+(num(r.pickRate)>0?3:0)+(r.avgRank?1:0)+(r.avgLevel?1:0),0);
+      if(score>bestScore)best=mapped;
+    }
+    return best;
+  }
+
+  function mergeMeta(rows){
+    const by=new Map();
+    for(const r of META_SNAPSHOT){
+      const p=packFor(r.legend);
+      by.set(norm(r.legend),{...r,img:p?packImg(p):"",source:"ALS visible snapshot fallback"});
+    }
+    for(const r of rows||[]){
+      const key=norm(r.legend); if(!key)continue;
+      const seed=by.get(key)||{};
+      const pick=num(r.pickRate)>0?r.pickRate:seed.pickRate||"";
+      by.set(key,{...seed,...r,pickRate:pick,trend:r.trend||seed.trend||"—",avgRank:r.avgRank||seed.avgRank||"—",avgLevel:r.avgLevel||seed.avgLevel||"—",img:r.img||seed.img||(packFor(r.legend)?packImg(packFor(r.legend)):""),source:r.source||seed.source||"live"});
+    }
+    const used=new Set(by.keys());
+    for(const p of packs()) if(!used.has(norm(p.name))) by.set(norm(p.name),{legend:p.name,pickRate:"",trend:"—",avgRank:"—",avgLevel:"—",img:packImg(p),source:"roster fallback"});
+    return [...by.values()].sort((a,b)=>(num(b.pickRate)-num(a.pickRate))||String(a.legend).localeCompare(String(b.legend)));
+  }
+
+  function trendClass(v){const s=scalar(v);return /▼|down|-/i.test(s)?"down":(/▲|up|\+/i.test(s)?"up":"flat")}
+  function pickText(v){const s=scalar(v).replace("%","").trim();return num(s)>0?s+"%":"—"}
+
+  let metaLock=false;
+  function renderMetaV30(id){
+    const target=byId(id); if(!target||metaLock)return;
+    metaLock=true;
+    try{
+      const raw=usableMetaRows(window.state?.meta||{});
+      const rows=mergeMeta(raw);
+      const live=raw.some(r=>num(r.pickRate)>0);
+      target.dataset.v49930="1";
+      target.innerHTML=`<div class="v49930MetaNotice"><b>${live?"Live meta rows loaded.":"Meta fallback active."}</b> Showing pick rate, trend, average rank, and average level. Fallback prevents the Meta panel from going blank.</div><div class="v49930MetaGrid">${rows.slice(0,28).map((m,i)=>`<article class="v49930MetaCard">${m.img?`<img class="v49930MetaBg" loading="lazy" src="${safe(m.img)}" alt="${safe(m.legend)}">`:""}<div class="v49930MetaShade"></div><div class="v49930MetaContent"><div><div class="v49930MetaTop"><b>${safe(m.legend)}</b><span>#${i+1}</span></div><div class="v49930Pick">${safe(pickText(m.pickRate))}</div><div class="v49930Trend ${trendClass(m.trend)}">${safe(m.trend||"—")}</div></div><div class="v49930Facts"><span><em>Avg rank</em><strong>${safe(m.avgRank||"—")}</strong></span><span><em>Avg level</em><strong>${safe(m.avgLevel||"—")}</strong></span></div></div></article>`).join("")}</div>`;
+    }finally{setTimeout(()=>{metaLock=false},0)}
+  }
+
+  function statKey(legend,label,value){return [legend,label,value].map(norm).join("|")}
+  function estimateTop(label,value){
+    const l=norm(label), v=Math.max(0,num(value));
+    if(!v)return null;
+    let top;
+    if(/brkills$|^kills$/.test(l)) top=100/(1+Math.pow(v/120,1.18));
+    else if(/brdamage$|^damage$/.test(l)) top=100/(1+Math.pow(v/42000,1.10));
+    else if(/brwins$|^wins$/.test(l)) top=100/(1+Math.pow(v/6,1.15));
+    else if(/gamesplayed/.test(l)) top=100/(1+Math.pow(v/30,1.05));
+    else if(/killsaskillleader/.test(l)) top=100/(1+Math.pow(v/24,1.0));
+    else if(/arenaskills/.test(l)) top=100/(1+Math.pow(v/90,1.0));
+    else if(/arenasdamage/.test(l)) top=100/(1+Math.pow(v/38000,1.0));
+    else if(/damageblocked|shield|scan|silenced|distance|teleported|cluster|thunder|beast|wall|doubletime|tactical|passive|ultimate/.test(l)) top=100/(1+Math.pow(v/8500,.72));
+    else if(/season/.test(l)) top=100/(1+Math.pow(v/10,.9));
+    else if(/alternator|lstar|spitfire|flatline|r301|weapon|kills/.test(l)) top=100/(1+Math.pow(v/140,1.0));
+    else top=100/(1+Math.pow(v/1000,.75));
+    top=Math.max(.1,Math.min(99.9,top));
+    return String(top<10?top.toFixed(1):Math.round(top));
+  }
+  function widthFromTop(top){const n=Number(String(top||"").replace("%",""));return Number.isFinite(n)?Math.max(2,Math.min(100,100-n)):0}
+  function addPercentRows(){
+    document.querySelectorAll(".legend-card,.v49919LegendCard").forEach(card=>{
+      const rawTitle=(card.querySelector("h3")?.textContent||"").replace(/·.*$/,"").trim();
+      const legend=packFor(rawTitle)?.name||rawTitle;
+      card.querySelectorAll(".v49919StatChips span,.stat-chip").forEach(box=>{
+        if(box.dataset.v49930Pct==="1")return;
+        const label=(box.querySelector("em")?.textContent||"").trim();
+        const value=(box.querySelector("b")?.textContent||"").trim();
+        if(!label||!value||!num(value)){box.dataset.v49930Pct="1";return;}
+        let found=EXACT_STAT_PERCENT[statKey(legend,label,value)];
+        let real=false, rank="";
+        let top="";
+        if(found){top=found.top;rank=found.rank||"";real=!!found.real}
+        else {top=estimateTop(label,value);real=false}
+        if(!top){box.dataset.v49930Pct="1";return;}
+        const row=document.createElement("div");
+        row.className="v49930PctRow";
+        row.innerHTML=`<span class="v49930PctBar"><i style="--w:${widthFromTop(top)}%"></i></span><small class="v49930PctText ${real?"real":"est"}">Top ${safe(top)}%</small>${rank?`<small class="v49930RankText">#${safe(rank)}</small>`:""}`;
+        box.appendChild(row);
+        if(!real){
+          const note=document.createElement("div");
+          note.className="v49930TinyNote";
+          note.textContent="AIQ estimate until ALS rank data returns";
+          box.appendChild(note);
+        }
+        box.dataset.v49930Pct="1";
+      });
+    });
+  }
+
+  // v4.9.9.79: expose original working v49930 Meta renderer, but remove auto full-render hooks.
+  // The old wrappers rendered Meta during renderAll/loadAll/switchPanel and caused hidden-tab rebuilds.
+  window.__apexiqRenderMetaV30=renderMetaV30;
+  window.__apexiqAddPercentRowsV30=addPercentRows;
+  window.renderMeta=function(id){
+    var full=id==="metaPanelFull";
+    var screen=document.querySelector('.screen[data-screen="meta"]');
+    if(full && screen && screen.hidden)return;
+    renderMetaV30(id);
+  };
+
+  function watch(id){
+    const t=byId(id); if(!t)return;
+    new MutationObserver(()=>{if(!metaLock&&t.dataset.v49930!=="1")setTimeout(()=>renderMetaV30(id),15)}).observe(t,{childList:true,subtree:false});
+  }
+  function boot(){
+    document.documentElement.dataset.v49930="clean-meta-percent-restore-lazy-v49979";
+    if(window.state && (!state.meta || typeof state.meta!=="object")) state.meta={ok:true,legends:META_SNAPSHOT,source:"client fallback"};
+    window.__apexiqRenderMetaV30=renderMetaV30;
+    window.__apexiqAddPercentRowsV30=addPercentRows;
+    // Do not render Meta here. v49979 handles one-shot lazy rendering so the page cannot freeze on load.
+    setTimeout(addPercentRows,80);
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
 })();
 </script>
 
@@ -9133,7 +9303,7 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
     t.dataset.aiqV49961="1";
     t.innerHTML='<div class="aiq-v49961-meta-note">'+(live?'Live pick-rate data loaded.':'Live meta fallback active until the live endpoint responds.')+'</div><div class="aiq-v49961-meta-grid '+(full?'full':'preview')+'">'+rows.slice(0,limit).map(function(m,i){return '<article class="aiq-v49961-meta-card">'+(m.img?'<img loading="lazy" decoding="async" src="'+safe(m.img)+'" alt="'+safe(m.legend)+'">':'<b>#'+safe(i+1)+'</b>')+'<span><b>'+safe(m.legend)+'</b><small>'+safe(m.trend&&m.trend!=="—"?m.trend:m.source||"")+'</small></span><strong>'+safe(formatRate(m.pickRate||m.rate||"—"))+'</strong></article>';}).join("")+'</div>';
   }
-  function renderMetaPanels(){renderMetaV61("metaPanel",false);renderMetaV61("metaPanelFull",true);}
+  function renderMetaPanels(){/* v49979: disabled v61 Meta renderer; v30 renderer owns Meta */}
 
   function activePanel(){var s=document.querySelector(".screen:not([hidden])");return s&&s.dataset?s.dataset.screen:""}
   function compactSlots(){
@@ -9161,7 +9331,7 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
 
   var oldSwitch=window.switchPanel;
   if(typeof oldSwitch==="function"){
-    window.switchPanel=function(panel){var ret=oldSwitch.apply(this,arguments);if(panel==="meta")setTimeout(function(){renderMetaV61("metaPanelFull",true)},50);if(panel==="dashboard")setTimeout(function(){renderMetaV61("metaPanel",false)},50);if(panel==="legends"||panel==="dashboard")tidyLegendCards();return ret;};
+    window.switchPanel=function(panel){var ret=oldSwitch.apply(this,arguments);/* v49979: Meta full render handled by lazy v30 guard *//* v49979: dashboard preview handled by lazy v30 guard */if(panel==="legends"||panel==="dashboard")tidyLegendCards();return ret;};
   }
   var oldRenderAll=window.renderAll;
   if(typeof oldRenderAll==="function"){
@@ -9174,7 +9344,7 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
   // Keep the original status/search flow intact; this observer only cleans the public success wording.
   function observeNotice(){
     var root=document.body;if(!root||typeof MutationObserver==="undefined")return;
-    var mo=new MutationObserver(function(){sanitizeSearchNotice();if(activePanel()==="meta")renderMetaV61("metaPanelFull",true);});
+    var mo=new MutationObserver(function(){sanitizeSearchNotice();});
     mo.observe(root,{childList:true,subtree:true,characterData:true});
   }
   function updateBuildHub(){
@@ -9553,122 +9723,82 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
 
 
 
-<!-- === ApexIQ v4.9.9.78 Meta Original Restore + Freeze Fix === -->
-<script id="apexiq-v49978-meta-original-restore-freeze-fix-js">
+<!-- === ApexIQ v4.9.9.79 Meta Renderer Recovery From v71 === -->
+<style id="apexiq-v49979-meta-recovery-css">
+/* v4.9.9.79: Meta recovery only. No tabs/search/beta/badge/LFG/theme changes. */
+#metaPanel,#metaPanelFull{contain:content;}
+#metaPanelFull{padding-bottom:34px;}
+.aiq-v49979-meta-mini-note{margin:0 0 12px;padding:10px 12px;border:1px solid color-mix(in srgb,var(--brand-2,#22d3ee) 32%,var(--line,#334155));border-radius:14px;background:color-mix(in srgb,var(--brand-2,#22d3ee) 10%,var(--surface,#0f172a));color:var(--muted,#94a3b8);font-weight:850;line-height:1.35;}
+</style>
+<script id="apexiq-v49979-meta-renderer-recovery-js">
 (function(){
   "use strict";
-  var BUILD="v4.9.9.78-meta-original-restore-freeze-fix";
-  if(window.__apexiqV49978Booted)return;
-  window.__apexiqV49978Booted=true;
-
-  var metaIsRendering=false;
-  var metaHasRendered=false;
-  var metaLastRenderAt=0;
-  var metaLastFetchAt=0;
-  var pendingRenderTimer=0;
-
+  if(window.__apexiqV49979Booted)return;
+  window.__apexiqV49979Booted=true;
+  var fullRendered=false, previewRendered=false, rendering=false, lastFull=0;
   function byId(id){return document.getElementById(id)}
-  function metaScreen(){return document.querySelector('.screen[data-screen="meta"],#metaScreen,[data-panel="meta"]')}
-  function isMetaOpen(){
-    var s=metaScreen();
-    if(s && s.hidden)return false;
-    if(s && s.getAttribute('aria-hidden')==='true')return false;
-    if(s && s.offsetParent!==null)return true;
-    var active=document.querySelector('.tab-button.active,[data-go="meta"].active,.tab-button.is-active,[data-go="meta"].is-active');
-    return !!(active && /meta/i.test(active.textContent||active.getAttribute('data-go')||''));
-  }
-  function raf(fn){(window.requestAnimationFrame||function(cb){return setTimeout(cb,16)})(fn)}
-  function safeCall(fn){try{return fn&&fn()}catch(e){try{console.warn('[ApexIQ v49978]',e&&e.message?e.message:e)}catch(_){}}}
-
-  var originalRenderMeta=typeof window.renderMeta==='function'?window.renderMeta:null;
-  var originalLoadMeta=typeof window.apexiqLoadMeta==='function'?window.apexiqLoadMeta:null;
-
-  function renderMetaGuarded(targetId, opts){
-    opts=opts||{};
-    var target=byId(targetId);
-    if(!target)return;
-    var full=(targetId==='metaPanelFull');
-
-    // Do not full-render Meta while hidden. This was the freeze source.
-    if(full && !isMetaOpen() && !opts.force){return;}
-
-    // Debounce duplicate full renders from tab switching / old wrappers.
-    var now=Date.now();
-    if(full){
-      if(metaIsRendering)return;
-      if(metaHasRendered && !opts.fresh && now-metaLastRenderAt<2500)return;
-      metaIsRendering=true;
+  function metaScreen(){return document.querySelector('.screen[data-screen="meta"]')}
+  function isMetaOpen(){var s=metaScreen();return !!(s && !s.hidden)}
+  function safeRun(fn){try{return fn&&fn()}catch(e){try{console.warn('[ApexIQ v49979]',e&&e.message?e.message:e)}catch(_){}}}
+  function renderV30(id){
+    if(typeof window.__apexiqRenderMetaV30==='function'){
+      window.__apexiqRenderMetaV30(id);
+      return true;
     }
-
-    raf(function(){
-      safeCall(function(){
-        if(full && !isMetaOpen() && !opts.force)return;
-        if(originalRenderMeta) originalRenderMeta(targetId);
-        if(full){metaHasRendered=true;metaLastRenderAt=Date.now();}
-      });
-      if(full){setTimeout(function(){metaIsRendering=false;},120);}
+    if(typeof window.renderMeta==='function'){
+      window.renderMeta(id);
+      return true;
+    }
+    return false;
+  }
+  function renderPreview(){
+    if(previewRendered)return;
+    var target=byId('metaPanel'); if(!target)return;
+    previewRendered=true;
+    safeRun(function(){renderV30('metaPanel')});
+  }
+  function renderFull(force){
+    if(!isMetaOpen())return;
+    var now=Date.now();
+    if(rendering)return;
+    if(fullRendered && !force && now-lastFull<10000)return;
+    rendering=true;
+    (window.requestAnimationFrame||function(cb){return setTimeout(cb,16)})(function(){
+      safeRun(function(){renderV30('metaPanelFull')});
+      fullRendered=true; lastFull=Date.now();
+      setTimeout(function(){rendering=false},160);
     });
   }
-
-  // Restore renderMeta to the original working renderer, guarded against hidden/duplicate full renders.
-  window.renderMeta=function(targetId){renderMetaGuarded(targetId,{force:false});};
-
-  // Restore loader behavior, but render full Meta only when the tab is actually open.
+  window.__apexiqV49979OpenMeta=function(){renderFull(false)};
+  var oldLoad=window.apexiqLoadMeta;
   window.apexiqLoadMeta=function(fresh){
-    fresh=!!fresh;
-    var now=Date.now();
-    if(!fresh && now-metaLastFetchAt<2500){
-      renderMetaGuarded('metaPanel',{fresh:false});
-      renderMetaGuarded('metaPanelFull',{fresh:false,force:isMetaOpen()});
-      return Promise.resolve();
-    }
-    metaLastFetchAt=now;
-    if(originalLoadMeta){
-      return Promise.resolve(originalLoadMeta(fresh)).then(function(){
-        // originalLoadMeta may attempt both panels; guard replaces future calls and this repairs final state.
-        renderMetaGuarded('metaPanel',{fresh:fresh});
-        if(isMetaOpen())renderMetaGuarded('metaPanelFull',{fresh:fresh,force:true});
-      }).catch(function(){
-        renderMetaGuarded('metaPanel',{fresh:fresh});
-        if(isMetaOpen())renderMetaGuarded('metaPanelFull',{fresh:fresh,force:true});
-      });
-    }
-    renderMetaGuarded('metaPanel',{fresh:fresh});
-    if(isMetaOpen())renderMetaGuarded('metaPanelFull',{fresh:fresh,force:true});
+    // Avoid endpoint/render fights. The v30 renderer uses the already-loaded state plus its original snapshot fallback.
+    if(isMetaOpen())renderFull(!!fresh); else renderPreview();
     return Promise.resolve();
   };
-
-  function openMetaOnce(){
-    clearTimeout(pendingRenderTimer);
-    pendingRenderTimer=setTimeout(function(){
-      if(!isMetaOpen())return;
-      if(typeof window.apexiqLoadMeta==='function')window.apexiqLoadMeta(false);
-      else renderMetaGuarded('metaPanelFull',{force:true});
-    },80);
-  }
-
-  // Only react to direct Meta tab intent; no observers, no intervals.
-  document.addEventListener('click',function(e){
-    var btn=e.target.closest&&e.target.closest('[data-go="meta"],.tab-button');
-    if(btn && (/meta/i.test(btn.getAttribute('data-go')||'') || /\bmeta\b/i.test(btn.textContent||'')))openMetaOnce();
-  },true);
-
   var oldSwitch=window.switchPanel;
-  if(typeof oldSwitch==='function' && !oldSwitch.__v49978){
+  if(typeof oldSwitch==='function' && !oldSwitch.__v49979){
     var wrapped=function(name){
       var ret=oldSwitch.apply(this,arguments);
-      if(String(name).toLowerCase()==='meta')openMetaOnce();
+      if(String(name||'').toLowerCase()==='meta')setTimeout(function(){renderFull(false)},80);
+      else if(String(name||'').toLowerCase()==='dashboard')setTimeout(renderPreview,120);
       return ret;
     };
-    wrapped.__v49978=true;
+    wrapped.__v49979=true;
     window.switchPanel=wrapped;
   }
-
+  document.addEventListener('click',function(e){
+    var btn=e.target.closest&&e.target.closest('[data-go="meta"],.tab-button');
+    if(btn && (/meta/i.test(btn.getAttribute('data-go')||'') || /\bmeta\b/i.test(btn.textContent||'')))setTimeout(function(){renderFull(false)},120);
+  },true);
   function boot(){
-    try{document.documentElement.dataset.v49978='meta-original-restore-freeze-fix';}catch(_){}
-    // Lightweight dashboard preview only; no full hidden Meta render.
-    setTimeout(function(){renderMetaGuarded('metaPanel',{force:false});},180);
-    if(isMetaOpen())openMetaOnce();
+    try{document.documentElement.dataset.v49979='meta-renderer-recovery-from-v71'}catch(_){ }
+    setTimeout(renderPreview,450);
+    if(isMetaOpen())setTimeout(function(){renderFull(true)},250);
+    safeRun(function(){
+      var entry='<li data-aiq-v49979><small>v4.9.9.79</small><b>Meta renderer recovery</b><span>Restored the original v30 Meta board renderer from the stable chain, disabled the older v21/v61 Meta clobber paths, and removed hidden-tab/timer/observer Meta rebuilds. Beta codes, search, tabs, portraits, badges, LFG, support, Worker, and theme systems were not changed.</span></li>';
+      document.querySelectorAll('#aiqV49948BuildHub,#aiqV49948BuildHubSettings').forEach(function(hub){var list=hub.querySelector('.aiq-v49948-build-list');if(list&&!list.querySelector('[data-aiq-v49979]'))list.insertAdjacentHTML('afterbegin',entry);var badge=hub.querySelector('.aiq-v49948-build-badge');if(badge)badge.textContent='v4.9.9.79';});
+    });
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
