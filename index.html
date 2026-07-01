@@ -9766,5 +9766,181 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
 })();
 </script>
 
+
+<!-- === ApexIQ v4.9.9.84 Meta-only direct live renderer recovery === -->
+<script id="apexiq-v49984-meta-direct-live-renderer-js">
+(function(){
+  "use strict";
+  if(window.__apexiqV49984MetaDirectLiveRenderer)return;
+  window.__apexiqV49984MetaDirectLiveRenderer=true;
+
+  var DEFAULT_META_ROOT="https://cool-wildflower-1646.pwr97pnmkn.workers.dev";
+  var META_STATE=window.__aiqMetaFetchState||(window.__aiqMetaFetchState={inFlight:false,promise:null,hasLoaded:false,lastFetchedAt:0,lastData:null,lastError:""});
+
+  function byId(id){return document.getElementById(id)}
+  function safe(v){return String(v==null?"":v).replace(/[&<>\"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
+  function norm(v){return String(v||"").toLowerCase().replace(/[^a-z0-9]/g,"")}
+  function appState(){try{return state}catch(_){return window.state||{}}}
+  function packs(){try{return Array.isArray(PACK_DATA)?PACK_DATA:[]}catch(_){return []}}
+  function packFor(name){var n=norm(name);return packs().find(function(p){return norm(p&&p.name)===n})||null}
+  function packImageSafe(pack){try{if(typeof packImage==="function")return packImage(pack)||""}catch(_){ }return pack&&pack.stickers&&pack.stickers[0]?pack.stickers[0].src||"":""}
+  function activeMeta(){try{var s=document.querySelector('[data-screen="meta"]');return !!(s&&!s.hidden)}catch(_){return false}}
+  function endpoint(fresh){
+    try{if(typeof apiURL==="function")return apiURL("/api/meta",fresh?{refresh:"1",_:Date.now()}:{});}catch(_){ }
+    var st=appState();
+    var root=String(st.proxy||localStorage.getItem("apexiqApiProxy")||DEFAULT_META_ROOT).replace(/\/$/,"");
+    return root+"/api/meta"+(fresh?"?refresh=1&_="+Date.now():"");
+  }
+  function pickValue(m){
+    if(!m||typeof m!=="object")return "";
+    var keys=["pickRate","pickrate","pick_rate","rate","value","percent","percentage","pickRatePercent","pickRateText","usage","usageRate"];
+    for(var i=0;i<keys.length;i++){var v=m[keys[i]];if(v!==undefined&&v!==null&&String(v).trim()!=="")return v;}
+    return "";
+  }
+  function trendValue(m){return (m&&(m.trend||m.change||m.delta||m.deltaText||m.pickRateChange))||"—"}
+  function rankValue(m){return (m&&(m.avgRank||m.averageRank||m.rank||m.rankAvg))||"—"}
+  function levelValue(m){return (m&&(m.avgLevel||m.averageLevel||m.level||m.levelAvg))||"—"}
+  function asArray(x){
+    if(Array.isArray(x))return x;
+    if(x&&typeof x==="object")return Object.keys(x).map(function(k){var v=x[k];if(v&&typeof v==="object"&&!Array.isArray(v))return Object.assign({legend:k},v);return {legend:k,pickRate:v};});
+    return [];
+  }
+  function rawRows(data){
+    if(!data||typeof data!=="object")return [];
+    var candidates=[data.pickrates,data.pickRates,data.rows,data.legends,data.meta,data.data&&data.data.pickrates,data.data&&data.data.pickRates,data.data&&data.data.rows,data.data&&data.data.legends,data.data&&data.data.meta];
+    var best=[];
+    for(var i=0;i<candidates.length;i++){
+      var arr=asArray(candidates[i]);
+      if(arr.length>best.length)best=arr;
+    }
+    return best;
+  }
+  function normalizeRows(data){
+    var rows=rawRows(data);
+    var out=[];
+    for(var i=0;i<rows.length;i++){
+      var m=rows[i]||{};
+      if(typeof m!=="object")continue;
+      var name=m.legend||m.name||m.character||m.legendName||m.hero||m.label;
+      if(!name)continue;
+      var pack=packFor(name);
+      var rate=pickValue(m);
+      if(rate==="Live pending")rate="";
+      out.push({
+        legend:(pack&&pack.name)||String(name),
+        pickRate:rate,
+        trend:trendValue(m),
+        avgRank:rankValue(m),
+        avgLevel:levelValue(m),
+        source:m.source||(data&&data.source)||"live",
+        order:m.order||m.rankOrder||m.position||i+1,
+        img:(m.img||m.image||m.icon||(pack?packImageSafe(pack):""))
+      });
+    }
+    out=out.filter(function(r){return r.legend&&String(r.pickRate||"").trim()!==""&&String(r.pickRate)!=="—"});
+    out.sort(function(a,b){
+      var ar=Number(String(a.pickRate).replace(/[^0-9.-]/g,""));
+      var br=Number(String(b.pickRate).replace(/[^0-9.-]/g,""));
+      if(Number.isFinite(ar)&&Number.isFinite(br)&&br!==ar)return br-ar;
+      return (a.order||999)-(b.order||999);
+    });
+    return out.slice(0,28);
+  }
+  function rateText(v){
+    var s=String(v==null?"":v).trim();
+    if(!s)return "—";
+    if(/^\d+(\.\d+)?$/.test(s))return s+"%";
+    return s;
+  }
+  function statusHTML(status,error,count){
+    if(status==="loading")return '<div class="v49930MetaNotice"><b>Loading live meta rows…</b> Fetching /api/meta one time. No retry loop is running.</div>';
+    if(status==="error")return '<div class="v49930MetaNotice"><b>Meta live endpoint error.</b> '+safe(error||"Request failed")+' <button type="button" data-aiq-meta-refresh>Refresh Meta</button></div>';
+    return '<div class="v49930MetaNotice"><b>Live meta rows loaded.</b> '+safe(count||0)+' live legends from /api/meta. <button type="button" data-aiq-meta-refresh>Refresh Meta</button></div>';
+  }
+  function renderTarget(id,rows,status,error,preview){
+    var target=byId(id); if(!target)return;
+    var limit=preview?8:28;
+    if(status==="loading"&&!rows.length){target.innerHTML=statusHTML("loading","",0);return;}
+    if(status==="error"&&!rows.length){target.innerHTML=statusHTML("error",error,0);return;}
+    target.dataset.aiqV49984="1";
+    target.innerHTML=statusHTML("live","",rows.length)+'<div class="v49930MetaGrid">'+rows.slice(0,limit).map(function(m,i){
+      return '<article class="v49930MetaCard">'+(m.img?'<img class="v49930MetaBg" loading="lazy" decoding="async" src="'+safe(m.img)+'" alt="'+safe(m.legend)+'">':'')+'<div class="v49930MetaShade"></div><div class="v49930MetaContent"><div><div class="v49930MetaTop"><b>'+safe(m.legend)+'</b><span>#'+safe(i+1)+'</span></div><div class="v49930Pick">'+safe(rateText(m.pickRate))+'</div><div class="v49930Trend flat">'+safe(m.trend||"—")+'</div></div><div class="v49930Facts"><span><em>Avg rank</em><strong>'+safe(m.avgRank||"—")+'</strong></span><span><em>Avg level</em><strong>'+safe(m.avgLevel||"—")+'</strong></span></div></div></article>';
+    }).join("")+'</div>';
+  }
+  function renderMetaDirect(data,status,error){
+    var rows=normalizeRows(data||META_STATE.lastData||appState().meta||{});
+    renderTarget("metaPanelFull",rows,status||"live",error||"",false);
+    renderTarget("metaPanel",rows,status||"live",error||"",true);
+    return rows;
+  }
+
+  window.apexiqRenderMetaDirectV49984=renderMetaDirect;
+  window.renderMeta=function(id){
+    var rows=normalizeRows(META_STATE.lastData||appState().meta||{});
+    renderTarget(id,rows,rows.length?"live":"error",rows.length?"":"No live meta rows are loaded yet.",id==="metaPanel");
+  };
+  window.apexiqLoadMeta=async function(fresh){
+    fresh=!!fresh;
+    var st=appState();
+    if(!fresh&&!activeMeta())return st.meta||META_STATE.lastData||null;
+    if(META_STATE.inFlight&&META_STATE.promise)return META_STATE.promise;
+    if(META_STATE.hasLoaded&&!fresh&&(st.meta||META_STATE.lastData)){
+      renderMetaDirect(st.meta||META_STATE.lastData,"live","");
+      return st.meta||META_STATE.lastData;
+    }
+    META_STATE.inFlight=true;
+    META_STATE.lastError="";
+    renderMetaDirect(st.meta||META_STATE.lastData,"loading","");
+    META_STATE.promise=(async function(){
+      try{
+        var res=await fetch(endpoint(fresh),{cache:"no-store",headers:{Accept:"application/json"}});
+        var text=await res.text();
+        var data=null;
+        try{data=JSON.parse(text)}catch(_){throw new Error("/api/meta returned non-JSON")}
+        if(!res.ok)throw new Error("/api/meta HTTP "+res.status);
+        if(data&&data.error)throw new Error(String(data.error));
+        var rows=normalizeRows(data);
+        if(!rows.length)throw new Error("/api/meta returned JSON but no usable pick-rate rows");
+        try{st.meta=data;st.metaError=""}catch(_){ }
+        META_STATE.lastData=data;
+        META_STATE.hasLoaded=true;
+        META_STATE.lastFetchedAt=Date.now();
+        renderMetaDirect(data,"live","");
+        return data;
+      }catch(e){
+        META_STATE.lastError=e&&e.message?e.message:String(e);
+        try{st.metaError=META_STATE.lastError}catch(_){ }
+        renderMetaDirect(null,"error",META_STATE.lastError);
+        return null;
+      }finally{
+        META_STATE.inFlight=false;
+        META_STATE.promise=null;
+      }
+    })();
+    return META_STATE.promise;
+  };
+
+  function requestMeta(fresh){if(fresh)META_STATE.hasLoaded=false;return window.apexiqLoadMeta(!!fresh)}
+  var oldSwitch=window.switchPanel;
+  if(typeof oldSwitch==="function"&&!oldSwitch.__aiqV49984MetaWrapped){
+    var wrapped=function(panel){
+      var ret=oldSwitch.apply(this,arguments);
+      if(panel==="meta")setTimeout(function(){requestMeta(false)},80);
+      return ret;
+    };
+    wrapped.__aiqV49984MetaWrapped=true;
+    window.switchPanel=wrapped;
+  }
+  document.addEventListener("click",function(e){
+    var go=e.target&&e.target.closest&&e.target.closest('[data-go="meta"]');
+    if(go)setTimeout(function(){requestMeta(false)},120);
+    var refresh=e.target&&e.target.closest&&e.target.closest('[data-aiq-meta-refresh]');
+    if(refresh){e.preventDefault();e.stopPropagation();requestMeta(true)}
+  },true);
+  function boot(){if(activeMeta())setTimeout(function(){requestMeta(false)},120)}
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
+})();
+</script>
+
 </body>
 </html>
