@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ApexIQ — v4.9.9.58 Mobile Nav Restore + Portrait Fix</title>
+<title>ApexIQ — v4.9.9.80 Meta Live Fetch Restore</title>
 <link id="apexiq-v49956-favicon" rel="icon" type="image/png" href="assets/apexiq-logo.png">
 <!-- ApexIQ Predator Broadcast v4.9.9.10 Source Re-Extract + Edge Fix: artifact-cleanup-only badge asset refresh on top of the stable full badge system. -->
 <style>
@@ -5667,17 +5667,36 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
     const live=!!(state.meta&&(state.meta.legends||state.meta.meta||state.meta.pickrates||state.meta.pickRates||state.meta.rows));
     target.innerHTML=`<div class="v49921MetaNotice">${live?"Live pick-rate data loaded.":"Live meta endpoint pending; showing roster fallback so the panel never appears broken."}</div><div class="v49921MetaGrid">${rows.slice(0,28).map((m,i)=>`<article class="v49921MetaCard">${m.img?`<img loading="lazy" src="${safe(m.img)}" alt="${safe(m.legend)}">`:`<b>#${i+1}</b>`}<span><b>${safe(m.legend)}</b><small>${safe(m.trend||m.source||"")}</small></span><strong>${safe(m.pickRate||m.rate||"—")}${String(m.pickRate||m.rate||"").match(/^\d+(\.\d+)?$/)?"%":""}</strong></article>`).join("")}</div>`;
   };
+  const AIQ_META_FETCH_STATE = window.__aiqMetaFetchState || (window.__aiqMetaFetchState = {inFlight:false,promise:null,hasLoaded:false,lastFetchedAt:0});
+  function aiqMetaPanelActive(){try{const s=document.querySelector('[data-screen="meta"]');return !!(s&&!s.hidden)}catch(_){return false}}
   window.apexiqLoadMeta=async function(fresh=false){
-    try{
-      const url=typeof apiURL==="function"?apiURL("/api/meta",fresh?{refresh:"1"}:{}):((state.proxy||"").replace(/\/$/,"")+"/api/meta"+(fresh?"?refresh=1":""));
-      const res=await fetch(url,{cache:"no-store",headers:{Accept:"application/json"}});
-      const data=await res.json();
-      state.meta=data; state.metaError="";
-    }catch(e){
-      state.meta={ok:false,error:e.message,legends:fallbackMetaRows(),source:"client fallback"};
-      state.metaError=e.message;
+    const active=aiqMetaPanelActive();
+    if(!active&&!fresh){return Promise.resolve(state.meta||null)}
+    if(AIQ_META_FETCH_STATE.inFlight&&AIQ_META_FETCH_STATE.promise)return AIQ_META_FETCH_STATE.promise;
+    if(AIQ_META_FETCH_STATE.hasLoaded&&!fresh){
+      try{if(active)renderMeta("metaPanelFull");renderMeta("metaPanel")}catch(_){ }
+      return Promise.resolve(state.meta||null);
     }
-    renderMeta("metaPanel"); renderMeta("metaPanelFull");
+    AIQ_META_FETCH_STATE.inFlight=true;
+    AIQ_META_FETCH_STATE.promise=(async()=>{
+      try{
+        const url=typeof apiURL==="function"?apiURL("/api/meta",fresh?{refresh:"1"}:{}):((state.proxy||"").replace(/\/$/,"")+"/api/meta"+(fresh?"?refresh=1":""));
+        const res=await fetch(url,{cache:"no-store",headers:{Accept:"application/json"}});
+        if(!res.ok)throw new Error("Meta request failed: "+res.status);
+        const data=await res.json();
+        state.meta=data; state.metaError="";
+        AIQ_META_FETCH_STATE.hasLoaded=true;
+        AIQ_META_FETCH_STATE.lastFetchedAt=Date.now();
+      }catch(e){
+        state.meta={ok:false,error:e.message,legends:fallbackMetaRows(),source:"client fallback"};
+        state.metaError=e.message;
+      }finally{
+        AIQ_META_FETCH_STATE.inFlight=false;
+      }
+      try{if(aiqMetaPanelActive())renderMeta("metaPanelFull");renderMeta("metaPanel")}catch(_){ }
+      return state.meta||null;
+    })();
+    return AIQ_META_FETCH_STATE.promise;
   };
 
   /* Theme studio: 224 unique themes, compact layout, not a giant duplicate pink list */
@@ -5778,7 +5797,7 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
   document.addEventListener("click",function(e){
     const mini=e.target.closest("[data-aiq-mini-badge]");
     if(mini){const tip=byId("apexiqMiniBadgeTip");if(tip){tip.textContent=mini.getAttribute("data-aiq-mini-badge")||mini.title||"";tip.classList.add("is-open")}}
-    const metaBtn=e.target.closest('[data-go="meta"]'); if(metaBtn&&window.__apexiqV49979OpenMeta)setTimeout(()=>window.__apexiqV49979OpenMeta(),60);
+    const metaBtn=e.target.closest('[data-go="meta"]'); if(metaBtn)setTimeout(()=>apexiqLoadMeta(false),60);
   },true);
 
   function bootPatch(){
@@ -5787,7 +5806,7 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
     if(typeof renderProfile==="function")renderProfile();
     if(typeof renderLegends==="function")renderLegends();
     if(typeof renderSettings==="function")renderSettings();
-    /* v49979: meta boot fetch disabled; renderer is lazy */
+    // v4.9.9.80: do not fetch/render Meta on boot; Meta loads lazily when the tab opens.
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",bootPatch,{once:true});else bootPatch();
 })();
@@ -6591,28 +6610,26 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
     });
   }
 
-  // v4.9.9.79: expose original working v49930 Meta renderer, but remove auto full-render hooks.
-  // The old wrappers rendered Meta during renderAll/loadAll/switchPanel and caused hidden-tab rebuilds.
-  window.__apexiqRenderMetaV30=renderMetaV30;
-  window.__apexiqAddPercentRowsV30=addPercentRows;
-  window.renderMeta=function(id){
-    var full=id==="metaPanelFull";
-    var screen=document.querySelector('.screen[data-screen="meta"]');
-    if(full && screen && screen.hidden)return;
-    renderMetaV30(id);
-  };
+  // v4.9.9.80: expose the original v30 Meta renderer, but do not auto-render Meta in loops while hidden.
+  window.renderMeta=function(id){renderMetaV30(id)};
+  window.apexiqRenderMetaV30=renderMetaV30;
+  window.apexiqAddPercentRowsV30=addPercentRows;
 
-  function watch(id){
-    const t=byId(id); if(!t)return;
-    new MutationObserver(()=>{if(!metaLock&&t.dataset.v49930!=="1")setTimeout(()=>renderMetaV30(id),15)}).observe(t,{childList:true,subtree:false});
+  const oldRenderAll=window.renderAll;
+  if(typeof oldRenderAll==="function"){
+    window.renderAll=function(){const ret=oldRenderAll.apply(this,arguments);setTimeout(addPercentRows,30);return ret;}
+  }
+  const oldLoadAll=window.loadAll;
+  if(typeof oldLoadAll==="function"){
+    window.loadAll=async function(fresh=false){const ret=await oldLoadAll.apply(this,arguments);setTimeout(addPercentRows,30);return ret;}
+  }
+  const oldSwitch=window.switchPanel;
+  if(typeof oldSwitch==="function"){
+    window.switchPanel=function(name){const ret=oldSwitch.apply(this,arguments);if(name==="meta")setTimeout(()=>{try{window.apexiqLoadMeta&&window.apexiqLoadMeta(false)}catch(_){renderMetaV30("metaPanelFull")}},90);setTimeout(addPercentRows,40);return ret;}
   }
   function boot(){
-    document.documentElement.dataset.v49930="clean-meta-percent-restore-lazy-v49979";
-    if(window.state && (!state.meta || typeof state.meta!=="object")) state.meta={ok:true,legends:META_SNAPSHOT,source:"client fallback"};
-    window.__apexiqRenderMetaV30=renderMetaV30;
-    window.__apexiqAddPercentRowsV30=addPercentRows;
-    // Do not render Meta here. v49979 handles one-shot lazy rendering so the page cannot freeze on load.
-    setTimeout(addPercentRows,80);
+    document.documentElement.dataset.v49930="clean-meta-percent-restore-no-loop";
+    addPercentRows();
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
 })();
@@ -9303,7 +9320,7 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
     t.dataset.aiqV49961="1";
     t.innerHTML='<div class="aiq-v49961-meta-note">'+(live?'Live pick-rate data loaded.':'Live meta fallback active until the live endpoint responds.')+'</div><div class="aiq-v49961-meta-grid '+(full?'full':'preview')+'">'+rows.slice(0,limit).map(function(m,i){return '<article class="aiq-v49961-meta-card">'+(m.img?'<img loading="lazy" decoding="async" src="'+safe(m.img)+'" alt="'+safe(m.legend)+'">':'<b>#'+safe(i+1)+'</b>')+'<span><b>'+safe(m.legend)+'</b><small>'+safe(m.trend&&m.trend!=="—"?m.trend:m.source||"")+'</small></span><strong>'+safe(formatRate(m.pickRate||m.rate||"—"))+'</strong></article>';}).join("")+'</div>';
   }
-  function renderMetaPanels(){/* v49979: disabled v61 Meta renderer; v30 renderer owns Meta */}
+  function renderMetaPanels(){renderMetaV61("metaPanel",false);renderMetaV61("metaPanelFull",true);}
 
   function activePanel(){var s=document.querySelector(".screen:not([hidden])");return s&&s.dataset?s.dataset.screen:""}
   function compactSlots(){
@@ -9331,7 +9348,7 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
 
   var oldSwitch=window.switchPanel;
   if(typeof oldSwitch==="function"){
-    window.switchPanel=function(panel){var ret=oldSwitch.apply(this,arguments);/* v49979: Meta full render handled by lazy v30 guard *//* v49979: dashboard preview handled by lazy v30 guard */if(panel==="legends"||panel==="dashboard")tidyLegendCards();return ret;};
+    window.switchPanel=function(panel){var ret=oldSwitch.apply(this,arguments);if(panel==="legends"||panel==="dashboard")tidyLegendCards();return ret;};
   }
   var oldRenderAll=window.renderAll;
   if(typeof oldRenderAll==="function"){
@@ -9723,83 +9740,50 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
 
 
 
-<!-- === ApexIQ v4.9.9.79 Meta Renderer Recovery From v71 === -->
-<style id="apexiq-v49979-meta-recovery-css">
-/* v4.9.9.79: Meta recovery only. No tabs/search/beta/badge/LFG/theme changes. */
-#metaPanel,#metaPanelFull{contain:content;}
-#metaPanelFull{padding-bottom:34px;}
-.aiq-v49979-meta-mini-note{margin:0 0 12px;padding:10px 12px;border:1px solid color-mix(in srgb,var(--brand-2,#22d3ee) 32%,var(--line,#334155));border-radius:14px;background:color-mix(in srgb,var(--brand-2,#22d3ee) 10%,var(--surface,#0f172a));color:var(--muted,#94a3b8);font-weight:850;line-height:1.35;}
-</style>
-<script id="apexiq-v49979-meta-renderer-recovery-js">
+<!-- === ApexIQ v4.9.9.80 Meta live fetch restore from v71 === -->
+<script id="apexiq-v49980-meta-live-fetch-restore-js">
 (function(){
   "use strict";
-  if(window.__apexiqV49979Booted)return;
-  window.__apexiqV49979Booted=true;
-  var fullRendered=false, previewRendered=false, rendering=false, lastFull=0;
+  var BUILD="v4.9.9.80-meta-live-fetch-restore-from-v71";
+  function all(sel,root){return Array.from((root||document).querySelectorAll(sel))}
   function byId(id){return document.getElementById(id)}
-  function metaScreen(){return document.querySelector('.screen[data-screen="meta"]')}
-  function isMetaOpen(){var s=metaScreen();return !!(s && !s.hidden)}
-  function safeRun(fn){try{return fn&&fn()}catch(e){try{console.warn('[ApexIQ v49979]',e&&e.message?e.message:e)}catch(_){}}}
-  function renderV30(id){
-    if(typeof window.__apexiqRenderMetaV30==='function'){
-      window.__apexiqRenderMetaV30(id);
-      return true;
-    }
-    if(typeof window.renderMeta==='function'){
-      window.renderMeta(id);
-      return true;
-    }
-    return false;
+  function activePanel(){var shown=all('[data-screen]').find(function(s){return !s.hidden});return shown?(shown.getAttribute('data-screen')||'dashboard'):'dashboard'}
+  var metaOpenNonce=0;
+  function renderMetaPreview(){try{if(typeof window.renderMeta==='function')window.renderMeta('metaPanel')}catch(e){console.warn(BUILD,e)}}
+  function requestMeta(fresh){
+    try{
+      if(activePanel()!=="meta"&&!fresh)return;
+      if(typeof window.apexiqLoadMeta==="function")window.apexiqLoadMeta(!!fresh);
+      else if(typeof window.renderMeta==="function")window.renderMeta("metaPanelFull");
+    }catch(e){console.warn(BUILD,e)}
   }
-  function renderPreview(){
-    if(previewRendered)return;
-    var target=byId('metaPanel'); if(!target)return;
-    previewRendered=true;
-    safeRun(function(){renderV30('metaPanel')});
-  }
-  function renderFull(force){
-    if(!isMetaOpen())return;
-    var now=Date.now();
-    if(rendering)return;
-    if(fullRendered && !force && now-lastFull<10000)return;
-    rendering=true;
-    (window.requestAnimationFrame||function(cb){return setTimeout(cb,16)})(function(){
-      safeRun(function(){renderV30('metaPanelFull')});
-      fullRendered=true; lastFull=Date.now();
-      setTimeout(function(){rendering=false},160);
-    });
-  }
-  window.__apexiqV49979OpenMeta=function(){renderFull(false)};
-  var oldLoad=window.apexiqLoadMeta;
-  window.apexiqLoadMeta=function(fresh){
-    // Avoid endpoint/render fights. The v30 renderer uses the already-loaded state plus its original snapshot fallback.
-    if(isMetaOpen())renderFull(!!fresh); else renderPreview();
-    return Promise.resolve();
-  };
   var oldSwitch=window.switchPanel;
-  if(typeof oldSwitch==='function' && !oldSwitch.__v49979){
-    var wrapped=function(name){
+  if(typeof oldSwitch==="function"&&!oldSwitch.__aiqV49980Wrapped){
+    var wrapped=function(panel){
       var ret=oldSwitch.apply(this,arguments);
-      if(String(name||'').toLowerCase()==='meta')setTimeout(function(){renderFull(false)},80);
-      else if(String(name||'').toLowerCase()==='dashboard')setTimeout(renderPreview,120);
+      if(panel==="meta"){
+        var nonce=++metaOpenNonce;
+        setTimeout(function(){if(nonce===metaOpenNonce)requestMeta(false)},120);
+      }
+      if(panel==="dashboard")setTimeout(renderMetaPreview,120);
       return ret;
     };
-    wrapped.__v49979=true;
+    wrapped.__aiqV49980Wrapped=true;
     window.switchPanel=wrapped;
   }
   document.addEventListener('click',function(e){
-    var btn=e.target.closest&&e.target.closest('[data-go="meta"],.tab-button');
-    if(btn && (/meta/i.test(btn.getAttribute('data-go')||'') || /\bmeta\b/i.test(btn.textContent||'')))setTimeout(function(){renderFull(false)},120);
+    var refresh=e.target&&e.target.closest&&e.target.closest('[data-aiq-meta-refresh],button');
+    if(refresh&&/refresh meta/i.test(refresh.textContent||'')){
+      e.preventDefault();e.stopPropagation();
+      if(window.__aiqMetaFetchState)window.__aiqMetaFetchState.hasLoaded=false;
+      requestMeta(true);
+    }
   },true);
-  function boot(){
-    try{document.documentElement.dataset.v49979='meta-renderer-recovery-from-v71'}catch(_){ }
-    setTimeout(renderPreview,450);
-    if(isMetaOpen())setTimeout(function(){renderFull(true)},250);
-    safeRun(function(){
-      var entry='<li data-aiq-v49979><small>v4.9.9.79</small><b>Meta renderer recovery</b><span>Restored the original v30 Meta board renderer from the stable chain, disabled the older v21/v61 Meta clobber paths, and removed hidden-tab/timer/observer Meta rebuilds. Beta codes, search, tabs, portraits, badges, LFG, support, Worker, and theme systems were not changed.</span></li>';
-      document.querySelectorAll('#aiqV49948BuildHub,#aiqV49948BuildHubSettings').forEach(function(hub){var list=hub.querySelector('.aiq-v49948-build-list');if(list&&!list.querySelector('[data-aiq-v49979]'))list.insertAdjacentHTML('afterbegin',entry);var badge=hub.querySelector('.aiq-v49948-build-badge');if(badge)badge.textContent='v4.9.9.79';});
-    });
+  function patchBuildHub(){
+    var entry='<li data-aiq-v49980><small>v4.9.9.80</small><b>Meta live fetch restore</b><span>Built from v71. Restored the real /api/meta fetch path, stopped hidden Meta boot renders, disabled old Meta interval/observer loops, kept the original Meta card renderer, and preserved beta codes, tabs, search, badges, LFG, support, ranked, themes, and Worker logic.</span></li>';
+    all('#aiqV49948BuildHub,#aiqV49948BuildHubSettings').forEach(function(hub){var badge=hub.querySelector('.aiq-v49948-build-badge');if(badge)badge.textContent='v4.9.9.80';var list=hub.querySelector('.aiq-v49948-build-list');if(list&&!list.querySelector('[data-aiq-v49980]'))list.insertAdjacentHTML('afterbegin',entry);});
   }
+  function boot(){document.documentElement.dataset.v49980='meta-live-fetch-restore-from-v71';patchBuildHub();renderMetaPreview();}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
 </script>
