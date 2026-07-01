@@ -10495,3 +10495,105 @@ body:not([data-aiq-profile-ready="1"]) .v49919ProfileBadgeCase,body:not([data-ai
 </script>
 
 
+
+
+<!-- === ApexIQ v4.9.9.100 Badge Data + Pack Target Fix === -->
+<style id="apexiq-v50000-badge-data-pack-fix-css">
+.aiq-v50000-badge-shell .aiq-v49992-stat small{overflow-wrap:anywhere}.aiq-v50000-badge-card{display:grid;grid-template-columns:54px 1fr;gap:14px;border:1px solid var(--line,#334155);border-radius:18px;padding:14px;background:rgba(255,255,255,.035)}.aiq-v50000-badge-card.unlocked{border-color:rgba(34,197,94,.55);background:rgba(34,197,94,.08)}.aiq-v50000-badge-card.locked{opacity:.78}.aiq-v50000-badge-media img{width:48px;height:48px;object-fit:contain;filter:drop-shadow(0 10px 16px rgba(0,0,0,.28))}.aiq-v50000-badge-card h4{margin:0 0 4px}.aiq-v50000-badge-card p{margin:3px 0;color:var(--muted,#94a3b8);line-height:1.35}.aiq-v50000-status{font-weight:900;color:var(--text,#f8fafc)!important}.aiq-v50000-source{margin-top:8px;color:var(--muted,#94a3b8);font-size:.82rem;font-weight:800}.aiq-v50000-badge-grid{align-items:stretch}.pack-tile,[data-aiq-pack-index]{cursor:pointer}
+</style>
+<script id="apexiq-v50000-badge-data-and-pack-fix-js">
+(function(){
+  "use strict";
+  var BUILD="v4.9.9.100-badge-data-pack-fix";
+  var LEGENDS=["Alter","Ash","Axle","Ballistic","Bangalore","Bloodhound","Catalyst","Caustic","Conduit","Crypto","Fuse","Gibraltar","Horizon","Lifeline","Loba","Mad Maggie","Mirage","Newcastle","Octane","Pathfinder","Rampart","Revenant","Seer","Sparrow","Valkyrie","Vantage","Wattson","Wraith"];
+  function $(s,r){return (r||document).querySelector(s)}
+  function $all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+  function safe(v){return String(v==null?"":v).replace(/[&<>\"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
+  function norm(v){return String(v||"").toLowerCase().replace(/[_-]+/g," ").replace(/[^a-z0-9 ]/g,"").replace(/\s+/g," ").trim()}
+  function idnorm(v){return norm(v).replace(/\s+/g,"")}
+  function num(v){var n=Number(String(v==null?"":v).replace(/,/g,""));return Number.isFinite(n)?n:0}
+  function fmt(v){try{return Number(v||0).toLocaleString()}catch(_){return String(v||0)}}
+  function getState(){try{return window.state||state||{}}catch(_){return {}}}
+  function profile(){var s=getState();return s.profile||s.currentProfile||s.liveProfile||null}
+  function manifest(){try{var el=$("#apexiqBadgeManifestV498");var m=JSON.parse(el&&el.textContent||"{}");return Array.isArray(m.badges)?m.badges:[]}catch(_){return []}}
+  function packData(){try{return Array.isArray(PACK_DATA)?PACK_DATA:[]}catch(_){return []}}
+  function canonLegend(v){var n=idnorm(v);return LEGENDS.find(function(l){return idnorm(l)===n})||""}
+  function flatten(x,out){out=out||[];if(!x)return out;if(Array.isArray(x)){x.forEach(function(v){flatten(v,out)});return out}if(typeof x==="object")out.push(x);return out}
+  function getPath(obj,path){try{return path.split('.').reduce(function(o,k){return o&&o[k]},obj)}catch(_){return null}}
+  function arrValues(x){if(!x)return[];if(Array.isArray(x))return x;if(typeof x==="object")return Object.keys(x).map(function(k){return x[k]});return[]}
+  function statItems(row){
+    var out=[];
+    function add(label,value,path){var v=num(value);if(!label||!v)return;out.push({label:String(label).trim(),labelNorm:norm(label),value:v,path:path||""})}
+    flatten([row&&row.stats,row&&row.trackers,row&&row.data,row&&row.values,row&&row.statCards,row&&row.cards],[]).forEach(function(s){
+      if(!s||typeof s!=="object")return;
+      var label=s.label||s.name||s.key||s.stat||s.title||s.displayName;
+      var value=s.value!==undefined?s.value:(s.total!==undefined?s.total:(s.amount!==undefined?s.amount:s.val));
+      add(label,value,"stat-array");
+    });
+    Object.keys(row||{}).forEach(function(k){
+      var v=row[k];if(v&&typeof v==="object")return;
+      if(/^(br\s*)?kills?$|^(br\s*)?damage$|^(br\s*)?wins?$/i.test(k))add(k,v,"direct-row-field");
+    });
+    return out;
+  }
+  function badgeText(row){var bits=[];flatten([row&&row.badges,row&&row.officialBadges,row&&row.badgeSlots,row&&row.legendBadges,row&&row.alsBadges,row&&row.visualBadges],[]).forEach(function(b){bits.push(String((b&&(b.name||b.label||b.rawName||b.title||b.type||b.id))||b||""))});return bits.join(" | ")}
+  function candidateLegendRows(p){
+    var sources=["allLegendStats","legendStats","legendCards","legends","profilePage.legendStats","profilePage.legendCards","profilePage.legends","data.legendStats","data.legendCards","data.legends","profile.legendStats","profile.legendCards"];
+    var raw=[];sources.forEach(function(path){arrValues(getPath(p,path)).forEach(function(r){raw.push(r)})});
+    // Last-resort: scan arrays only, but require a direct legend-like field and stats/badges.
+    if(!raw.length){
+      (function scan(x,depth){if(!x||depth>4)return;if(Array.isArray(x)){x.forEach(function(v){if(v&&typeof v==="object"){var lg=canonLegend(v.legend||v.legendName||v.character||v.name);if(lg&&(v.stats||v.trackers||v.badges||v.officialBadges||v.badgeSlots))raw.push(v);else scan(v,depth+1)}})}else if(typeof x==="object"){Object.keys(x).forEach(function(k){var v=x[k];if(v&&typeof v==="object")scan(v,depth+1)})}})(p,0);
+    }
+    var by={};raw.forEach(function(row){if(!row||typeof row!=="object")return;var lg=canonLegend(row.legend||row.legendName||row.character||row.selectedLegend||row.name);if(!lg)return;var key=idnorm(lg);var entry=by[key]||(by[key]={legend:lg,stats:{},badges:[],rawCount:0});entry.rawCount++;
+      statItems(row).forEach(function(s){var l=s.labelNorm;if(!entry.stats[l]||s.value>entry.stats[l].value)entry.stats[l]=s});
+      entry.badges.push(badgeText(row));
+    });
+    return Object.keys(by).map(function(k){return by[k]});
+  }
+  function exactLegendSum(rows,labels,opts){opts=opts||{};var used=[],total=0;rows.forEach(function(r){var best=null;labels.forEach(function(l){var s=r.stats[norm(l)];if(s&&(!best||s.value>best.value))best=s});if(!best)return;var text=best.labelNorm+" "+best.path;if(opts.exclude&&opts.exclude.test(text))return;total+=best.value;used.push({legend:r.legend,label:best.label,value:best.value})});return {value:used.length>=2?total:0,count:used.length,used:used,source:used.length>=2?("sum of "+used.length+" unique legend exact stat rows"):("needs account total or 2+ unique legend rows")}}
+  function accountTotal(p,labels){
+    var buckets=[p&&p.accountStats,p&&p.account,p&&p.totals,p&&p.totalStats,p&&p.summary,p&&p.overview,p&&p.profileTotals,p&&p.profile&&p.profile.totals,p&&p.profilePage&&p.profilePage.totals];
+    var best=0,src="no account total returned";
+    flatten(buckets,[]).forEach(function(o){if(!o||typeof o!=="object")return;Object.keys(o).forEach(function(k){var nk=norm(k);if(labels.indexOf(nk)<0)return;var v=num(o[k]&&typeof o[k]==="object"?(o[k].value||o[k].total):o[k]);if(v>best){best=v;src="exact account total: "+k}})});
+    return {value:best,source:src};
+  }
+  function collectionCounts(rows){var tw=new Set(),fk=new Set();rows.forEach(function(r){var txt=(r.badges||[]).join(" | ").toLowerCase().replace(/[_-]+/g," ");if(/\bwake\b|20\s*kill|20\s*bomb|\b20b\b|twenty\s*kill/.test(txt))tw.add(r.legend);if(/\bwrath\b|\b4\s*k\b|\b4k\b|4000|4,000/.test(txt))fk.add(r.legend)});return {twenty:tw,fourk:fk}}
+  function exactCategorySum(rows,patterns){var total=0,used=0;rows.forEach(function(r){var best=0;Object.keys(r.stats).forEach(function(k){if(patterns.some(function(re){return re.test(k)})){best=Math.max(best,r.stats[k].value)}});if(best){total+=best;used++}});return {value:used>=1?total:0,count:used,source:used?('sum of '+used+' exact matching tracker row(s)'):'needs exact tracker data or proof'}}
+  function computeBadgeState(){
+    var p=profile(), rows=candidateLegendRows(p||{}), collections=collectionCounts(rows);
+    var kills=accountTotal(p||{},["total kills","career kills","account kills","br kills"]);if(!kills.value)kills=exactLegendSum(rows,["BR Kills","Kills"],{exclude:/kill leader|weapon|arena|arenas|rank|leaderboard/});
+    var damage=accountTotal(p||{},["total damage","career damage","account damage","br damage"]);if(!damage.value)damage=exactLegendSum(rows,["BR Damage","Damage"],{exclude:/weapon|arena|arenas|rank|leaderboard/});
+    var wins=accountTotal(p||{},["total wins","career wins","account wins","br wins"]);if(!wins.value)wins=exactLegendSum(rows,["BR Wins","Wins"],{exclude:/top|streak|arena|arenas|rank|leaderboard/});
+    var smg=exactCategorySum(rows,[/^smg kills$/, /^submachine gun kills$/, /^(alternator|r99|r 99|car|volt|prowler) kills$/]);
+    var ar=exactCategorySum(rows,[/^ar kills$/, /^assault rifle kills$/, /^(r301|r 301|flatline|hemlok|nemesis|havoc) kills$/]);
+    var shotgun=exactCategorySum(rows,[/^shotgun kills$/, /^(mastiff|peacekeeper|eva 8|eva8|mozambique) kills$/]);
+    var sniper=exactCategorySum(rows,[/^sniper kills$/, /^marksman kills$/, /^(sentinel|longbow|charge rifle|kraber|triple take|g7 scout|30 30|3030) kills$/]);
+    var revive=exactCategorySum(rows,[/^revives$/, /^players revived$/, /^teammates revived$/, /^respawns$/, /^respawned teammates$/, /^allies revived$/]);
+    var shield=exactCategorySum(rows,[/^shield damage blocked$/, /^damage blocked$/, /^shield healing given$/, /^damage prevented$/, /^protection provided$/]);
+    var recon=exactCategorySum(rows,[/^enemies scanned$/, /^enemies detected$/, /^scan assists$/, /^recon assists$/, /^tracker scans$/]);
+    var explosive=exactCategorySum(rows,[/^grenade damage$/, /^grenade kills$/, /^explosive damage$/, /^explosive kills$/, /^ordnance damage$/, /^ordnance kills$/]);
+    var tactical=exactCategorySum(rows,[/^tactical damage$/, /^tactical hits$/, /^tactical uses$/, /^tactical assists$/, /^ability damage$/, /^ability assists$/]);
+    var movement=exactCategorySum(rows,[/^movement distance$/, /^distance traveled$/, /^distance travelled$/, /^movement assists$/]);
+    var st={ready:!!p,rowCount:rows.length,rows:rows,twenty:collections.twenty.size,fourk:collections.fourk.size,kills:kills,damage:damage,wins:wins,smg:smg,ar:ar,shotgun:shotgun,sniper:sniper,revive:revive,shield:shield,recon:recon,explosive:explosive,tactical:tactical,movement:movement};
+    window.apexiqBadgeState=st;return st;
+  }
+  function req(t){return String(t&&t.requires).toLowerCase()==="all_legends"?28:num(t&&t.requires)}
+  function tier(def,value){var tiers=(def.tiers||[]).slice().sort(function(a,b){return req(a)-req(b)}),earned=null,next=tiers[0]||null;for(var i=0;i<tiers.length;i++){if(value>=req(tiers[i])){earned=tiers[i];next=null}else{next=tiers[i];break}}return {earned:earned,next:next,tiers:tiers,asset:(earned||next||tiers[0]||{}).asset||""}}
+  function metric(def,st){var id=String(def.id||"");if(id==="20b_collection")return {value:st.twenty,source:"verified Wake / 20-kill badge rows only"};if(id==="4k_collection")return {value:st.fourk,source:"verified Wrath / 4K badge rows only"};if(id==="career_killer")return st.kills;if(id==="damage_dealer")return st.damage;if(id==="win_stacker")return st.wins;if(id==="smg_reaper")return st.smg;if(id==="ar_ace")return st.ar;if(id==="shotgun_brutality")return st.shotgun;if(id==="sniper_deadeye")return st.sniper;if(id==="revive_angel")return st.revive;if(id==="shield_savior")return st.shield;if(id==="recon_scanner")return st.recon;if(id==="explosive_expert")return st.explosive;if(id==="tactical_genius")return st.tactical;if(id==="movement_maniac")return st.movement;if(/legend|roster/.test(id))return {value:st.rowCount,source:"unique returned legend rows"};if(id==="badge_hunter")return {value:st.twenty+st.fourk,source:"verified collection badges only"};if(id==="prestige_ascendant"){var p=profile()||{};var v=0;try{v=typeof trueLevel==="function"?num(trueLevel(p)):num(p.trueLevel)}catch(_){v=num(p.trueLevel)}return {value:v,source:v?"trusted profile true level":"needs exact profile level"}}return {value:0,source:"Needs exact tracker data or proof"}}
+  function card(def,st){var m=metric(def,st),v=num(m.value),ts=tier(def,v),un=!!ts.earned,t=ts.earned||ts.next||(def.tiers||[])[0]||{},r=req(t)||1,pct=Math.max(0,Math.min(100,Math.round(v/r*100)));var label=un?("Unlocked "+safe(ts.earned.label||"tier")):(v?("Locked · next "+safe((ts.next||{}).label||"Tier I")):"Needs exact tracker data or proof");return '<article class="aiq-v50000-badge-card '+(un?'unlocked':'locked')+'"><div class="aiq-v50000-badge-media">'+((t&&t.asset)?'<img loading="lazy" src="'+safe(t.asset)+'" alt="'+safe(def.name)+'">':'')+'</div><div><h4>'+safe(def.name)+'</h4><p class="aiq-v50000-status">'+label+' · '+fmt(v)+' / '+(String((t||{}).requires).toLowerCase()==='all_legends'?'28':fmt(r))+'</p><p>'+safe(def.description||'ApexIQ badge progress line.')+'</p><div class="aiq-v49992-progress"><span style="width:'+pct+'%"></span></div><div class="aiq-v49992-pill-row">'+(ts.tiers||[]).map(function(x){var rv=req(x);return '<span class="aiq-v49992-pill '+(v>=rv?'earned':'')+'">'+safe(x.label||('Tier '+(x.tier||'')))+' · '+(String(x.requires).toLowerCase()==='all_legends'?'all legends':fmt(rv))+'</span>'}).join('')+'</div><div class="aiq-v50000-source">'+safe(m.source||'Needs exact tracker data or proof')+'</div></div></article>'}
+  function renderBadges(){var panel=$("#badgesPanel");if(!panel)return;var defs=manifest(),st=computeBadgeState();var cats=["All"].concat(Array.from(new Set(defs.map(function(d){return d.category||"Other"}))));var active=localStorage.getItem("apexiq:badgeFilter:v50000")||"All";if(cats.indexOf(active)<0)active="All";var shown=active==="All"?defs:defs.filter(function(d){return (d.category||"Other")===active});var unlocked=defs.filter(function(d){return !!tier(d,num(metric(d,st).value)).earned}).length;panel.innerHTML='<section class="aiq-v50000-badge-shell"><div class="aiq-v49992-badge-hero"><div class="aiq-v49992-badge-kicker"><span>ApexIQ badge locker</span><span>verified calculator</span></div><h3>Badges, tiers, and requirements</h3><p>ApexIQ only unlocks badges from trusted visible stats or approved proof. Unknown or ambiguous stats stay locked instead of being guessed.</p></div><div class="aiq-v49992-guide"><article><b>Career total rule</b><ul><li>Account totals are used first when the API exposes them.</li><li>If account totals are missing, ApexIQ sums each unique legend once from exact labels only: BR Kills, Kills, BR Damage, Damage, BR Wins, Wins.</li><li>Selected legend stats are never treated as full career totals by themselves.</li></ul></article><article><b>Tracker badge rule</b><ul><li>Weapon badges require exact weapon kill trackers, never damage.</li><li>Tactical, explosive, support, recon, and movement badges only progress from exact matching trackers.</li><li>Current legend rows found: '+fmt(st.rowCount)+'.</li></ul></article></div><div class="aiq-v49992-stats"><div class="aiq-v49992-stat"><span>Unlocked</span><b>'+fmt(unlocked)+'</b><small>verified badge lines</small></div><div class="aiq-v49992-stat"><span>Career kills source</span><b>'+fmt(st.kills.value)+'</b><small>'+safe(st.kills.source)+'</small></div><div class="aiq-v49992-stat"><span>Career damage source</span><b>'+fmt(st.damage.value)+'</b><small>'+safe(st.damage.source)+'</small></div><div class="aiq-v49992-stat"><span>Career wins source</span><b>'+fmt(st.wins.value)+'</b><small>'+safe(st.wins.source)+'</small></div></div><div class="aiq-v49992-filter">'+cats.map(function(c){return '<button type="button" data-aiq-badge-filter-v50000="'+safe(c)+'" class="'+(c===active?'active':'')+'">'+safe(c)+'</button>'}).join('')+'</div><div class="aiq-v49992-badge-grid aiq-v50000-badge-grid">'+shown.map(function(d){return card(d,st)}).join('')+'</div></section>';}
+  function tagPackCards(){var packs=packData(),panel=$("#packsPanel");if(!panel)return;$all('.pack-tile,.aiq-v49993-pack-card,.aiq-v49994-pack-card,[data-aiq-pack-card]',panel).forEach(function(card,i){var text=norm((card.querySelector('h3')||card.querySelector('b')||card).textContent||'');var idx=packs.findIndex(function(p){return norm(p.name)===text||text.indexOf(norm(p.name))>=0});if(idx<0)idx=i;if(packs[idx]){card.setAttribute('data-aiq-pack-index',String(idx));card.setAttribute('data-aiq-pack-name',packs[idx].name);card.setAttribute('role','button');card.setAttribute('tabindex','0')}})}
+  function boot(){try{Object.keys(localStorage).forEach(function(k){if(/apexiqBadgeCalc|badge_state_v499|badgeStateV499|apexiq:badgeState/i.test(k))localStorage.removeItem(k)})}catch(_){ }tagPackCards();if($("#badgesPanel")&&!$("#badgesPanel").closest('[hidden]'))renderBadges()}
+  window.apexiqComputeBadgeState=computeBadgeState;
+  window.apexiqRenderBadgesV50000=renderBadges;
+  window.renderBadgesPanel=renderBadges;
+  var oldRenderPacks=window.renderPacks;if(typeof oldRenderPacks==='function'&&!oldRenderPacks.__aiqV50000){window.renderPacks=function(){var ret=oldRenderPacks.apply(this,arguments);setTimeout(tagPackCards,0);return ret};window.renderPacks.__aiqV50000=true}
+  var oldRenderProfile=window.renderProfile;if(typeof oldRenderProfile==='function'&&!oldRenderProfile.__aiqV50000){window.renderProfile=function(){var ret=oldRenderProfile.apply(this,arguments);setTimeout(function(){computeBadgeState();},0);return ret};window.renderProfile.__aiqV50000=true}
+  var oldSwitch=window.switchPanel;if(typeof oldSwitch==='function'&&!oldSwitch.__aiqV50000){window.switchPanel=function(panel){var ret=oldSwitch.apply(this,arguments);setTimeout(function(){if(panel==='packs')tagPackCards();if(panel==='badges')renderBadges();},80);setTimeout(function(){if(panel==='badges')renderBadges();if(panel==='packs')tagPackCards();},300);return ret};window.switchPanel.__aiqV50000=true}
+  document.addEventListener('click',function(e){var f=e.target&&e.target.closest&&e.target.closest('[data-aiq-badge-filter-v50000]');if(f){e.preventDefault();e.stopPropagation();localStorage.setItem('apexiq:badgeFilter:v50000',f.getAttribute('data-aiq-badge-filter-v50000')||'All');renderBadges();return}},true);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+  new MutationObserver(function(){tagPackCards();}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
+<!-- === /ApexIQ v4.9.9.100 Badge Data + Pack Target Fix === -->
