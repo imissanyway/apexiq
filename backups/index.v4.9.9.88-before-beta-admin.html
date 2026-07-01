@@ -7720,7 +7720,23 @@ html[data-aiq-beta="locked"] body{overflow:hidden;}
   const ROLE_KEY="apexiq:betaRole:v49950";
   const TICKET_KEY="apexiq:supportTickets:v49950";
   const CONFIG={enabled: (window.APEXIQ_BETA_GATE_ENABLED!==false && !/[?&]beta=off\b/i.test(location.search))};
-  const CODES={}; // v4.9.9.89: beta codes moved to Worker/KV; do not expose tester keys in index.html.
+  const CODES={
+    "AIQ-ORIGIN-7K2M":{name:"Coye / IMissAnyway",role:"Owner",admin:true,desc:"Founder · Product Lead · QA & API Testing Lead"},
+    "AIQ-ANCHOR-9Q4T":{name:"Fastwagen",role:"Tester · Contributor · Asset Verification",admin:true,desc:"Sticker, badge, logo, UI, and beta verification"},
+    "AIQ-SENTINEL-3W8X":{name:"Deadkenn3dys",role:"Tester/Admin candidate",admin:true,desc:"Trusted beta testing and support/admin candidate"},
+    "AIQ-RIFT-7K2M":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta access"},
+    "AIQ-NOVA-9Q4T":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta access"},
+    "AIQ-PULSE-3W8X":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta access"},
+    "AIQ-VAULT-6D1P":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta access"},
+    "AIQ-ORBIT-5H7L":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta access"},
+    "AIQ-PHASE-2N9C":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta access"},
+    "AIQ-TRACK-8F4A":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta access"},
+    "AIQ-BOOST-1R6V":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta access"},
+    "AIQ-SCAN-4M2K":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta access"},
+    "AIQ-PRIME-7X9D":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta access"},
+    "AIQ-BEACON-3C5Q":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta access"},
+    "AIQ-LEGEND-6T8Z":{name:"Private Beta Tester",role:"Tester",admin:false,desc:"Limited private beta access"}
+  };
   const CATEGORIES=["Stats issue","Badge issue","LFG issue","Sticker/emoji issue","Theme/UI issue","Beta access","General feedback"];
   const STATUSES=["open","reviewing","fixed","closed"];
   function $(s,r=document){return r.querySelector(s)}
@@ -7728,48 +7744,11 @@ html[data-aiq-beta="locked"] body{overflow:hidden;}
   function safe(v){try{return typeof esc==="function"?esc(v):String(v??"").replace(/[&<>\"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}catch(_){return String(v??"")}}
   function readJSON(key,fb){try{const v=localStorage.getItem(key);return v?JSON.parse(v):fb}catch(_){return fb}}
   function writeJSON(key,val){try{localStorage.setItem(key,JSON.stringify(val));return true}catch(e){console.warn(BUILD,e);return false}}
-  function role(){
-    const workerSession=readJSON("apexiq:betaSession:v49989",null);
-    if(workerSession&&workerSession.ok&&workerSession.sessionToken){
-      return {
-        code:workerSession.code||"WORKER-VERIFIED",
-        name:workerSession.assignedUsername||workerSession.username||"Private Beta Tester",
-        role:workerSession.role||"Tester",
-        admin:!!workerSession.admin,
-        badge:workerSession.badge||"Original Beta Tester",
-        desc:"Worker-verified private beta access",
-        ts:workerSession.verifiedAt||Date.now()
-      };
-    }
-    return readJSON(ROLE_KEY,null)
-  }
+  function role(){return readJSON(ROLE_KEY,null)}
   function codeKey(v){return String(v||"").normalize("NFKC").trim().toUpperCase().replace(/[\u2010-\u2015\u2212\uFE58\uFE63\uFF0D]/g,"-").replace(/\s+/g,"")}
-  function hasAccess(){
-    if(!CONFIG.enabled)return true;
-    const sess=readJSON("apexiq:betaSession:v49989",null);
-    if(sess&&sess.ok&&sess.sessionToken){
-      const exp=Date.parse(sess.expiresAt||"");
-      const recent=Number(sess.verifiedAt||0)&&Date.now()-Number(sess.verifiedAt)<24*60*60*1000;
-      return !Number.isFinite(exp)||exp>Date.now()||recent;
-    }
-    return false;
-  }
-  function grant(code){
-    // v4.9.9.89: direct frontend invite keys are disabled. The Worker-backed login below handles verification.
-    return false;
-  }
-  function revoke(){
-    try{
-      localStorage.removeItem(TOKEN_KEY);
-      localStorage.removeItem(ROLE_KEY);
-      localStorage.removeItem("apexiq:betaSession:v49989");
-      localStorage.removeItem("apexiq:betaWelcomeSeen:v49989");
-      localStorage.removeItem("apexiq:adminSession:v49989");
-    }catch(_){};
-    document.documentElement.dataset.aiqBeta=CONFIG.enabled?"locked":"off";
-    ensureBetaGate();ensurePrivateLabel();ensureSettingsPanel();
-    try{window.apexiqBetaAccessV49989&&window.apexiqBetaAccessV49989.render&&window.apexiqBetaAccessV49989.render()}catch(_){ }
-  }
+  function hasAccess(){if(!CONFIG.enabled)return true;const tok=readJSON(TOKEN_KEY,null);return !!(tok&&tok.ok&&tok.code&&CODES[tok.code])}
+  function grant(code){const c=codeKey(code);const meta=CODES[c];if(!meta)return false;writeJSON(TOKEN_KEY,{ok:true,code:c,ts:Date.now()});writeJSON(ROLE_KEY,{code:c,...meta,ts:Date.now()});document.documentElement.dataset.aiqBeta="ok";ensureBetaGate();ensurePrivateLabel();ensureSupportShell();ensureSettingsPanel();return true}
+  function revoke(){try{localStorage.removeItem(TOKEN_KEY);localStorage.removeItem(ROLE_KEY)}catch(_){};document.documentElement.dataset.aiqBeta=CONFIG.enabled?"locked":"off";ensureBetaGate();ensurePrivateLabel();ensureSettingsPanel();}
   function ensurePrivateLabel(){
     const old=$("#aiqV49950PrivateLabel");
     const r=role();
@@ -10036,184 +10015,12 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
     return true;
   }
   function start(){
-    // v4.9.9.89 owns the Worker-backed request-access UI.
-    if(window.apexiqBetaAccessV49989&&window.apexiqBetaAccessV49989.render){window.apexiqBetaAccessV49989.render();return;}
     patchGate();
+    let tries=0;
+    const timer=setInterval(function(){tries++; if(patchGate()||tries>20)clearInterval(timer);},250);
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});else start();
 })();
 </script>
-
-
-<!-- === ApexIQ v4.9.9.89 Worker-backed Beta Access + Welcome + Admin Panel === -->
-<style id="apexiq-v49989-beta-admin-css">
-/* v4.9.9.89: beta gate/welcome/admin UI only. Meta, ranked, search, legends, badges, LFG, stickers, and themes untouched. */
-.aiq-v49989-field-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.aiq-v49989-field-grid.full{grid-template-columns:1fr;}
-.aiq-v49989-field-grid label,.aiq-v49989-admin-form label{display:grid;gap:6px;color:var(--muted,#94a3b8);font-size:.83rem;font-weight:900;}
-.aiq-v49989-field-grid input,.aiq-v49989-field-grid select,.aiq-v49989-admin-form input,.aiq-v49989-admin-form select,.aiq-v49989-admin-form textarea{
-  width:100%;min-height:48px;border-radius:15px;border:1px solid var(--line,#334155);background:var(--surface-2,#111827);color:var(--text,#f8fafc);padding:12px 14px;font:inherit;outline:none;
-}
-.aiq-v49989-admin-form textarea{min-height:74px;resize:vertical;}
-.aiq-v49989-mini{font-size:.82rem;color:var(--muted,#94a3b8);line-height:1.4;}
-.aiq-v49989-modal{position:fixed;inset:0;z-index:125000;display:grid;place-items:center;padding:18px;background:rgba(2,8,23,.78);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);}
-.aiq-v49989-modal[hidden]{display:none!important;}
-.aiq-v49989-card{width:min(820px,100%);max-height:calc(100vh - 36px);overflow:auto;border:1px solid color-mix(in srgb,var(--brand,#7c3aed) 40%,var(--line,#334155));background:linear-gradient(180deg,color-mix(in srgb,var(--surface,#0f172a) 96%,transparent),var(--surface-2,#111827));color:var(--text,#f8fafc);border-radius:28px;padding:24px;box-shadow:0 44px 130px rgba(0,0,0,.52);}
-.aiq-v49989-card h2,.aiq-v49989-card h3{margin:0 0 8px;letter-spacing:-.04em;}.aiq-v49989-card h2{font-size:clamp(2rem,5vw,3.4rem);line-height:.95;}.aiq-v49989-card p{color:var(--muted,#94a3b8);line-height:1.5;margin:0 0 12px;}
-.aiq-v49989-sections{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0;}.aiq-v49989-section{border:1px solid var(--line,#334155);border-radius:18px;background:color-mix(in srgb,var(--surface-2,#111827) 82%,transparent);padding:13px;}.aiq-v49989-section b{display:block;margin-bottom:7px;}.aiq-v49989-section ul{margin:0;padding-left:18px;color:var(--muted,#94a3b8);line-height:1.45;}
-.aiq-v49989-check{display:flex;align-items:center;gap:9px;margin:8px 0 15px;color:var(--muted,#94a3b8);font-size:.9rem;}.aiq-v49989-check input{width:auto;min-height:auto;}
-.aiq-v49989-admin-shell{position:fixed;inset:0;z-index:126000;background:rgba(2,8,23,.86);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);padding:18px;overflow:auto;}.aiq-v49989-admin-shell[hidden]{display:none!important;}
-.aiq-v49989-admin-panel{width:min(1120px,100%);margin:0 auto;border:1px solid color-mix(in srgb,var(--brand,#7c3aed) 42%,var(--line,#334155));background:linear-gradient(180deg,var(--surface,#0f172a),var(--surface-2,#111827));color:var(--text,#f8fafc);border-radius:28px;padding:20px;box-shadow:0 44px 130px rgba(0,0,0,.52);}
-.aiq-v49989-admin-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:14px;}.aiq-v49989-admin-head h2{margin:0;font-size:clamp(1.9rem,4vw,3.2rem);letter-spacing:-.05em;}.aiq-v49989-kicker{display:flex;gap:8px;flex-wrap:wrap;color:var(--brand-2,#22d3ee);font-size:.76rem;font-weight:1000;text-transform:uppercase;letter-spacing:.13em;margin-bottom:8px;}
-.aiq-v49989-admin-grid{display:grid;grid-template-columns:360px 1fr;gap:14px;align-items:start;}.aiq-v49989-admin-card{border:1px solid var(--line,#334155);background:color-mix(in srgb,var(--surface-2,#111827) 86%,transparent);border-radius:20px;padding:15px;display:grid;gap:10px;}.aiq-v49989-admin-form{display:grid;gap:10px;}
-.aiq-v49989-table-wrap{overflow:auto;max-height:62vh;border-radius:16px;border:1px solid var(--line,#334155);}.aiq-v49989-table{width:100%;border-collapse:collapse;min-width:860px;background:var(--surface,#0f172a);}.aiq-v49989-table th,.aiq-v49989-table td{padding:10px;border-bottom:1px solid var(--line,#334155);text-align:left;font-size:.86rem;vertical-align:top;}.aiq-v49989-table th{position:sticky;top:0;background:var(--surface-2,#111827);z-index:1;color:var(--brand-2,#22d3ee);}.aiq-v49989-table small{color:var(--muted,#94a3b8);display:block;line-height:1.35;}.aiq-v49989-actions{display:flex;gap:7px;flex-wrap:wrap;}.aiq-v49989-actions button{min-height:32px;border-radius:10px;padding:0 9px;font-size:.78rem;}
-.aiq-v49989-status{min-height:22px;color:var(--brand-2,#22d3ee);font-weight:900;overflow-wrap:anywhere;}.aiq-v49989-status.err{color:#fca5a5;}.aiq-v49989-code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:1000;letter-spacing:.04em;}
-@media(max-width:860px){.aiq-v49989-field-grid,.aiq-v49989-sections,.aiq-v49989-admin-grid{grid-template-columns:1fr;}.aiq-v49989-card,.aiq-v49989-admin-panel{padding:18px;border-radius:22px;}.aiq-v49989-admin-head{display:grid}.aiq-v49989-admin-shell{padding:10px}.aiq-v49989-table-wrap{max-height:58vh}}
-</style>
-<script id="apexiq-v49989-beta-admin-js">
-(function(){
-  "use strict";
-  const BUILD="v4.9.9.89-beta-welcome-admin-worker";
-  const ADMIN_EMAIL="coyemicthell@gmail.com";
-  const SESSION_KEY="apexiq:betaSession:v49989";
-  const ADMIN_SESSION_KEY="apexiq:adminSession:v49989";
-  const DEVICE_KEY="apexiq_beta_device_id";
-  const WELCOME_KEY="apexiq:betaWelcomeSeen:v49989";
-  const TARGET_EMAIL="coyemicthell@gmail.com";
-  function $(s,r){return (r||document).querySelector(s)}
-  function $all(s,r){return Array.from((r||document).querySelectorAll(s))}
-  function safe(v){return String(v??"").replace(/[&<>\"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
-  function readJSON(k,fb){try{const v=localStorage.getItem(k);return v?JSON.parse(v):fb}catch(_){return fb}}
-  function writeJSON(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(_){return false}}
-  function remove(k){try{localStorage.removeItem(k)}catch(_){}}
-  function root(){
-    try{if(typeof apiRoot==="function")return apiRoot().replace(/\/$/,"")}catch(_){ }
-    try{if(typeof state==="object"&&state.proxy)return String(state.proxy).replace(/\/$/,"")}catch(_){ }
-    try{if(typeof DEFAULT_WORKER==="string")return DEFAULT_WORKER.replace(/\/$/,"")}catch(_){ }
-    return (window.APEXIQ_WORKER_URL||localStorage.getItem("apexiqApiProxy")||"https://cool-wildflower-1646.pwr97pnmkn.workers.dev").replace(/\/$/,"");
-  }
-  async function post(path,body,token){
-    const headers={"Content-Type":"application/json","Accept":"application/json"};
-    if(token)headers.Authorization="Bearer "+token;
-    const res=await fetch(root()+path,{method:"POST",headers,cache:"no-store",body:JSON.stringify(body||{})});
-    const text=await res.text();
-    let data={};try{data=JSON.parse(text)}catch(_){data={ok:false,error:"ApexIQ Live API returned non-JSON."}}
-    if(!res.ok||data.error||data.ok===false)throw new Error(data.error||("HTTP "+res.status));
-    return data;
-  }
-  async function get(path,token){
-    const headers={"Accept":"application/json"};if(token)headers.Authorization="Bearer "+token;
-    const res=await fetch(root()+path,{headers,cache:"no-store"});
-    const text=await res.text();let data={};try{data=JSON.parse(text)}catch(_){data={ok:false,error:"ApexIQ Live API returned non-JSON."}}
-    if(!res.ok||data.error||data.ok===false)throw new Error(data.error||("HTTP "+res.status));
-    return data;
-  }
-  function deviceId(){
-    let id=localStorage.getItem(DEVICE_KEY);
-    if(!id){id=(crypto&&crypto.randomUUID)?crypto.randomUUID():("dev_"+Date.now().toString(36)+"_"+Math.random().toString(16).slice(2));localStorage.setItem(DEVICE_KEY,id)}
-    return id;
-  }
-  async function sha256(input){
-    try{const bytes=new TextEncoder().encode(String(input||""));const hash=await crypto.subtle.digest("SHA-256",bytes);return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,"0")).join("").slice(0,48)}catch(_){return ""}
-  }
-  async function devicePayload(){
-    const sig=[navigator.userAgent,navigator.platform,navigator.language,screen.width+"x"+screen.height,screen.colorDepth,Intl.DateTimeFormat().resolvedOptions().timeZone||""].join("|");
-    return {deviceId:deviceId(),deviceSignatureHash:await sha256(sig),label:(navigator.platform||"Web")+" · "+(screen.width||0)+"x"+(screen.height||0)};
-  }
-  function session(){return readJSON(SESSION_KEY,null)}
-  function sessionFresh(s){if(!s||!s.ok||!s.sessionToken)return false;const exp=Date.parse(s.expiresAt||"");if(Number.isFinite(exp)&&exp<Date.now())return false;return true}
-  function unlock(s){
-    writeJSON(SESSION_KEY,Object.assign({},s,{ok:true,verifiedAt:Date.now()}));
-    try{localStorage.setItem("apexiq:betaToken:v49950",JSON.stringify({ok:true,code:"WORKER-VERIFIED",ts:Date.now()}));localStorage.setItem("apexiq:betaRole:v49950",JSON.stringify({code:s.code||"WORKER-VERIFIED",name:s.assignedUsername||s.username||"Private Beta Tester",role:s.role||"Tester",admin:!!s.admin,badge:s.badge||"Original Beta Tester",ts:Date.now()}));}catch(_){ }
-    document.documentElement.dataset.aiqBeta="ok";
-    renderGate();
-  }
-  function lock(){document.documentElement.dataset.aiqBeta="locked";renderGate()}
-  function setStatus(id,text,err){const el=$("#"+id);if(el){el.textContent=text||"";el.classList.toggle("err",!!err)}}
-  function gateHTML(){return '<section class="aiq-v49950-beta-card"><div class="aiq-v49950-beta-kicker"><span>ApexIQ private beta</span><span>Invite only</span></div><h2 id="aiqV49950BetaTitle">Access key required</h2><p>Enter the Apex username your key was assigned to, then enter your access key. Each key can be used on up to 2 devices.</p><div class="aiq-v49950-beta-form"><div class="aiq-v49989-field-grid full"><label>Apex username<input id="aiqV49989BetaUsername" autocomplete="username" placeholder="Example: IMissAnyway"></label><label>Access key<input id="aiqV49989BetaCode" autocomplete="one-time-code" autocapitalize="characters" placeholder="AIX-XXXX-XXXX"></label></div><div class="aiq-v49950-beta-actions"><button type="button" id="aiqV49989BetaEnter" class="aiq-v49950-btn">Unlock ApexIQ</button><button type="button" id="aiqV49989RequestBtn" class="aiq-v49950-btn ghost">Request access key</button><button type="button" id="aiqV49989BetaInfo" class="aiq-v49950-btn ghost">Beta rules</button></div><div id="aiqV49989BetaError" class="aiq-v49950-error"></div><div class="aiq-v49950-note">Early testers help check stats, badges, Meta, LFG, and mobile stability before public release. Do not share your key.</div></div></section>'}
-  function ensureGate(){
-    let gate=$("#aiqV49950BetaGate");
-    if(!gate){document.body.insertAdjacentHTML("beforeend",'<div id="aiqV49950BetaGate" class="aiq-v49950-beta-overlay" role="dialog" aria-modal="true" aria-labelledby="aiqV49950BetaTitle"></div>');gate=$("#aiqV49950BetaGate")}
-    if(gate&&!gate.dataset.v49989){gate.innerHTML=gateHTML();gate.dataset.v49989="1";bindGate(gate)}
-    return gate;
-  }
-  function renderGate(){const gate=ensureGate();if(!gate)return;const ok=sessionFresh(session());gate.hidden=ok;document.documentElement.dataset.aiqBeta=ok?"ok":"locked";if(!ok)setTimeout(()=>$("#aiqV49989BetaUsername")?.focus(),60)}
-  async function login(){
-    const username=$("#aiqV49989BetaUsername")?.value?.trim()||"";
-    const code=$("#aiqV49989BetaCode")?.value?.trim()||"";
-    if(!username){setStatus("aiqV49989BetaError","Enter your Apex username.",true);return}
-    if(!code){setStatus("aiqV49989BetaError","Enter your access key.",true);return}
-    setStatus("aiqV49989BetaError","Verifying beta access…",false);
-    try{
-      const dev=await devicePayload();
-      const data=await post("/api/beta/verify",Object.assign({username,code},dev));
-      unlock({sessionToken:data.sessionToken,expiresAt:data.expiresAt,code:data.code,assignedUsername:data.assignedUsername||username,username,platform:data.platform||"",role:data.role||"Tester",badge:data.badge||"Original Beta Tester",admin:!!data.admin,devicesUsed:data.devicesUsed,maxDevices:data.maxDevices});
-      setStatus("aiqV49989BetaError","",false);
-      showWelcome(false);
-    }catch(e){
-      setStatus("aiqV49989BetaError",e&&e.message?e.message:"Could not verify beta access right now. Try again in a minute.",true);
-    }
-  }
-  function requestBody(){
-    const username=$("#aiqV49989BetaUsername")?.value?.trim()||$("#playerInput")?.value?.trim()||"";
-    const platform=$("#platformInput")?.value||"";
-    const lines=["ApexIQ beta access key request","","Apex username: "+(username||"not provided"),"Platform: "+(platform||"not provided"),"Main legend: ","Device I will test on: ","I agree not to share my key: yes/no","","Requested from: "+location.href,"Time: "+new Date().toISOString()];
-    return lines.join("\n");
-  }
-  async function requestAccess(){
-    const body=requestBody();try{await navigator.clipboard.writeText(body)}catch(_){ }
-    location.href="mailto:"+encodeURIComponent(TARGET_EMAIL)+"?subject="+encodeURIComponent("ApexIQ beta access key request")+"&body="+encodeURIComponent(body);
-  }
-  function bindGate(gate){
-    $("#aiqV49989BetaEnter",gate)?.addEventListener("click",login);
-    $("#aiqV49989BetaCode",gate)?.addEventListener("keydown",e=>{if(e.key==="Enter")login()});
-    $("#aiqV49989BetaUsername",gate)?.addEventListener("keydown",e=>{if(e.key==="Enter")login()});
-    $("#aiqV49989RequestBtn",gate)?.addEventListener("click",requestAccess);
-    $("#aiqV49989BetaInfo",gate)?.addEventListener("click",()=>showWelcome(true));
-  }
-  function welcomeHTML(){return '<div id="aiqV49989Welcome" class="aiq-v49989-modal" role="dialog" aria-modal="true"><section class="aiq-v49989-card"><div class="aiq-v49989-kicker"><span>Private beta</span><span>Original tester group</span></div><h2>Welcome to the ApexIQ Private Beta</h2><p>Thanks for helping test ApexIQ. This first tester group is helping shape the site before public release, and early testers will receive special ApexIQ badges later.</p><div class="aiq-v49989-sections"><article class="aiq-v49989-section"><b>Feature pool</b><ul><li>Player search and profile dashboard</li><li>Legend stat cards</li><li>Badge tracking</li><li>Ranked leaderboard</li><li>Meta pick rates</li><li>LFG / squad tools</li><li>Sticker/emoji dock</li><li>Themes and mobile layout</li></ul></article><article class="aiq-v49989-section"><b>Beta rules</b><ul><li>Do not share your access key.</li><li>Your key is locked to your Apex username.</li><li>Your key works on up to 2 devices.</li><li>Report bugs with device/browser and what you clicked.</li><li>Features may change during beta.</li><li>Abuse/spam can get a key disabled.</li></ul></article><article class="aiq-v49989-section"><b>Accurate stats tips</b><ul><li>Enter your Apex username exactly how it appears in-game.</li><li>Try platform variations if your profile does not load.</li><li>Make sure your profile is public/trackable where possible.</li><li>Search again after playing if stats look outdated.</li><li>Some third-party stats update slowly.</li><li>Send screenshots with username/platform if stats look wrong.</li></ul></article><article class="aiq-v49989-section"><b>Testing notes</b><ul><li>Refresh Meta only when needed.</li><li>Check mobile scrolling and tab switching.</li><li>Try LFG/stickers if you use them.</li><li>Tell Coye what feels confusing or useful.</li></ul></article></div><label class="aiq-v49989-check"><input id="aiqV49989WelcomeDontShow" type="checkbox"> Don’t show again on this device</label><div class="aiq-v49950-beta-actions"><button type="button" id="aiqV49989WelcomeStart" class="aiq-v49950-btn">Start Testing</button></div></section></div>'}
-  function showWelcome(force){
-    if(!force&&localStorage.getItem(WELCOME_KEY))return;
-    $("#aiqV49989Welcome")?.remove();document.body.insertAdjacentHTML("beforeend",welcomeHTML());
-    $("#aiqV49989WelcomeStart")?.addEventListener("click",function(){if($("#aiqV49989WelcomeDontShow")?.checked||!force)localStorage.setItem(WELCOME_KEY,"1");$("#aiqV49989Welcome")?.remove()});
-  }
-  async function verifyExisting(){
-    const s=session();
-    if(sessionFresh(s)){unlock(s)}else{lock()}
-    if(s&&s.sessionToken){
-      try{const dev=await devicePayload();const data=await post("/api/beta/session",{sessionToken:s.sessionToken,deviceId:dev.deviceId,deviceSignatureHash:dev.deviceSignatureHash});unlock(Object.assign({},s,data));}catch(e){if(!sessionFresh(s))lock()}
-    }
-  }
-  function adminShellHTML(){return '<div id="aiqV49989AdminShell" class="aiq-v49989-admin-shell"><section class="aiq-v49989-admin-panel"><div class="aiq-v49989-admin-head"><div><div class="aiq-v49989-kicker"><span>ApexIQ admin</span><span>Beta access manager</span></div><h2>Beta Admin Panel</h2><p class="aiq-v49989-mini">Only '+safe(ADMIN_EMAIL)+' with the Worker admin secret can manage beta users.</p></div><button type="button" id="aiqV49989AdminClose" class="aiq-v49950-btn ghost">Close</button></div><div id="aiqV49989AdminBody"></div></section></div>'}
-  function adminToken(){const s=readJSON(ADMIN_SESSION_KEY,null);const exp=Date.parse(s?.expiresAt||"");return s&&s.token&&(!Number.isFinite(exp)||exp>Date.now())?s.token:""}
-  function ensureAdminShell(){let shell=$("#aiqV49989AdminShell");if(!shell){document.body.insertAdjacentHTML("beforeend",adminShellHTML());shell=$("#aiqV49989AdminShell");$("#aiqV49989AdminClose")?.addEventListener("click",()=>{shell.hidden=true;if(location.search.includes("admin=1")){history.replaceState(null,"",location.pathname+location.hash)}})}shell.hidden=false;return shell}
-  function adminLoginHTML(){return '<div class="aiq-v49989-admin-grid"><article class="aiq-v49989-admin-card"><h3>Admin login</h3><div class="aiq-v49989-admin-form"><label>Admin email<input id="aiqV49989AdminEmail" type="email" value="'+safe(ADMIN_EMAIL)+'"></label><label>Admin secret<input id="aiqV49989AdminSecret" type="password" placeholder="APEXIQ_ADMIN_SECRET"></label><button type="button" id="aiqV49989AdminLogin" class="aiq-v49950-btn">Open admin tools</button><div id="aiqV49989AdminStatus" class="aiq-v49989-status"></div></div></article><article class="aiq-v49989-admin-card"><h3>Setup required</h3><p class="aiq-v49989-mini">This panel is Worker/KV-backed. Set the Cloudflare secret <b>APEXIQ_ADMIN_SECRET</b> and bind a KV namespace as <b>APEXIQ_BETA_KV</b>.</p></article></div>'}
-  async function adminLogin(){const email=$("#aiqV49989AdminEmail")?.value?.trim()||"";const secret=$("#aiqV49989AdminSecret")?.value||"";setStatus("aiqV49989AdminStatus","Verifying admin…",false);try{const data=await post("/api/beta/admin/login",{email,secret});writeJSON(ADMIN_SESSION_KEY,{token:data.adminToken,expiresAt:data.expiresAt,email,ts:Date.now()});setStatus("aiqV49989AdminStatus","Admin unlocked.",false);await renderAdminTools()}catch(e){setStatus("aiqV49989AdminStatus",e.message||"Admin login failed.",true)}}
-  function adminToolsHTML(){return '<div class="aiq-v49989-admin-grid"><article class="aiq-v49989-admin-card"><h3>Add Beta User</h3><div class="aiq-v49989-admin-form"><label>Apex username<input id="aiqV49989CreateUsername" placeholder="IMissAnyway"></label><label>Platform<select id="aiqV49989CreatePlatform"><option>PC</option><option>PlayStation</option><option>Xbox</option><option>Switch</option><option>Auto</option></select></label><label>Role<select id="aiqV49989CreateRole"><option>tester</option><option>admin</option><option>founder</option></select></label><label>Badge label<select id="aiqV49989CreateBadge"><option>Original Beta Tester</option><option>Founding Tester</option><option>Admin Tester</option></select></label><label>Max devices<input id="aiqV49989CreateMax" type="number" min="1" max="5" value="2"></label><label>Notes<textarea id="aiqV49989CreateNotes" placeholder="Optional notes"></textarea></label><button type="button" id="aiqV49989CreateBtn" class="aiq-v49950-btn">Generate Access Key</button><div id="aiqV49989CreateStatus" class="aiq-v49989-status"></div></div><hr style="border-color:var(--line);width:100%"><h3>Bulk Codes</h3><div class="aiq-v49989-admin-form"><label>Count<select id="aiqV49989BulkCount"><option>1</option><option>5</option><option>10</option><option>25</option></select></label><button type="button" id="aiqV49989BulkBtn" class="aiq-v49950-btn ghost">Generate disabled unassigned codes</button><div id="aiqV49989BulkStatus" class="aiq-v49989-status"></div></div></article><article class="aiq-v49989-admin-card"><div class="aiq-v49989-admin-head" style="margin:0"><h3>Existing Beta Users</h3><button type="button" id="aiqV49989RefreshUsers" class="aiq-v49950-btn ghost">Refresh</button></div><div id="aiqV49989UsersStatus" class="aiq-v49989-status"></div><div id="aiqV49989Users"></div></article></div>'}
-  async function renderAdminTools(){const body=$("#aiqV49989AdminBody");if(!body)return;body.innerHTML=adminToolsHTML();bindAdminTools();await loadUsers()}
-  function bindAdminTools(){
-    $("#aiqV49989CreateBtn")?.addEventListener("click",createUser);
-    $("#aiqV49989BulkBtn")?.addEventListener("click",bulkCodes);
-    $("#aiqV49989RefreshUsers")?.addEventListener("click",loadUsers);
-  }
-  async function createUser(){
-    const body={assignedUsername:$("#aiqV49989CreateUsername")?.value?.trim()||"",platform:$("#aiqV49989CreatePlatform")?.value||"Auto",role:$("#aiqV49989CreateRole")?.value||"tester",badge:$("#aiqV49989CreateBadge")?.value||"Original Beta Tester",maxDevices:Number($("#aiqV49989CreateMax")?.value||2),notes:$("#aiqV49989CreateNotes")?.value||""};
-    setStatus("aiqV49989CreateStatus","Generating…",false);try{const data=await post("/api/beta/admin/create",body,adminToken());setStatus("aiqV49989CreateStatus","Generated: "+data.code+" — copied if browser allowed.",false);try{await navigator.clipboard.writeText(data.code)}catch(_){ }await loadUsers()}catch(e){setStatus("aiqV49989CreateStatus",e.message,true)}
-  }
-  async function bulkCodes(){const count=Number($("#aiqV49989BulkCount")?.value||1);setStatus("aiqV49989BulkStatus","Generating bulk codes…",false);try{const out=[];for(let i=0;i<count;i++){const data=await post("/api/beta/admin/create",{assignedUsername:"",status:"disabled",role:"tester",badge:"Original Beta Tester",maxDevices:2,notes:"Bulk generated; assign before enabling."},adminToken());out.push(data.code)}setStatus("aiqV49989BulkStatus","Generated disabled codes: "+out.join(", "),false);try{await navigator.clipboard.writeText(out.join("\n"))}catch(_){ }await loadUsers()}catch(e){setStatus("aiqV49989BulkStatus",e.message,true)}}
-  async function loadUsers(){setStatus("aiqV49989UsersStatus","Loading users…",false);try{const data=await get("/api/beta/admin/users",adminToken());renderUsers(data.users||[]);setStatus("aiqV49989UsersStatus",(data.users||[]).length+" beta records loaded.",false)}catch(e){setStatus("aiqV49989UsersStatus",e.message,true)}}
-  function mask(code){code=String(code||"");return code?code.replace(/^(.{4}).*(.{4})$/,"$1••••$2"):""}
-  function renderUsers(users){const box=$("#aiqV49989Users");if(!box)return;if(!users.length){box.innerHTML='<p class="aiq-v49989-mini">No beta users yet.</p>';return}box.innerHTML='<div class="aiq-v49989-table-wrap"><table class="aiq-v49989-table"><thead><tr><th>User</th><th>Code</th><th>Role</th><th>Status</th><th>Devices</th><th>Last login</th><th>Actions</th></tr></thead><tbody>'+users.map(u=>'<tr data-code="'+safe(u.code)+'"><td><b>'+safe(u.assignedUsername||"Unassigned")+'</b><small>'+safe(u.platform||"Auto")+' · '+safe(u.notes||"")+'</small></td><td><span class="aiq-v49989-code" data-full="'+safe(u.code)+'">'+safe(mask(u.code))+'</span></td><td>'+safe(u.role||"tester")+'<small>'+safe(u.badge||"")+'</small></td><td>'+safe(u.status||"active")+'</td><td>'+safe((u.devices||[]).length)+' / '+safe(u.maxDevices||2)+'</td><td>'+safe(u.lastLoginAt||"—")+'</td><td><div class="aiq-v49989-actions"><button class="aiq-v49950-btn ghost" data-act="copy">Copy</button><button class="aiq-v49950-btn ghost" data-act="toggle">'+(u.status==="active"?"Disable":"Enable")+'</button><button class="aiq-v49950-btn ghost" data-act="reset">Reset devices</button><button class="aiq-v49950-btn ghost" data-act="edit">Edit</button></div></td></tr>').join("")+'</tbody></table></div>';box.onclick=userAction}
-  async function userAction(e){const btn=e.target.closest("button[data-act]");if(!btn)return;const tr=btn.closest("tr[data-code]");const code=tr?.dataset.code;if(!code)return;const act=btn.dataset.act;try{if(act==="copy"){await navigator.clipboard.writeText(code);setStatus("aiqV49989UsersStatus","Copied "+code,false);return}if(act==="toggle"){const status=btn.textContent.trim()==="Disable"?"disabled":"active";await post("/api/beta/admin/update",{code,status},adminToken())}if(act==="reset"){await post("/api/beta/admin/reset-devices",{code},adminToken())}if(act==="edit"){const username=prompt("Assigned Apex username",tr.children[0].querySelector("b")?.textContent||"");if(username==null)return;const maxDevices=prompt("Max devices",String((tr.children[4].textContent||"2").split("/").pop().trim()||2));await post("/api/beta/admin/update",{code,assignedUsername:username,maxDevices:Number(maxDevices||2)},adminToken())}await loadUsers()}catch(err){setStatus("aiqV49989UsersStatus",err.message,true)}}
-  function openAdmin(){const shell=ensureAdminShell();const body=$("#aiqV49989AdminBody");if(!body)return;if(adminToken()){renderAdminTools()}else{body.innerHTML=adminLoginHTML();$("#aiqV49989AdminLogin")?.addEventListener("click",adminLogin);$("#aiqV49989AdminSecret")?.addEventListener("keydown",e=>{if(e.key==="Enter")adminLogin()})}}
-  function boot(){
-    ensureGate();verifyExisting();
-    if(/[?&]admin=1\b/i.test(location.search))setTimeout(openAdmin,120);
-    window.apexiqBetaAccessV49989={render:renderGate,openAdmin,showWelcome,logout:function(){remove(SESSION_KEY);remove("apexiq:betaToken:v49950");remove("apexiq:betaRole:v49950");lock();}};
-  }
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
-})();
-</script>
-
 </body>
 </html>
