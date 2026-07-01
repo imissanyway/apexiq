@@ -4276,8 +4276,7 @@ function renderAll() {
   renderLegends();
   renderRanked("rankedPanel");
   renderRanked("rankedPanelFull");
-  renderMeta("metaPanel");
-  renderMeta("metaPanelFull");
+  // v4.9.9.83 Meta-only recovery: do not render hidden Meta panels during global renderAll.
   renderPacks();
   renderSquad();
   renderSettings();
@@ -4323,7 +4322,8 @@ async function loadMeta(fresh=false) {
 }
 async function loadAll(fresh=false) {
   setStatus("SYNCING", "syncing");
-  await Promise.allSettled([loadProfile(fresh), loadRanked(fresh), loadMeta(fresh), checkHealth(false)]);
+  // v4.9.9.83 Meta-only recovery: Meta loads lazily when the Meta tab opens, not during global loadAll.
+  await Promise.allSettled([loadProfile(fresh), loadRanked(fresh), checkHealth(false)]);
   renderAll();
   setStatus(state.profileError ? "CHECK API" : "LIVE READY", state.profileError ? "bad" : "good");
 }
@@ -5667,17 +5667,36 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
     const live=!!(state.meta&&(state.meta.legends||state.meta.meta||state.meta.pickrates||state.meta.pickRates||state.meta.rows));
     target.innerHTML=`<div class="v49921MetaNotice">${live?"Live pick-rate data loaded.":"Live meta endpoint pending; showing roster fallback so the panel never appears broken."}</div><div class="v49921MetaGrid">${rows.slice(0,28).map((m,i)=>`<article class="v49921MetaCard">${m.img?`<img loading="lazy" src="${safe(m.img)}" alt="${safe(m.legend)}">`:`<b>#${i+1}</b>`}<span><b>${safe(m.legend)}</b><small>${safe(m.trend||m.source||"")}</small></span><strong>${safe(m.pickRate||m.rate||"—")}${String(m.pickRate||m.rate||"").match(/^\d+(\.\d+)?$/)?"%":""}</strong></article>`).join("")}</div>`;
   };
+  const AIQ_META_FETCH_STATE = window.__aiqMetaFetchState || (window.__aiqMetaFetchState = {inFlight:false,promise:null,hasLoaded:false,lastFetchedAt:0});
+  function aiqMetaPanelActive(){try{const s=document.querySelector('[data-screen="meta"]');return !!(s&&!s.hidden)}catch(_){return false}}
   window.apexiqLoadMeta=async function(fresh=false){
-    try{
-      const url=typeof apiURL==="function"?apiURL("/api/meta",fresh?{refresh:"1"}:{}):((state.proxy||"").replace(/\/$/,"")+"/api/meta"+(fresh?"?refresh=1":""));
-      const res=await fetch(url,{cache:"no-store",headers:{Accept:"application/json"}});
-      const data=await res.json();
-      state.meta=data; state.metaError="";
-    }catch(e){
-      state.meta={ok:false,error:e.message,legends:fallbackMetaRows(),source:"client fallback"};
-      state.metaError=e.message;
+    const active=aiqMetaPanelActive();
+    if(!active&&!fresh){return Promise.resolve(state.meta||null)}
+    if(AIQ_META_FETCH_STATE.inFlight&&AIQ_META_FETCH_STATE.promise)return AIQ_META_FETCH_STATE.promise;
+    if(AIQ_META_FETCH_STATE.hasLoaded&&!fresh){
+      try{if(active)renderMeta("metaPanelFull");renderMeta("metaPanel")}catch(_){ }
+      return Promise.resolve(state.meta||null);
     }
-    renderMeta("metaPanel"); renderMeta("metaPanelFull");
+    AIQ_META_FETCH_STATE.inFlight=true;
+    AIQ_META_FETCH_STATE.promise=(async()=>{
+      try{
+        const url=typeof apiURL==="function"?apiURL("/api/meta",fresh?{refresh:"1"}:{}):((state.proxy||"").replace(/\/$/,"")+"/api/meta"+(fresh?"?refresh=1":""));
+        const res=await fetch(url,{cache:"no-store",headers:{Accept:"application/json"}});
+        if(!res.ok)throw new Error("Meta request failed: "+res.status);
+        const data=await res.json();
+        state.meta=data; state.metaError="";
+        AIQ_META_FETCH_STATE.hasLoaded=true;
+        AIQ_META_FETCH_STATE.lastFetchedAt=Date.now();
+      }catch(e){
+        state.meta={ok:false,error:e.message||String(e),source:"live meta error"};
+        state.metaError=e.message||String(e);
+      }finally{
+        AIQ_META_FETCH_STATE.inFlight=false;
+      }
+      try{if(aiqMetaPanelActive())renderMeta("metaPanelFull");renderMeta("metaPanel")}catch(_){ }
+      return state.meta||null;
+    })();
+    return AIQ_META_FETCH_STATE.promise;
   };
 
   /* Theme studio: 224 unique themes, compact layout, not a giant duplicate pink list */
@@ -5787,7 +5806,7 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
     if(typeof renderProfile==="function")renderProfile();
     if(typeof renderLegends==="function")renderLegends();
     if(typeof renderSettings==="function")renderSettings();
-    setTimeout(()=>apexiqLoadMeta(false),500);
+    // v4.9.9.83 Meta-only recovery: no boot-time Meta fetch; Meta loads only when opened.
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",bootPatch,{once:true});else bootPatch();
 })();
@@ -6591,33 +6610,36 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
     });
   }
 
-  // Wrap global calls so original renderAll/loadAll cannot leave Meta blank.
+  // v4.9.9.83 Meta-only recovery: expose v30 renderer but stop hidden Meta render loops.
+  window.renderMeta=function(id){renderMetaV30(id)};
+  window.apexiqRenderMetaV30=renderMetaV30;
+  window.apexiqAddPercentRowsV30=addPercentRows;
+
   const oldRenderAll=window.renderAll;
   if(typeof oldRenderAll==="function"){
-    window.renderAll=function(){oldRenderAll(); renderMetaV30("metaPanel"); renderMetaV30("metaPanelFull"); setTimeout(addPercentRows,30);}
+    window.renderAll=function(){const ret=oldRenderAll.apply(this,arguments);setTimeout(addPercentRows,30);return ret;}
   }
   const oldLoadAll=window.loadAll;
   if(typeof oldLoadAll==="function"){
-    window.loadAll=async function(fresh=false){await oldLoadAll(fresh); renderMetaV30("metaPanel"); renderMetaV30("metaPanelFull"); setTimeout(addPercentRows,30);}
+    window.loadAll=async function(fresh=false){const ret=await oldLoadAll.apply(this,arguments);setTimeout(addPercentRows,30);return ret;}
   }
   const oldSwitch=window.switchPanel;
   if(typeof oldSwitch==="function"){
-    window.switchPanel=function(name){oldSwitch(name); setTimeout(()=>{renderMetaV30("metaPanel"); renderMetaV30("metaPanelFull"); addPercentRows();},40);}
+    window.switchPanel=function(name){
+      const ret=oldSwitch.apply(this,arguments);
+      if(name==="meta")setTimeout(()=>{try{if(window.apexiqLoadMeta)window.apexiqLoadMeta(false);else renderMetaV30("metaPanelFull")}catch(_){renderMetaV30("metaPanelFull")}addPercentRows();},80);
+      else setTimeout(addPercentRows,40);
+      return ret;
+    }
   }
-  window.renderMeta=function(id){renderMetaV30(id)};
 
   function watch(id){
-    const t=byId(id); if(!t)return;
-    new MutationObserver(()=>{if(!metaLock&&t.dataset.v49930!=="1")setTimeout(()=>renderMetaV30(id),15)}).observe(t,{childList:true,subtree:false});
+    // v4.9.9.83 Meta-only recovery: disabled old Meta MutationObserver render storm.
+    return;
   }
   function boot(){
-    document.documentElement.dataset.v49930="clean-meta-percent-restore";
-    if(window.state && (!state.meta || typeof state.meta!=="object")) state.meta={ok:true,legends:META_SNAPSHOT,source:"client fallback"};
-    watch("metaPanel"); watch("metaPanelFull");
-    renderMetaV30("metaPanel"); renderMetaV30("metaPanelFull");
+    document.documentElement.dataset.v49930="clean-meta-percent-restore-no-meta-loop";
     addPercentRows();
-    setTimeout(()=>{renderMetaV30("metaPanel"); renderMetaV30("metaPanelFull"); addPercentRows();},300);
-    setInterval(()=>{renderMetaV30("metaPanel"); renderMetaV30("metaPanelFull"); addPercentRows();},1500);
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
 })();
@@ -9336,11 +9358,11 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
 
   var oldSwitch=window.switchPanel;
   if(typeof oldSwitch==="function"){
-    window.switchPanel=function(panel){var ret=oldSwitch.apply(this,arguments);if(panel==="meta")setTimeout(function(){renderMetaV61("metaPanelFull",true)},50);if(panel==="dashboard")setTimeout(function(){renderMetaV61("metaPanel",false)},50);if(panel==="legends"||panel==="dashboard")tidyLegendCards();return ret;};
+    window.switchPanel=function(panel){var ret=oldSwitch.apply(this,arguments);if(panel==="legends"||panel==="dashboard")tidyLegendCards();return ret;};
   }
   var oldRenderAll=window.renderAll;
   if(typeof oldRenderAll==="function"){
-    window.renderAll=function(){var ret=oldRenderAll.apply(this,arguments);setTimeout(function(){renderMetaPanels();tidyLegendCards();sanitizeSearchNotice();},60);return ret;};
+    window.renderAll=function(){var ret=oldRenderAll.apply(this,arguments);setTimeout(function(){tidyLegendCards();sanitizeSearchNotice();},60);return ret;};
   }
   var oldRenderLegends=window.renderLegends;
   if(typeof oldRenderLegends==="function"){
@@ -9349,7 +9371,7 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
   // Keep the original status/search flow intact; this observer only cleans the public success wording.
   function observeNotice(){
     var root=document.body;if(!root||typeof MutationObserver==="undefined")return;
-    var mo=new MutationObserver(function(){sanitizeSearchNotice();if(activePanel()==="meta")renderMetaV61("metaPanelFull",true);});
+    var mo=new MutationObserver(function(){sanitizeSearchNotice();});
     mo.observe(root,{childList:true,subtree:true,characterData:true});
   }
   function updateBuildHub(){
@@ -9358,8 +9380,8 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
   }
   function boot(){
     document.documentElement.dataset.v49961="mobile-ui-meta-worker-card-polish";
-    ensureMobileLogo();updateBuildHub();renderMetaPanels();tidyLegendCards();sanitizeSearchNotice();observeNotice();
-    [250,900,1800,3200].forEach(function(ms){setTimeout(function(){ensureMobileLogo();updateBuildHub();renderMetaPanels();tidyLegendCards();sanitizeSearchNotice();},ms)});
+    ensureMobileLogo();updateBuildHub();tidyLegendCards();sanitizeSearchNotice();observeNotice();
+    [250,900,1800,3200].forEach(function(ms){setTimeout(function(){ensureMobileLogo();updateBuildHub();tidyLegendCards();sanitizeSearchNotice();},ms)});
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
 })();
@@ -9723,6 +9745,24 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
   window.addEventListener("resize",schedule,{passive:true});
   window.addEventListener("orientationchange",schedule,{passive:true});
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
+})();
+</script>
+
+
+<!-- === ApexIQ v4.9.9.83 Meta-only recovery refresh guard === -->
+<script id="apexiq-v49983-meta-refresh-guard-js">
+(function(){
+  "use strict";
+  if(window.__apexiqV49983MetaRefreshGuard)return;
+  window.__apexiqV49983MetaRefreshGuard=true;
+  function activeMeta(){try{var s=document.querySelector('[data-screen="meta"]');return !!(s&&!s.hidden)}catch(_){return false}}
+  function requestMeta(fresh){try{if(!fresh&&!activeMeta())return;if(window.__aiqMetaFetchState&&fresh)window.__aiqMetaFetchState.hasLoaded=false;if(typeof window.apexiqLoadMeta==="function")window.apexiqLoadMeta(!!fresh)}catch(e){console.warn("v4.9.9.83-meta-refresh-guard",e)}}
+  document.addEventListener("click",function(e){
+    var go=e.target&&e.target.closest&&e.target.closest('[data-go="meta"]');
+    if(go)setTimeout(function(){requestMeta(false)},90);
+    var btn=e.target&&e.target.closest&&e.target.closest('button,[role="button"],[data-aiq-meta-refresh]');
+    if(btn&&(/refresh meta/i.test(btn.textContent||"")||btn.hasAttribute("data-aiq-meta-refresh"))){e.preventDefault();e.stopPropagation();requestMeta(true)}
+  },true);
 })();
 </script>
 
