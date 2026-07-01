@@ -1,0 +1,19 @@
+ApexIQ v4.9.9.89 Beta Welcome/Admin Setup
+
+Upload order:
+1. Create/bind a Cloudflare KV namespace to the Worker as APEXIQ_BETA_KV.
+2. Add a Worker secret named APEXIQ_ADMIN_SECRET.
+3. Upload apexiq-api-worker-v4.9.9.89-beta-admin-kv.js to Cloudflare Worker.
+4. Upload index.html to GitHub Pages.
+5. Open https://imissanyway.github.io/apexiq/?v=49989&admin=1
+6. Login with:
+   email: coyemicthell@gmail.com
+   secret: the value you set for APEXIQ_ADMIN_SECRET
+7. Generate beta records for your testers. Each active code must be assigned to the tester's exact Apex username.
+
+Notes:
+- Existing frontend-only beta codes were removed from index.html.
+- New tester login requires Apex username + access key.
+- Device locking is Worker/KV-backed with a privacy-safe local device ID and lightweight signature. It is strong enough for web beta enforcement, but not hardware-perfect.
+- Admin secret is never stored in index.html.
+- Meta was not changed.

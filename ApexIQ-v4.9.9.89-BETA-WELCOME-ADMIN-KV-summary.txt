@@ -1,0 +1,49 @@
+ApexIQ v4.9.9.89 — Beta Welcome + Admin KV
+
+Changed function/script blocks:
+1. v4.9.9.50 beta/support/admin foundation
+   - Removed exposed frontend beta code list from index.html.
+   - Patched role() to read the Worker-verified beta session.
+   - Patched hasAccess() to trust only the Worker-verified session.
+   - Disabled old frontend-only grant().
+   - Patched revoke() to clear v4.9.9.89 beta/admin sessions too.
+
+2. v4.9.9.87 beta access request script
+   - Disabled its retry interval because v4.9.9.89 owns the new request-access UI.
+   - Request flow itself is preserved in the new v4.9.9.89 login gate.
+
+3. Added v4.9.9.89 Worker-backed Beta Access + Welcome + Admin Panel block
+   - New Apex username + access key login.
+   - Worker/KV verification.
+   - Privacy-safe beta device ID.
+   - Lightweight device signature hash.
+   - Welcome modal after first successful login.
+   - Improved request-access mailto body to coyemicthell@gmail.com.
+   - Hidden admin route via ?admin=1.
+   - Admin login for coyemicthell@gmail.com + Worker secret.
+   - Admin panel to create users, bulk-generate disabled codes, list users, copy codes, disable/enable, reset devices, and edit username/max devices.
+
+4. Worker v4.9.9.89 beta/admin endpoints
+   - POST /api/beta/verify
+   - POST /api/beta/session
+   - POST /api/beta/admin/login
+   - GET /api/beta/admin/users
+   - POST /api/beta/admin/create
+   - POST /api/beta/admin/update
+   - POST /api/beta/admin/reset-devices
+   - POST /api/beta/admin/disable
+   - POST /api/beta/admin/enable
+   - POST /api/beta/admin/delete
+
+Confirmations:
+- Meta was not changed.
+- Ranked was not changed.
+- Dashboard/Search/Legends/Badges/LFG/Stickers/Theme manager were not changed.
+- CSS/layout changes are scoped to beta gate, welcome modal, and admin panel only.
+- Tester codes are no longer exposed in index.html.
+- Admin secret is not exposed in index.html.
+- Device locking is Worker/KV-backed, not frontend-only. It uses a privacy-safe local device ID plus a lightweight signature. This is practical web beta enforcement, not perfect hardware fingerprinting.
+
+Validation:
+- Worker syntax check passed.
+- Frontend script syntax check passed for JS scripts; the only skipped/ignored check is the existing JSON data script block.
