@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ApexIQ — v4.9.9.80 Meta Live Fetch Restore</title>
+<title>ApexIQ — v4.9.9.58 Mobile Nav Restore + Portrait Fix</title>
 <link id="apexiq-v49956-favicon" rel="icon" type="image/png" href="assets/apexiq-logo.png">
 <!-- ApexIQ Predator Broadcast v4.9.9.10 Source Re-Extract + Edge Fix: artifact-cleanup-only badge asset refresh on top of the stable full badge system. -->
 <style>
@@ -5667,36 +5667,17 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
     const live=!!(state.meta&&(state.meta.legends||state.meta.meta||state.meta.pickrates||state.meta.pickRates||state.meta.rows));
     target.innerHTML=`<div class="v49921MetaNotice">${live?"Live pick-rate data loaded.":"Live meta endpoint pending; showing roster fallback so the panel never appears broken."}</div><div class="v49921MetaGrid">${rows.slice(0,28).map((m,i)=>`<article class="v49921MetaCard">${m.img?`<img loading="lazy" src="${safe(m.img)}" alt="${safe(m.legend)}">`:`<b>#${i+1}</b>`}<span><b>${safe(m.legend)}</b><small>${safe(m.trend||m.source||"")}</small></span><strong>${safe(m.pickRate||m.rate||"—")}${String(m.pickRate||m.rate||"").match(/^\d+(\.\d+)?$/)?"%":""}</strong></article>`).join("")}</div>`;
   };
-  const AIQ_META_FETCH_STATE = window.__aiqMetaFetchState || (window.__aiqMetaFetchState = {inFlight:false,promise:null,hasLoaded:false,lastFetchedAt:0});
-  function aiqMetaPanelActive(){try{const s=document.querySelector('[data-screen="meta"]');return !!(s&&!s.hidden)}catch(_){return false}}
   window.apexiqLoadMeta=async function(fresh=false){
-    const active=aiqMetaPanelActive();
-    if(!active&&!fresh){return Promise.resolve(state.meta||null)}
-    if(AIQ_META_FETCH_STATE.inFlight&&AIQ_META_FETCH_STATE.promise)return AIQ_META_FETCH_STATE.promise;
-    if(AIQ_META_FETCH_STATE.hasLoaded&&!fresh){
-      try{if(active)renderMeta("metaPanelFull");renderMeta("metaPanel")}catch(_){ }
-      return Promise.resolve(state.meta||null);
+    try{
+      const url=typeof apiURL==="function"?apiURL("/api/meta",fresh?{refresh:"1"}:{}):((state.proxy||"").replace(/\/$/,"")+"/api/meta"+(fresh?"?refresh=1":""));
+      const res=await fetch(url,{cache:"no-store",headers:{Accept:"application/json"}});
+      const data=await res.json();
+      state.meta=data; state.metaError="";
+    }catch(e){
+      state.meta={ok:false,error:e.message,legends:fallbackMetaRows(),source:"client fallback"};
+      state.metaError=e.message;
     }
-    AIQ_META_FETCH_STATE.inFlight=true;
-    AIQ_META_FETCH_STATE.promise=(async()=>{
-      try{
-        const url=typeof apiURL==="function"?apiURL("/api/meta",fresh?{refresh:"1"}:{}):((state.proxy||"").replace(/\/$/,"")+"/api/meta"+(fresh?"?refresh=1":""));
-        const res=await fetch(url,{cache:"no-store",headers:{Accept:"application/json"}});
-        if(!res.ok)throw new Error("Meta request failed: "+res.status);
-        const data=await res.json();
-        state.meta=data; state.metaError="";
-        AIQ_META_FETCH_STATE.hasLoaded=true;
-        AIQ_META_FETCH_STATE.lastFetchedAt=Date.now();
-      }catch(e){
-        state.meta={ok:false,error:e.message,legends:fallbackMetaRows(),source:"client fallback"};
-        state.metaError=e.message;
-      }finally{
-        AIQ_META_FETCH_STATE.inFlight=false;
-      }
-      try{if(aiqMetaPanelActive())renderMeta("metaPanelFull");renderMeta("metaPanel")}catch(_){ }
-      return state.meta||null;
-    })();
-    return AIQ_META_FETCH_STATE.promise;
+    renderMeta("metaPanel"); renderMeta("metaPanelFull");
   };
 
   /* Theme studio: 224 unique themes, compact layout, not a giant duplicate pink list */
@@ -5806,7 +5787,7 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
     if(typeof renderProfile==="function")renderProfile();
     if(typeof renderLegends==="function")renderLegends();
     if(typeof renderSettings==="function")renderSettings();
-    // v4.9.9.80: do not fetch/render Meta on boot; Meta loads lazily when the tab opens.
+    setTimeout(()=>apexiqLoadMeta(false),500);
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",bootPatch,{once:true});else bootPatch();
 })();
@@ -6610,26 +6591,33 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
     });
   }
 
-  // v4.9.9.80: expose the original v30 Meta renderer, but do not auto-render Meta in loops while hidden.
-  window.renderMeta=function(id){renderMetaV30(id)};
-  window.apexiqRenderMetaV30=renderMetaV30;
-  window.apexiqAddPercentRowsV30=addPercentRows;
-
+  // Wrap global calls so original renderAll/loadAll cannot leave Meta blank.
   const oldRenderAll=window.renderAll;
   if(typeof oldRenderAll==="function"){
-    window.renderAll=function(){const ret=oldRenderAll.apply(this,arguments);setTimeout(addPercentRows,30);return ret;}
+    window.renderAll=function(){oldRenderAll(); renderMetaV30("metaPanel"); renderMetaV30("metaPanelFull"); setTimeout(addPercentRows,30);}
   }
   const oldLoadAll=window.loadAll;
   if(typeof oldLoadAll==="function"){
-    window.loadAll=async function(fresh=false){const ret=await oldLoadAll.apply(this,arguments);setTimeout(addPercentRows,30);return ret;}
+    window.loadAll=async function(fresh=false){await oldLoadAll(fresh); renderMetaV30("metaPanel"); renderMetaV30("metaPanelFull"); setTimeout(addPercentRows,30);}
   }
   const oldSwitch=window.switchPanel;
   if(typeof oldSwitch==="function"){
-    window.switchPanel=function(name){const ret=oldSwitch.apply(this,arguments);if(name==="meta")setTimeout(()=>{try{window.apexiqLoadMeta&&window.apexiqLoadMeta(false)}catch(_){renderMetaV30("metaPanelFull")}},90);setTimeout(addPercentRows,40);return ret;}
+    window.switchPanel=function(name){oldSwitch(name); setTimeout(()=>{renderMetaV30("metaPanel"); renderMetaV30("metaPanelFull"); addPercentRows();},40);}
+  }
+  window.renderMeta=function(id){renderMetaV30(id)};
+
+  function watch(id){
+    const t=byId(id); if(!t)return;
+    new MutationObserver(()=>{if(!metaLock&&t.dataset.v49930!=="1")setTimeout(()=>renderMetaV30(id),15)}).observe(t,{childList:true,subtree:false});
   }
   function boot(){
-    document.documentElement.dataset.v49930="clean-meta-percent-restore-no-loop";
+    document.documentElement.dataset.v49930="clean-meta-percent-restore";
+    if(window.state && (!state.meta || typeof state.meta!=="object")) state.meta={ok:true,legends:META_SNAPSHOT,source:"client fallback"};
+    watch("metaPanel"); watch("metaPanelFull");
+    renderMetaV30("metaPanel"); renderMetaV30("metaPanelFull");
     addPercentRows();
+    setTimeout(()=>{renderMetaV30("metaPanel"); renderMetaV30("metaPanelFull"); addPercentRows();},300);
+    setInterval(()=>{renderMetaV30("metaPanel"); renderMetaV30("metaPanelFull"); addPercentRows();},1500);
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
 })();
@@ -9348,11 +9336,11 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
 
   var oldSwitch=window.switchPanel;
   if(typeof oldSwitch==="function"){
-    window.switchPanel=function(panel){var ret=oldSwitch.apply(this,arguments);if(panel==="legends"||panel==="dashboard")tidyLegendCards();return ret;};
+    window.switchPanel=function(panel){var ret=oldSwitch.apply(this,arguments);if(panel==="meta")setTimeout(function(){renderMetaV61("metaPanelFull",true)},50);if(panel==="dashboard")setTimeout(function(){renderMetaV61("metaPanel",false)},50);if(panel==="legends"||panel==="dashboard")tidyLegendCards();return ret;};
   }
   var oldRenderAll=window.renderAll;
   if(typeof oldRenderAll==="function"){
-    window.renderAll=function(){var ret=oldRenderAll.apply(this,arguments);setTimeout(function(){tidyLegendCards();sanitizeSearchNotice();},60);return ret;};
+    window.renderAll=function(){var ret=oldRenderAll.apply(this,arguments);setTimeout(function(){renderMetaPanels();tidyLegendCards();sanitizeSearchNotice();},60);return ret;};
   }
   var oldRenderLegends=window.renderLegends;
   if(typeof oldRenderLegends==="function"){
@@ -9361,7 +9349,7 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
   // Keep the original status/search flow intact; this observer only cleans the public success wording.
   function observeNotice(){
     var root=document.body;if(!root||typeof MutationObserver==="undefined")return;
-    var mo=new MutationObserver(function(){sanitizeSearchNotice();});
+    var mo=new MutationObserver(function(){sanitizeSearchNotice();if(activePanel()==="meta")renderMetaV61("metaPanelFull",true);});
     mo.observe(root,{childList:true,subtree:true,characterData:true});
   }
   function updateBuildHub(){
@@ -9370,8 +9358,8 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
   }
   function boot(){
     document.documentElement.dataset.v49961="mobile-ui-meta-worker-card-polish";
-    ensureMobileLogo();updateBuildHub();tidyLegendCards();sanitizeSearchNotice();observeNotice();
-    [250,900,1800,3200].forEach(function(ms){setTimeout(function(){ensureMobileLogo();updateBuildHub();tidyLegendCards();sanitizeSearchNotice();},ms)});
+    ensureMobileLogo();updateBuildHub();renderMetaPanels();tidyLegendCards();sanitizeSearchNotice();observeNotice();
+    [250,900,1800,3200].forEach(function(ms){setTimeout(function(){ensureMobileLogo();updateBuildHub();renderMetaPanels();tidyLegendCards();sanitizeSearchNotice();},ms)});
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
 })();
@@ -9735,56 +9723,6 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
   window.addEventListener("resize",schedule,{passive:true});
   window.addEventListener("orientationchange",schedule,{passive:true});
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
-})();
-</script>
-
-
-
-<!-- === ApexIQ v4.9.9.80 Meta live fetch restore from v71 === -->
-<script id="apexiq-v49980-meta-live-fetch-restore-js">
-(function(){
-  "use strict";
-  var BUILD="v4.9.9.80-meta-live-fetch-restore-from-v71";
-  function all(sel,root){return Array.from((root||document).querySelectorAll(sel))}
-  function byId(id){return document.getElementById(id)}
-  function activePanel(){var shown=all('[data-screen]').find(function(s){return !s.hidden});return shown?(shown.getAttribute('data-screen')||'dashboard'):'dashboard'}
-  var metaOpenNonce=0;
-  function renderMetaPreview(){try{if(typeof window.renderMeta==='function')window.renderMeta('metaPanel')}catch(e){console.warn(BUILD,e)}}
-  function requestMeta(fresh){
-    try{
-      if(activePanel()!=="meta"&&!fresh)return;
-      if(typeof window.apexiqLoadMeta==="function")window.apexiqLoadMeta(!!fresh);
-      else if(typeof window.renderMeta==="function")window.renderMeta("metaPanelFull");
-    }catch(e){console.warn(BUILD,e)}
-  }
-  var oldSwitch=window.switchPanel;
-  if(typeof oldSwitch==="function"&&!oldSwitch.__aiqV49980Wrapped){
-    var wrapped=function(panel){
-      var ret=oldSwitch.apply(this,arguments);
-      if(panel==="meta"){
-        var nonce=++metaOpenNonce;
-        setTimeout(function(){if(nonce===metaOpenNonce)requestMeta(false)},120);
-      }
-      if(panel==="dashboard")setTimeout(renderMetaPreview,120);
-      return ret;
-    };
-    wrapped.__aiqV49980Wrapped=true;
-    window.switchPanel=wrapped;
-  }
-  document.addEventListener('click',function(e){
-    var refresh=e.target&&e.target.closest&&e.target.closest('[data-aiq-meta-refresh],button');
-    if(refresh&&/refresh meta/i.test(refresh.textContent||'')){
-      e.preventDefault();e.stopPropagation();
-      if(window.__aiqMetaFetchState)window.__aiqMetaFetchState.hasLoaded=false;
-      requestMeta(true);
-    }
-  },true);
-  function patchBuildHub(){
-    var entry='<li data-aiq-v49980><small>v4.9.9.80</small><b>Meta live fetch restore</b><span>Built from v71. Restored the real /api/meta fetch path, stopped hidden Meta boot renders, disabled old Meta interval/observer loops, kept the original Meta card renderer, and preserved beta codes, tabs, search, badges, LFG, support, ranked, themes, and Worker logic.</span></li>';
-    all('#aiqV49948BuildHub,#aiqV49948BuildHubSettings').forEach(function(hub){var badge=hub.querySelector('.aiq-v49948-build-badge');if(badge)badge.textContent='v4.9.9.80';var list=hub.querySelector('.aiq-v49948-build-list');if(list&&!list.querySelector('[data-aiq-v49980]'))list.insertAdjacentHTML('afterbegin',entry);});
-  }
-  function boot(){document.documentElement.dataset.v49980='meta-live-fetch-restore-from-v71';patchBuildHub();renderMetaPreview();}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
 </script>
 
