@@ -11003,3 +11003,194 @@ body:not([data-aiq-profile-ready="1"]) .v49919ProfileBadgeCase,body:not([data-ai
 </script>
 <!-- === /ApexIQ v4.9.9.108 UI Rollback + Badge-Only Isolation === -->
 
+
+
+<!-- === ApexIQ v4.9.9.113 Profile Load Gate + Legend Snapshot Deploy Fix + Debug Export Fix === -->
+<style id="apexiq-v50113-profile-gate-debug-css">
+/* v113: release-candidate gate fix. No dashboard/legend redesign, no Meta/ranked parser/beta/admin/Worker changes. */
+.aiq-v50113-hidden-before-search{display:none!important;}
+body[data-apexiq-profile-loaded="true"] #legendsPreview,
+body[data-apexiq-profile-loaded="true"] #legendsPanel{visibility:visible!important;}
+#profilePanel .badge-case.aiq-v50113-polished-case .aiq-v50109-mini-grid,
+#profilePanel .aiq-v50113-polished-case .aiq-v50109-mini-grid{display:flex!important;flex-wrap:wrap!important;gap:12px!important;align-items:center!important;justify-content:center!important;margin-top:14px!important;}
+#profilePanel .badge-case.aiq-v50113-polished-case .aiq-v50109-mini,
+#profilePanel .aiq-v50113-polished-case .aiq-v50109-mini{width:68px!important;height:68px!important;min-width:68px!important;min-height:68px!important;border-radius:18px!important;display:grid!important;place-items:center!important;padding:0!important;position:relative!important;}
+#profilePanel .badge-case.aiq-v50113-polished-case .aiq-v50109-mini img,
+#profilePanel .aiq-v50113-polished-case .aiq-v50109-mini img{width:52px!important;height:52px!important;object-fit:contain!important;display:block!important;margin:auto!important;}
+#profilePanel .badge-case.aiq-v50113-polished-case .aiq-v50109-mini span,
+#profilePanel .aiq-v50113-polished-case .aiq-v50109-mini span{position:absolute!important;right:4px!important;bottom:4px!important;min-width:18px!important;text-align:center!important;font-size:.66rem!important;line-height:1!important;background:#0f172a!important;color:#f8fafc!important;border:1px solid rgba(255,255,255,.18)!important;border-radius:7px!important;padding:2px 4px!important;}
+#aiqV50113DebugDock{position:fixed;right:18px;bottom:86px;z-index:999999;display:grid;gap:8px;max-width:min(420px,calc(100vw - 36px));padding:12px;border:1px solid rgba(96,165,250,.48);border-radius:18px;background:rgba(2,6,23,.95);box-shadow:0 20px 60px rgba(0,0,0,.42);color:#e5f0ff;font:13px/1.35 system-ui,-apple-system,Segoe UI,sans-serif;}
+#aiqV50113DebugDock b{font-weight:1000;letter-spacing:.01em;}
+#aiqV50113DebugDock small{display:block;color:#9fb5d4;}
+#aiqV50113DebugDock .aiq-v50113-debug-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+#aiqV50113DebugDock button{min-height:38px;border-radius:12px;border:1px solid rgba(96,165,250,.42);background:rgba(15,23,42,.9);color:#e5f0ff;font-weight:900;padding:0 12px;cursor:pointer;}
+#aiqV50113DebugDock button:hover{background:rgba(30,41,59,.98);}
+#aiqV50113DebugDock textarea{width:100%;min-height:130px;max-height:42vh;resize:vertical;border-radius:12px;border:1px solid rgba(96,165,250,.28);background:#020617;color:#dbeafe;padding:9px;font:10.5px/1.35 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;}
+.aiq-v50113-conflict-note{border:1px solid rgba(245,158,11,.45);background:rgba(245,158,11,.12);color:#fde68a;border-radius:14px;padding:10px 12px;margin:10px 0;font-size:.86rem;line-height:1.35;}
+@media(max-width:720px){#aiqV50113DebugDock{right:10px;left:10px;bottom:72px;max-width:none}#profilePanel .badge-case.aiq-v50113-polished-case .aiq-v50109-mini{width:58px!important;height:58px!important;min-width:58px!important;min-height:58px!important}#profilePanel .badge-case.aiq-v50113-polished-case .aiq-v50109-mini img{width:44px!important;height:44px!important}}
+</style>
+<script id="apexiq-v50113-profile-gate-debug-js">
+(function(){
+  "use strict";
+  var BUILD="v4.9.9.113-profile-load-gate-debug-export";
+  var V="v50113";
+  function qs(s,r){return (r||document).querySelector(s)}
+  function qsa(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+  function safe(v){try{if(typeof esc==="function")return esc(v)}catch(_){}return String(v==null?"":v).replace(/[&<>\"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
+  function fmt(v){try{if(typeof window.fmt==="function")return window.fmt(v)}catch(_){}var n=Number(String(v==null?"":v).replace(/[^0-9.-]/g,""));return Number.isFinite(n)?n.toLocaleString():String(v==null?"—":v)}
+  function stateSafe(){try{return (typeof state==="object"&&state)||window.state||{}}catch(_){return window.state||{}}}
+  function profile(){var st=stateSafe();return st&&st.profile?st.profile:(window.__apexiqLastSuccessfulProfile||window.__apexiqLastProfile||null)}
+  function rowCountFromProfile(p){
+    if(!p||typeof p!=="object")return 0;
+    var n=0;
+    try{if(typeof bestRows==="function"){var br=bestRows(p);if(Array.isArray(br))n=Math.max(n,br.length)}}catch(_){}
+    try{if(typeof rowMap==="function"){var rm=rowMap(p);if(rm&&typeof rm.size==="number")n=Math.max(n,rm.size)}}catch(_){}
+    [p.legendRows,p.legends,p.legendStats,p.allLegendStats,p.trackerRows,p.rendered&&p.rendered.legendCards,p.profilePage&&p.profilePage.legendStats].forEach(function(x){if(Array.isArray(x))n=Math.max(n,x.length)});
+    return n;
+  }
+  function legendDataUseful(){
+    try{if(typeof buildLegendData!=="function")return 0;var data=buildLegendData();if(!Array.isArray(data))return 0;return data.filter(function(d){return d&&(d.row||(Array.isArray(d.stats)&&d.stats.length)||d.isSelected)}).length}catch(_){return 0}
+  }
+  function hasSearchProfile(){
+    var p=profile();
+    if(!p||typeof p!=="object")return false;
+    var hasSummary=!!(p.name||p.uid||p.platform||p.rank||p.rp||p.trueLevel||p.level||p.kills||p.damage||p.fields||p.profilePage||p.rendered);
+    var rows=rowCountFromProfile(p);
+    var useful=legendDataUseful();
+    return !!(hasSummary||rows>0||useful>0);
+  }
+  window.apexiqHasSearchProfileV113=hasSearchProfile;
+  window.__apexiqV50113=window.__apexiqV50113||{build:BUILD,base:"v4.9.9.112 with v113 gate fix appended",profileLoaded:false,renders:0,blockedPreSearch:0,blockedAfterSuccess:0,rejectedLegendWrites:[],debugCopies:0,debugDownloads:0,patchedAt:Date.now(),lastReason:"boot"};
+  var audit=window.__apexiqV50113;
+  function markProfileLoaded(reason){
+    var ok=hasSearchProfile();
+    audit.profileLoaded=ok;
+    audit.apexiqHasSearchProfileV113=ok;
+    audit.lastProfileCheck={time:Date.now(),reason:reason||"check",profileObject:!!profile(),rowCount:rowCountFromProfile(profile()),legendDataUseful:legendDataUseful()};
+    if(ok){window.apexiqProfileLoaded=true;document.body.dataset.apexiqProfileLoaded="true";}else{if(!window.apexiqProfileLoaded)document.body.dataset.apexiqProfileLoaded="false";}
+    return ok;
+  }
+  function dashLegendBlock(){var p=qs("#legendsPreview");return p&&(p.closest(".block")||p.closest("section")||p.parentElement)}
+  function hideLegendSnapshot(reason){
+    if(markProfileLoaded("hide-check:"+reason))return false;
+    var block=dashLegendBlock();
+    if(block){block.hidden=true;block.classList.add("aiq-v50113-hidden-before-search","aiq-v50111-hide","aiq-v50112-hide-before-search");}
+    ["#legendsPreview","#legendsPanel"].forEach(function(sel){var n=qs(sel);if(n){n.classList.add("aiq-v50113-hidden-before-search","aiq-v50111-empty-before-search","aiq-v50112-empty-before-search");if(sel==="#legendsPreview")n.innerHTML="";}});
+    audit.blockedPreSearch++;
+    audit.lastReason=reason||"hidden before search";
+    return true;
+  }
+  function showLegendSnapshot(){
+    var block=dashLegendBlock();
+    if(block){block.hidden=false;block.classList.remove("aiq-v50113-hidden-before-search","aiq-v50111-hide","aiq-v50112-hide-before-search");}
+    ["#legendsPreview","#legendsPanel"].forEach(function(sel){var n=qs(sel);if(n){n.hidden=false;n.classList.remove("aiq-v50113-hidden-before-search","aiq-v50111-empty-before-search","aiq-v50112-empty-before-search");n.classList.add("aiq-v50113-ready");}});
+  }
+  function originalLegendHTML(d,preview){
+    try{if(typeof renderLegendCard==="function")return renderLegendCard(d,!!preview)}catch(e){audit.rejectedLegendWrites.push({time:Date.now(),reason:"renderLegendCard failed",error:String(e)})}
+    return "";
+  }
+  function deployLegends(reason){
+    if(!markProfileLoaded("deploy:"+reason))return hideLegendSnapshot(reason);
+    showLegendSnapshot();
+    var data=[];
+    try{if(typeof buildLegendData==="function")data=buildLegendData()||[]}catch(e){audit.rejectedLegendWrites.push({time:Date.now(),reason:"buildLegendData failed",error:String(e)})}
+    var prev=qs("#legendsPreview"),panel=qs("#legendsPanel");
+    if(prev)prev.innerHTML=data.slice(0,4).map(function(d){return originalLegendHTML(d,true)}).join("");
+    if(panel)panel.innerHTML=data.map(function(d){return originalLegendHTML(d,false)}).join("");
+    audit.renders++;
+    audit.lastRender={time:Date.now(),reason:reason||"deployLegends",cards:data.length,profileLoaded:true};
+    return true;
+  }
+  window.apexiqDeployLegendSnapshotV113=deployLegends;
+  window.renderLegends=function(){return deployLegends("window.renderLegends")};
+  try{window.eval("renderLegends = window.renderLegends")}catch(_){ }
+  function postProcessBadgeState(st){
+    if(!st||typeof st!=="object")return st;
+    try{
+      var conflicts=(st.proof&&st.proof.conflicts)||[];
+      var has20=conflicts.some(function(c){return String(c.type).toLowerCase()==="20b"});
+      if(has20&&st.sources&&st.sources.twenty){st.sources.twenty.source="Founder verified: 10. Automatic scan found 11; needs review.";st.sources.twenty.confidence="verified-conflict";}
+      if(Array.isArray(st.badges)){st.badges.forEach(function(b){if(b&&b.id==="20b_collection"&&has20){b.source="Founder verified: 10. Automatic scan found 11; needs review.";b.confidence="verified-conflict";b.auditConflict=true;}})}
+      st.v113Build=BUILD;
+      st.v113ProfileLoaded=hasSearchProfile();
+      window.apexiqBadgeState=st;
+    }catch(e){audit.rejectedBadgePatchError=String(e)}
+    return st;
+  }
+  var oldCompute=window.apexiqComputeBadgeState;
+  if(typeof oldCompute==="function"&&!oldCompute.__v50113Wrapped){
+    var wrappedCompute=function(){return postProcessBadgeState(oldCompute.apply(this,arguments))};
+    wrappedCompute.__v50113Wrapped=true;wrappedCompute.__v50113Original=oldCompute;window.apexiqComputeBadgeState=wrappedCompute;
+  }
+  function computeBadgeStateSafe(){
+    var st=null;
+    try{if(typeof window.apexiqComputeBadgeState==="function")st=window.apexiqComputeBadgeState(profile()||{})}catch(e){st={error:String(e)}}
+    if(!st)st=window.apexiqBadgeState||null;
+    return postProcessBadgeState(st);
+  }
+  function polishBadgeCase(){
+    markProfileLoaded("badge-case");
+    var panel=qs("#profilePanel");if(!panel)return;
+    qsa("section.badge-case,.aiq-v50111-profile-badge-case,.aiq-v50112-profile-badge-case",panel).forEach(function(c){c.classList.add("aiq-v50113-polished-case")});
+    var st=computeBadgeStateSafe();
+    if(!hasSearchProfile()||!st||!Array.isArray(st.badges))return;
+    var target=panel.querySelector("section.badge-case");
+    if(!target)return;
+    target.classList.add("aiq-v50113-polished-case");
+  }
+  function patchBadgePanel(){
+    var panel=qs("#badgesPanel");if(!panel)return;
+    var hero=panel.querySelector(".aiq-v50109-hero");
+    if(hero){var spans=hero.querySelectorAll(".aiq-v50109-kicker span");if(spans.length)spans[spans.length-1].textContent="Stat Vault v113 gate-fixed";}
+    var st=computeBadgeStateSafe();
+    var conflicts=st&&st.proof&&st.proof.conflicts||[];
+    if(conflicts.some(function(c){return String(c.type).toLowerCase()==="20b"})&&!panel.querySelector("#aiqV50113ConflictNote")){
+      var grid=panel.querySelector(".aiq-v50109-source-grid")||panel.firstElementChild;
+      if(grid)grid.insertAdjacentHTML("afterend",'<div id="aiqV50113ConflictNote" class="aiq-v50113-conflict-note"><b>20B proof conflict:</b> Founder verified count is 10. Automatic scan found 11; needs review before claiming the extra legend.</div>');
+    }
+  }
+  function officialUrl(card){var txt=(card.textContent||"").toLowerCase();var plat=/switch|nintendo/.test(txt)?"SWITCH":(/xbox|x1/.test(txt)?"X1":(/playstation|ps4|ps5|\bps\b/.test(txt)?"PS4":"PC"));return "https://apexlegendsstatus.com/live-ranked-leaderboards/Battle_Royale/"+plat}
+  function patchOfficialButtons(){
+    qsa(".platform-card").forEach(function(card){var row=card.querySelector(".action-row");if(!row){var spot=card.querySelector(".leader-list")||card.querySelector(".empty")||card;spot.insertAdjacentHTML("afterend",'<div class="action-row"></div>');row=card.querySelector(".action-row");}
+      var links=qsa("a",row).filter(function(a){return /official|board/i.test(a.textContent||"")});var link=links[0];links.slice(1).forEach(function(x){x.remove()});if(!link){row.insertAdjacentHTML("beforeend",'<a class="ghost aiq-v50113-official-board">Official board ↗</a>');link=row.querySelector("a:last-child")}
+      link.href=officialUrl(card);link.target="_blank";link.rel="noopener noreferrer";link.textContent="Official board ↗";link.classList.add("ghost","aiq-v50113-official-board");
+    });
+  }
+  function debugPayload(){
+    var st=computeBadgeStateSafe();
+    return {build:BUILD,profileLoaded:hasSearchProfile(),apexiqHasSearchProfileV113:hasSearchProfile(),profileGate:audit,oldLegendRecovery:window.__apexiqV50112||null,oldFrozenGuard:window.__apexiqV50111||null,badgeSummary:st&&st.summary,badgeSources:st&&st.sources,proof:st&&st.proof,badges:st&&Array.isArray(st.badges)?st.badges.map(function(b){return {id:b.id,name:b.name,progress:b.progress,tier:b.tierLabel||b.tier,source:b.source,confidence:b.confidence,counted:b.counted,ignored:b.ignored,auditConflict:b.auditConflict||false}}):[],registry:st&&st.registry,rejectedBadgeStateWrites:window.__apexiqRejectedBadgeStateWrites||[],rejectedLegendWrites:audit.rejectedLegendWrites||[]};
+  }
+  window.apexiqCopyBadgeDebugV113=function(){
+    var txt=JSON.stringify(debugPayload(),null,2);var ta=qs("#aiqV50113DebugText");if(ta){ta.value=txt;ta.hidden=false;}
+    try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt)}else{if(ta){ta.focus();ta.select();document.execCommand("copy")}}}catch(_){try{if(ta){ta.focus();ta.select();document.execCommand("copy")}}catch(__){}}
+    audit.debugCopies++;return txt;
+  };
+  window.apexiqDownloadBadgeDebugV113=function(){
+    var txt=JSON.stringify(debugPayload(),null,2);var blob=new Blob([txt],{type:"application/json"});var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="apexiq-badge-debug-v50113.json";document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500);audit.debugDownloads++;
+  };
+  function ensureDebugDock(){
+    if(!/[?&]badgeDebug=1\b/i.test(location.search))return;
+    var dock=qs("#aiqV50113DebugDock");
+    if(!dock){document.body.insertAdjacentHTML("beforeend",'<section id="aiqV50113DebugDock"><div><b>Badge debug export</b><small>v113 copy/download includes profile gate + badge sources.</small></div><div class="aiq-v50113-debug-actions"><button type="button" id="aiqV50113CopyBtn">Copy Badge Debug JSON</button><button type="button" id="aiqV50113DownloadBtn">Download Badge Debug JSON</button></div><textarea id="aiqV50113DebugText" readonly spellcheck="false"></textarea></section>');dock=qs("#aiqV50113DebugDock");var c=qs("#aiqV50113CopyBtn"),d=qs("#aiqV50113DownloadBtn");if(c)c.onclick=window.apexiqCopyBadgeDebugV113;if(d)d.onclick=window.apexiqDownloadBadgeDebugV113;}
+    var ta=qs("#aiqV50113DebugText");if(ta)ta.value=JSON.stringify(debugPayload(),null,2);
+  }
+  function updateBuildLog(){
+    var entry='<li data-aiq-v50113><small>v4.9.9.113</small><b>Profile Load Gate + Legend Snapshot Deploy Fix + Debug Export Fix</b><span>Fixed the stale profile-loaded gate that blocked Legend Snapshot after search, restored post-search legend deployment using the approved renderLegendCard path, added copy/download badge debug export, polished badge case icons, preserved v109/v112 badge math, clarified the 20B automatic/proof-vault conflict, and verified Official board buttons.</span></li>';
+    var roadmap='<li data-aiq-v50113-roadmap><b>Current roadmap status</b><span>Release-candidate stability is active. Stat Vault / Badge Engine remains in audit mode. Automatic stat refresh is client/session only unless verified. Server-side background refresh remains planned until Worker cron exists. Badge proof vault is active for founder verified counts; admin proof assignment UI is still planned. Legend Snapshot profile gate is active.</span></li>';
+    qsa("#aiqV49948BuildHub,#aiqV49948BuildHubSettings,.aiq-v49948-buildhub").forEach(function(hub){var badge=hub.querySelector(".aiq-v49948-build-badge");if(badge)badge.textContent="v4.9.9.113";var lists=qsa(".aiq-v49948-build-list",hub);if(lists[0]&&!lists[0].querySelector("[data-aiq-v50113]"))lists[0].insertAdjacentHTML("afterbegin",entry);if(lists[1]&&!lists[1].querySelector("[data-aiq-v50113-roadmap]"))lists[1].insertAdjacentHTML("afterbegin",roadmap);});
+  }
+  function afterRender(reason){
+    try{markProfileLoaded(reason);if(hasSearchProfile())deployLegends(reason);else hideLegendSnapshot(reason);polishBadgeCase();patchBadgePanel();patchOfficialButtons();ensureDebugDock();updateBuildLog();}catch(e){audit.lastError=String(e);console.warn(BUILD,e)}
+  }
+  function schedule(reason){[0,150,500,1200,3000,5200].forEach(function(ms){setTimeout(function(){afterRender(reason+" +"+ms)},ms)})}
+  function wrapSync(name,afterOnly){var old=window[name];if(typeof old!=="function"||old.__v50113Wrapped)return;var w=function(){var ret=old.apply(this,arguments);schedule(name);return ret};w.__v50113Wrapped=true;w.__v50113Original=old;window[name]=w;try{window.eval(name+" = window['"+name+"']")}catch(_){ }}
+  function wrapAsync(name){var old=window[name];if(typeof old!=="function"||old.__v50113Wrapped)return;var w=async function(){try{return await old.apply(this,arguments)}finally{markProfileLoaded(name+" finally");schedule(name+" finally")}};w.__v50113Wrapped=true;w.__v50113Original=old;window[name]=w;try{window.eval(name+" = window['"+name+"']")}catch(_){ }}
+  function install(){
+    wrapSync("renderProfile");wrapSync("renderAll");wrapSync("renderBadgesPanel");wrapSync("renderRanked");wrapSync("renderSettings");wrapSync("switchPanel");
+    wrapAsync("apexiqSafeSearch");wrapAsync("apexiqSearchPlayer");wrapAsync("loadAll");
+    afterRender("boot");schedule("boot scheduled");
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",install,{once:true});else install();
+})();
+</script>
+<!-- === /ApexIQ v4.9.9.113 Profile Load Gate + Legend Snapshot Deploy Fix + Debug Export Fix === -->
