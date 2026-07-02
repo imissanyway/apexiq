@@ -10412,6 +10412,296 @@ body:not([data-aiq-profile-ready="1"]) .v49919ProfileBadgeCase,body:not([data-ai
 </script>
 <!-- === /ApexIQ v4.9.9.102 Stat Vault + Real Badge Engine === -->
 
+
+<style id="apexiq-v50107-render-lock-css">
+/* ApexIQ v4.9.9.107 — render lock + stable legend cards */
+#profilePanel .badge-case,
+#profilePanel .v49918ProfileBadgeCase,
+#profilePanel .v49919ProfileBadgeCase,
+#profilePanel .v49920ProfileBadgeCase,
+#profilePanel .v49921ProfileBadgeCase,
+#profilePanel .v49923MiniCase,
+#profilePanel .v49924MiniCase,
+#profilePanel .v49924ProfileBadgeCase,
+#profilePanel .aiq-v50100-mini-case,
+#profilePanel .aiq-v50102-mini-case,
+#profilePanel .aiq-v50104-empty-case{display:none!important}
+
+#profilePanel .aiq-v50107-profile{display:grid;gap:14px}
+#profilePanel .aiq-v50107-scorebug{display:grid;grid-template-columns:minmax(0,1fr) 170px 190px;gap:14px;align-items:stretch;padding:22px;border-radius:0 0 28px 0;background:linear-gradient(135deg,#f8fafc,#ffffff 70%,#e2e8f0);color:#0f172a;border-top:4px solid var(--brand,#ff7a2f);clip-path:polygon(0 0,100% 0,100% calc(100% - 28px),calc(100% - 28px) 100%,0 100%)}
+[data-mode="dark"] #profilePanel .aiq-v50107-scorebug{background:linear-gradient(135deg,#f8fafc,#ffffff 70%,#dbeafe);color:#0f172a}
+#profilePanel .aiq-v50107-lower span{display:block;color:#d89a00;font-weight:1000;letter-spacing:.16em;text-transform:uppercase;font-size:.8rem}
+#profilePanel .aiq-v50107-lower h2{font-size:clamp(2.2rem,4vw,4.4rem);line-height:.86;margin:6px 0 8px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#profilePanel .aiq-v50107-lower p{margin:0;color:#475569;font-weight:800}
+#profilePanel .aiq-v50107-score-cell{border-radius:14px;background:#0f1c31;color:#f8fafc;display:grid;place-items:center;text-align:center;padding:14px;min-width:0}
+#profilePanel .aiq-v50107-score-cell.gold{background:linear-gradient(160deg,#facc15,#d59b17);color:#fff}
+#profilePanel .aiq-v50107-score-cell span{font-size:.76rem;text-transform:uppercase;letter-spacing:.16em;color:rgba(255,255,255,.72);font-weight:1000}
+#profilePanel .aiq-v50107-score-cell b{font-size:1.9rem;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+#profilePanel .aiq-v50107-actions{display:grid;gap:10px}
+#profilePanel .aiq-v50107-actions button{min-height:44px;border-radius:12px;border:1px solid rgba(15,23,42,.15);font-weight:1000;cursor:pointer}
+#profilePanel .aiq-v50107-actions button:first-child{background:linear-gradient(135deg,#facc15,#fb923c);color:white;border:0}
+#profilePanel .aiq-v50107-actions button:last-child{background:rgba(15,23,42,.06);color:#0f172a}
+
+#profilePanel .aiq-v50107-stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:12px}
+#profilePanel .aiq-v50107-tile{border:1px solid var(--line,#26384f);border-radius:14px;background:rgba(15,23,42,.70);padding:14px;min-width:0;overflow:hidden}
+#profilePanel .aiq-v50107-tile span{display:block;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted,#94a3b8);font-weight:1000}
+#profilePanel .aiq-v50107-tile b{display:block;font-size:1.55rem;line-height:1.05;margin:10px 0;white-space:normal;overflow-wrap:break-word}
+#profilePanel .aiq-v50107-tile em{font-style:normal;color:var(--muted,#94a3b8);font-size:.78rem}
+
+#legendsPreview.aiq-v50107-legends,#legendsPanel.aiq-v50107-legends{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(420px,1fr))!important;gap:16px!important;align-items:start!important;min-height:220px;contain:layout}
+.aiq-v50107-legend-card{position:relative;display:grid!important;grid-template-columns:104px minmax(0,1fr)!important;gap:16px!important;align-items:start!important;width:100%!important;min-width:0!important;overflow:hidden!important;padding:16px!important;border:1px solid var(--line,#26384f)!important;border-radius:18px!important;background:rgba(15,23,42,.72)!important;box-shadow:0 12px 30px rgba(0,0,0,.16)}
+.aiq-v50107-legend-card.has-data{outline:1px solid color-mix(in srgb,var(--brand,#ff7a2f) 35%,transparent)}
+.aiq-v50107-legend-visual{width:104px!important;min-width:104px!important;min-height:104px!important;display:grid!important;place-items:center!important;align-self:start!important}
+.aiq-v50107-legend-visual img{width:92px!important;height:92px!important;max-width:92px!important;max-height:92px!important;object-fit:contain!important;filter:drop-shadow(0 12px 18px rgba(0,0,0,.36))}
+.aiq-v50107-legend-body{min-width:0!important;width:100%!important;display:grid;gap:10px}
+.aiq-v50107-legend-title{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;min-width:0}
+.aiq-v50107-legend-title h3{margin:0;font-size:1.35rem;line-height:1.03;white-space:normal;overflow-wrap:anywhere}
+.aiq-v50107-legend-title small{display:block;color:var(--muted,#94a3b8);font-size:.78rem;line-height:1.2;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.aiq-v50107-count{display:inline-flex;align-items:center;justify-content:center;min-width:54px;max-width:70px;border:1px solid var(--line,#26384f);border-radius:999px;padding:5px 8px;font-size:.75rem;font-weight:1000;color:var(--muted,#94a3b8);white-space:nowrap}
+.aiq-v50107-stat-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;width:100%!important}
+.aiq-v50107-stat{display:grid;gap:4px;min-width:0!important;max-width:100%!important;padding:9px 10px!important;border-radius:12px!important;border:1px solid var(--line,#26384f)!important;background:rgba(255,255,255,.06)!important;overflow:hidden!important}
+.aiq-v50107-stat em{font-style:normal;font-size:.68rem;color:var(--muted,#94a3b8);font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.aiq-v50107-stat b{font-size:1.02rem;line-height:1.05;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.aiq-v50107-badge-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;min-width:0}
+.aiq-v50107-badge-row span{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line,#26384f);border-radius:999px;padding:5px 8px;font-size:.72rem;font-weight:1000;color:var(--muted,#94a3b8);max-width:140px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.aiq-v50107-badge-row img{width:22px;height:22px;object-fit:contain;flex:0 0 auto}
+.aiq-v50107-loading{border:1px solid var(--line,#26384f);border-radius:18px;background:rgba(15,23,42,.72);padding:20px;color:var(--muted,#94a3b8);font-weight:900}
+.aiq-v50107-mini-case{display:block!important;border:1px solid var(--line,#26384f);border-radius:18px;background:rgba(15,23,42,.72);padding:14px;margin-top:14px}
+.aiq-v50107-mini-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+.aiq-v50107-mini-head h3{margin:0;font-size:1.05rem}.aiq-v50107-mini-head p{margin:4px 0 0;color:var(--muted,#94a3b8)}
+.aiq-v50107-mini-grid{display:flex;gap:8px;flex-wrap:wrap}
+.aiq-v50107-mini{width:44px;height:44px;border-radius:12px;border:1px solid rgba(16,185,129,.5);background:rgba(16,185,129,.13);display:grid;place-items:center;position:relative}
+.aiq-v50107-mini img{width:30px;height:30px;object-fit:contain}.aiq-v50107-mini span{position:absolute;right:3px;bottom:2px;background:rgba(15,23,42,.92);color:#fff;border-radius:5px;padding:0 4px;font-size:.58rem;font-weight:1000}
+.aiq-v50107-debug{max-height:55vh;overflow:auto;border:1px solid var(--line,#334155);border-radius:16px;background:rgba(2,6,23,.78);padding:12px;font-size:11px;line-height:1.35;color:#dbeafe;margin-top:14px}
+@media(max-width:920px){
+  #profilePanel .aiq-v50107-scorebug{grid-template-columns:1fr;clip-path:none;border-radius:18px}
+  #legendsPreview.aiq-v50107-legends,#legendsPanel.aiq-v50107-legends{grid-template-columns:1fr!important}
+  .aiq-v50107-legend-card{grid-template-columns:82px minmax(0,1fr)!important}
+  .aiq-v50107-legend-visual{width:82px!important;min-width:82px!important}
+  .aiq-v50107-legend-visual img{width:74px!important;height:74px!important}
+  .aiq-v50107-stat-grid{grid-template-columns:1fr!important}
+}
+</style>
+<script id="apexiq-v50107-render-lock-js">
+(function(){
+  "use strict";
+  var BUILD="v4.9.9.107-render-lock";
+  var oldSafeSearch=window.apexiqSafeSearch;
+  var rejectedStates=[];
+  var safeState=null;
+  function $(id){return document.getElementById(id)}
+  function qs(s,r){return (r||document).querySelector(s)}
+  function all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+  function esc(v){return String(v==null?"":v).replace(/[&<>\"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
+  function num(v){var n=Number(String(v==null?"":v).replace(/,/g,"").replace(/[^0-9.-]/g,""));return Number.isFinite(n)?n:0}
+  function fmt(v){try{return Number(v||0).toLocaleString()}catch(_){return String(v||0)}}
+  function appState(){try{return state}catch(_){return window.state||{}}}
+  function profile(){var s=appState();return s.profile||s.currentProfile||s.liveProfile||window.apexiqLastProfile||null}
+  function call(name,args,fallback){try{if(typeof window[name]==="function")return window[name].apply(window,args||[])}catch(_){ }return fallback}
+  function f(p,key,fb){try{return typeof field==="function"?field(p,key,fb):(p&&p[key]!=null?p[key]:((p&&p.fields&&p.fields[key]&&((p.fields[key].value!=null?p.fields[key].value:p.fields[key])))||fb))}catch(_){return fb}}
+  function tl(p){try{return typeof trueLevel==="function"?trueLevel(p):f(p,"trueLevel",f(p,"level","—"))}catch(_){return f(p,"trueLevel","—")}}
+  function src(p,key){try{return typeof source==="function"?source(p,key):"trusted"}catch(_){return "trusted"}}
+  function currentPanel(){var shown=all("[data-screen]").find(function(x){return !x.hidden});return shown?shown.getAttribute("data-screen"):"dashboard"}
+  function badgeStateLooksSafe(v){var source=String(v&&v.summary&&v.summary.source||"");return !!(v&&v.summary&&Array.isArray(v.badges)&&/(v106|v107|safe registry|render-locked)/i.test(source))}
+  (function gateBadgeState(){
+    var existing=window.apexiqBadgeState;
+    if(badgeStateLooksSafe(existing))safeState=existing;
+    else if(existing)rejectedStates.push({time:Date.now(),reason:"initial unsafe badge state",summary:existing.summary||null});
+    try{
+      Object.defineProperty(window,"apexiqBadgeState",{configurable:true,enumerable:true,
+        get:function(){return safeState},
+        set:function(v){
+          if(badgeStateLooksSafe(v)){safeState=v;return}
+          rejectedStates.push({time:Date.now(),reason:"rejected unsafe badge state write",summary:v&&v.summary?v.summary:null});
+          window.__apexiqV50107RejectedBadgeStates=rejectedStates.slice(-30);
+        }
+      });
+    }catch(e){console.warn(BUILD,"badge state gate failed",e)}
+  })();
+  function safeCompute(){
+    var p=profile()||{};
+    var st=null;
+    try{
+      if(typeof window.apexiqComputeBadgeStateV50106==="function")st=window.apexiqComputeBadgeStateV50106(p);
+      else if(typeof window.apexiqComputeBadgeState==="function")st=window.apexiqComputeBadgeState(p,window.apexiqStatVault||null);
+    }catch(e){console.warn(BUILD,"badge compute failed",e)}
+    if(st&&st.summary){
+      st.version="v50107";
+      st.summary.source="Stat Vault v107 render-locked safe state";
+      safeState=st;
+      window.__apexiqLastBadgeSources=st.sources||{};
+    }
+    return safeState||st||{badges:[],summary:{unlocked:0,wakeCount:0,wrathCount:0,maxTier:0,source:"No safe badge state"},sources:{},registry:[]};
+  }
+  function cleanupCases(){
+    all("#profilePanel .badge-case,#profilePanel .v49918ProfileBadgeCase,#profilePanel .v49919ProfileBadgeCase,#profilePanel .v49920ProfileBadgeCase,#profilePanel .v49921ProfileBadgeCase,#profilePanel .v49923MiniCase,#profilePanel .v49924MiniCase,#profilePanel .v49924ProfileBadgeCase,#profilePanel .aiq-v50100-mini-case,#profilePanel .aiq-v50102-mini-case,#profilePanel .aiq-v50104-empty-case,#profilePanel .aiq-v50107-mini-case").forEach(function(x){x.remove()});
+  }
+  function tile(label,value,note){return '<article class="aiq-v50107-tile"><span>'+esc(label)+'</span><b>'+esc(fmt(value))+'</b><em>'+esc(note||"trusted")+'</em></article>'}
+  function renderProfileStable(){
+    var p=profile(),panel=$("profilePanel"),s=appState(); if(!panel)return;
+    cleanupCases();
+    if(!p){
+      panel.innerHTML='<section class="empty"><b>Profile unavailable</b><p>'+esc(s.profileError||"Search a player to pull live data.")+'</p></section>';
+      return;
+    }
+    var name=p.name||p.displayName||s.player||"Player",platform=s.platform||p.platform||"PC",legend=call("selectedLegend",[p],"—")||"—";
+    var rank=f(p,"rank","—"),rp=f(p,"rp","—");
+    panel.innerHTML='<section class="aiq-v50107-profile"><div class="aiq-v50107-scorebug"><div class="aiq-v50107-lower"><span>'+(p.fastMode?"HYDRATING PROFILE":"LIVE PROFILE")+'</span><h2>'+esc(name)+'</h2><p>'+esc(platform)+' · selected '+esc(legend)+' · '+esc(p.fastMode?"waiting for full rows":"stable render locked")+'</p></div><div class="aiq-v50107-score-cell"><span>True Level</span><b>'+esc(fmt(tl(p)))+'</b></div><div class="aiq-v50107-score-cell gold"><span>Rank</span><b>'+esc(rank)+'</b><small>'+esc(rp&&rp!=="—"?fmt(rp)+" RP":"")+'</small></div><div class="aiq-v50107-actions"><button type="button" onclick="apexiqSafeSearch(true)">Refresh</button><button type="button" onclick="switchPanel(&quot;badges&quot;)">Badges</button></div></div><section class="aiq-v50107-stat-grid">'+
+      tile("True Level",tl(p),src(p,"trueLevel"))+
+      tile("Visible",f(p,"visibleLevel","—"),src(p,"visibleLevel"))+
+      tile("Prestige",f(p,"prestige","—"),src(p,"prestige"))+
+      tile("Rank",rank,src(p,"rank"))+
+      tile("RP",rp,src(p,"rp"))+
+      tile("Kills",f(p,"kills","—"),src(p,"kills"))+
+      tile("Damage",f(p,"damage","—"),src(p,"damage"))+
+      tile("UID",f(p,"uid","—"),src(p,"uid"))+
+      tile("Legend Rows",((p.legendStats||p.legendRows||p.legends||p.allLegendStats||[]).length)||"", "trusted")+
+      '</section></section>';
+    renderCaseStable();
+  }
+  function proofType(b){
+    var txt=String((typeof b==="string"?b:(b&& (b.name||b.label||b.id||b.title||b.alt||"")))||"").toLowerCase();
+    var src=String((b&& (b.src||b.url||b.icon||b.image||""))||"").toLowerCase();
+    var all=txt+" "+src;
+    if(/\b(20b|20 kill|20 kills|wake|twenty kill|twenty kills)\b/.test(all))return "20B";
+    if(/\b(4k|wrath|4000 damage|4000|four thousand)\b/.test(all))return "4K";
+    return "";
+  }
+  function statHTML(stats){
+    var arr=(stats||[]).slice(0,6);
+    if(!arr.length)return '<div class="aiq-v50107-loading">Waiting for trusted tracker rows.</div>';
+    return '<div class="aiq-v50107-stat-grid">'+arr.map(function(s){return '<span class="aiq-v50107-stat"><em>'+esc(s.label||s.name||"Stat")+'</em><b>'+esc(fmt(s.value))+'</b></span>'}).join("")+'</div>';
+  }
+  function badgeHTML(row){
+    var raw=[]; try{raw=typeof returnedBadges==="function"?returnedBadges(row):(row?(row.officialBadges||row.badges||[]):[])}catch(_){raw=[]}
+    var filtered=[]; raw.forEach(function(b){var t=proofType(b); if(t)filtered.push({type:t,b:b})});
+    if(!filtered.length)return "";
+    return '<div class="aiq-v50107-badge-row">'+filtered.slice(0,4).map(function(x){var b=x.b||{},name=(typeof b==="string"?b:(b.name||b.label||x.type));var src=(b.src||b.url||b.icon||b.image||"");return '<span title="'+esc(name)+'">'+(src?'<img loading="lazy" src="'+esc(src)+'" alt="'+esc(name)+'">':"")+'<b>'+esc(x.type)+'</b></span>'}).join("")+'</div>';
+  }
+  function legendCard(d,preview){
+    var pack=d&&d.pack||{},row=d&&d.row||null,stats=d&&d.stats||[],img="";
+    try{img=typeof packImage==="function"?packImage(pack):(pack.stickers&&pack.stickers[0]&&pack.stickers[0].src)||""}catch(_){}
+    var source=(row&&row.source)||(stats.length?"tracker rows":"waiting for trusted data");
+    return '<article class="aiq-v50107-legend-card legend-card '+(stats.length?"has-data":"waiting")+'" data-aiq-v50107-card="1" data-legend="'+esc(pack.name||"")+'"><div class="aiq-v50107-legend-visual legend-visual">'+(img?'<img loading="lazy" src="'+esc(img)+'" alt="'+esc(pack.name||"Legend")+'">':'<b>'+esc(String(pack.name||"?").slice(0,2).toUpperCase())+'</b>')+'</div><div class="aiq-v50107-legend-body legend-body"><div class="aiq-v50107-legend-title legend-title"><div><h3>'+esc(pack.name||"Legend")+(d&&d.isSelected?" · selected":"")+'</h3><small>'+esc(source)+'</small></div><span class="aiq-v50107-count">'+esc(stats.length)+' stats</span></div>'+statHTML(stats)+(preview?"":badgeHTML(row))+'</div></article>';
+  }
+  function renderLegendsStable(){
+    var prev=$("legendsPreview"),panel=$("legendsPanel"),p=profile(); if(!prev&&!panel)return;
+    if(prev)prev.classList.add("aiq-v50107-legends");
+    if(panel)panel.classList.add("aiq-v50107-legends");
+    if(!p||p.fastMode){
+      var loading='<section class="aiq-v50107-loading"><b>Hydrating full legend rows…</b><p>ApexIQ is holding the legend area steady until the full profile finishes, so cached/fast rows do not flash broken cards.</p></section>';
+      if(prev&&!prev.querySelector("[data-aiq-v50107-card]"))prev.innerHTML=loading;
+      if(panel&&!panel.querySelector("[data-aiq-v50107-card]"))panel.innerHTML=loading;
+      return;
+    }
+    var data=[];
+    try{data=typeof buildLegendData==="function"?buildLegendData():[]}catch(e){console.warn(BUILD,"buildLegendData failed",e)}
+    if(!Array.isArray(data)||!data.length){
+      var empty='<section class="aiq-v50107-loading"><b>No legend rows loaded yet</b><p>Search a player to hydrate full ALS legend rows.</p></section>';
+      if(prev)prev.innerHTML=empty;if(panel)panel.innerHTML=empty;return;
+    }
+    var useful=data.filter(function(d){return (d&&d.stats&&d.stats.length)||d.isSelected||d.row}).concat(data.filter(function(d){return !((d&&d.stats&&d.stats.length)||d.isSelected||d.row)}));
+    if(prev)prev.innerHTML=useful.slice(0,4).map(function(d){return legendCard(d,true)}).join("");
+    if(panel)panel.innerHTML=useful.map(function(d){return legendCard(d,false)}).join("");
+  }
+  function mini(b){
+    var tier=String(b.tierLabel||"").match(/\b(IV|III|II|I)\b/i);tier=tier?tier[1].toUpperCase():"—";
+    var detail=b.name+": "+b.tierLabel+" · "+fmt(b.progress)+" · "+b.source;
+    return '<button type="button" class="aiq-v50107-mini" title="'+esc(detail)+'" aria-label="'+esc(detail)+'">'+(b.icon?'<img loading="lazy" src="'+esc(b.icon)+'" alt="'+esc(b.name)+'">':"")+'<span>'+esc(tier)+'</span></button>';
+  }
+  function renderCaseStable(){
+    var panel=$("profilePanel"); if(!panel||!profile())return; cleanupCases();
+    var st=safeCompute(),items=(st.badges||[]).filter(function(b){return b.unlocked});
+    if(!items.length)return;
+    panel.insertAdjacentHTML("beforeend",'<section class="aiq-v50107-mini-case"><div class="aiq-v50107-mini-head"><div><h3>ApexIQ badge display case</h3><p>Unlocked ApexIQ badges only. Render-locked to the same v107 state as Badge Locker.</p></div><small>'+items.length+' unlocked</small></div><div class="aiq-v50107-mini-grid">'+items.map(mini).join("")+'</div></section>');
+  }
+  function card(b){
+    var req=num(b.nextRequirement)||1,p=Math.max(0,Math.min(100,(num(b.progress)/req)*100));
+    var counted=(b.counted||[]).slice(0,2).map(function(r){return (r.labelRaw||"row")+": "+fmt(r.value)}).join("; ");
+    var ignored=(b.ignored||[]).slice(0,2).map(function(x){return (x.reason||"ignored")+" — "+((x.row&&x.row.labelRaw)||"")}).join("; ");
+    return '<article class="aiq-v50102-card '+(b.unlocked?"unlocked":"locked")+'"><div>'+(b.icon?'<img loading="lazy" src="'+esc(b.icon)+'" alt="'+esc(b.name)+'">':"")+'</div><div><h4>'+esc(b.name)+'</h4><p class="status">'+esc((b.unlocked?b.tierLabel:"Locked")+" · "+fmt(b.progress)+" / "+fmt(req))+'</p><p>'+esc((b.def&&b.def.description)||"ApexIQ badge progress line.")+'</p><div class="aiq-v50102-progress"><span style="width:'+p+'%"></span></div><div class="aiq-v50106-audit"><span><b>Source:</b> '+esc(b.source||"Needs exact tracker data or proof")+'</span>'+(counted?'<span><b>Counted:</b> '+esc(counted)+'</span>':"")+(ignored?'<span class="aiq-v50106-ignored"><b>Ignored:</b> '+esc(ignored)+'</span>':"")+'</div></div></article>';
+  }
+  function renderBadgesStable(){
+    var panel=$("badgesPanel"); if(!panel)return;
+    var st=safeCompute(),cats=["All"].concat(Array.from(new Set((st.badges||[]).map(function(b){return b.category||"ApexIQ"}))));
+    var active=localStorage.getItem("apexiq:badgeFilter:v50107")||localStorage.getItem("apexiq:badgeFilter:v50102")||"All";
+    if(cats.indexOf(active)<0)active="All";
+    var shown=active==="All"?(st.badges||[]):(st.badges||[]).filter(function(b){return (b.category||"ApexIQ")===active});
+    var debug=/[?&]badgeDebug=1\b/i.test(location.search)?'<pre class="aiq-v50107-debug">'+esc(JSON.stringify({build:BUILD,summary:st.summary,sources:st.sources,proof:st.proof,registry:st.registry,rejectedBadgeStateWrites:rejectedStates.slice(-10)},null,2))+'</pre>':"";
+    panel.innerHTML='<section class="aiq-v50102-badge-shell"><div class="aiq-v49992-badge-hero"><div class="aiq-v49992-badge-kicker"><span>ApexIQ badge locker</span><span>Stat Vault v107 render-locked</span></div><h3>Badges, tiers, and source math</h3><p>v107 blocks older badge writers, suppresses fast/cached render flicker during search, and only displays the safe shared state.</p></div><div class="aiq-v50102-source-grid"><div class="aiq-v50102-source"><span>Unlocked</span><b>'+fmt(st.summary.unlocked)+'</b><small>same shared state</small></div><div class="aiq-v50102-source"><span>20B legends</span><b>'+fmt(st.summary.wakeCount)+'</b><small>strict exact proof</small></div><div class="aiq-v50102-source"><span>4K legends</span><b>'+fmt(st.summary.wrathCount)+'</b><small>strict exact proof</small></div><div class="aiq-v50102-source"><span>Registry rows</span><b>'+fmt((st.registry||[]).length)+'</b><small>safe registry</small></div></div><div class="aiq-v50102-note"><b>Current sources</b><br>Kills: '+esc(st.sources&&st.sources.careerKills&&st.sources.careerKills.source||"Needs exact tracker data")+'<br>Damage: '+esc(st.sources&&st.sources.careerDamage&&st.sources.careerDamage.source||"Needs exact tracker data")+'<br>SMG: '+esc(st.sources&&st.sources.smgKills&&st.sources.smgKills.source||"Needs exact weapon kill tracker data")+'</div><div class="aiq-v49992-filter">'+cats.map(function(c){return '<button type="button" data-aiq-badge-filter-v50107="'+esc(c)+'" class="'+(c===active?"active":"")+'">'+esc(c)+'</button>'}).join("")+'</div><div class="aiq-v50102-grid">'+shown.map(card).join("")+'</div>'+debug+'</section>';
+  }
+  function renderVisible(){
+    var panel=currentPanel();
+    if(panel==="dashboard"){renderProfileStable();renderLegendsStable();call("renderRanked",["rankedPanel"])}
+    else if(panel==="legends"){renderLegendsStable()}
+    else if(panel==="badges"){renderBadgesStable()}
+    else if(panel==="ranked"){call("renderRanked",["rankedPanelFull"])}
+  }
+  function renderAllStable(){
+    renderProfileStable(); renderLegendsStable();
+    call("renderRanked",["rankedPanel"]); call("renderRanked",["rankedPanelFull"]);
+    call("renderPacks",[]); call("renderSquad",[]); call("renderSettings",[]); call("renderSources",[]);
+  }
+  function switchPanelStable(panel){
+    all("[data-screen]").forEach(function(s){s.hidden=s.getAttribute("data-screen")!==panel});
+    all("[data-go]").forEach(function(b){b.classList.toggle("active",b.getAttribute("data-go")===panel)});
+    if(panel==="settings")call("renderSettings",[]);
+    if(panel==="packs")call("renderPacks",[]);
+    if(panel==="squad")call("renderSquad",[]);
+    if(panel==="meta"&&typeof window.apexiqLoadMeta==="function")setTimeout(function(){try{window.apexiqLoadMeta(false)}catch(_){ }},40);
+    renderVisible();
+  }
+  var searchLock=false;
+  async function safeSearchStable(fresh){
+    if(searchLock)return;
+    searchLock=true;
+    var panel=$("profilePanel"),prev=$("legendsPreview"),lp=$("legendsPanel");
+    if(panel)panel.innerHTML='<section class="empty"><b>Searching live profile…</b><p>Render lock is active. ApexIQ will update the dashboard once, after the full profile finishes.</p></section>';
+    if(prev&&!prev.querySelector("[data-aiq-v50107-card]"))prev.innerHTML='<section class="aiq-v50107-loading"><b>Hydrating full legend rows…</b><p>Holding layout steady during search.</p></section>';
+    if(lp&&!lp.querySelector("[data-aiq-v50107-card]"))lp.innerHTML='<section class="aiq-v50107-loading"><b>Hydrating full legend rows…</b><p>Holding layout steady during search.</p></section>';
+    var savedProfile=window.renderProfile,savedLegends=window.renderLegends,savedBadges=window.renderBadgesPanel,savedAll=window.renderAll;
+    window.renderProfile=function(){};
+    window.renderLegends=function(){};
+    window.renderBadgesPanel=function(){};
+    window.renderAll=function(){};
+    try{
+      if(typeof oldSafeSearch==="function")await oldSafeSearch.call(window,fresh!==false);
+      else if(typeof loadProfile==="function"){await loadProfile(fresh!==false)}
+    }catch(e){console.warn(BUILD,"underlying search failed",e)}
+    finally{
+      searchLock=false;
+      installExports();
+      renderAllStable();
+      if(currentPanel()==="badges")renderBadgesStable();
+    }
+  }
+  function installExports(){
+    window.renderProfile=renderProfileStable;
+    window.renderLegends=renderLegendsStable;
+    window.renderBadgesPanel=renderBadgesStable;
+    window.renderAll=renderAllStable;
+    window.switchPanel=switchPanelStable;
+    window.apexiqSafeSearch=safeSearchStable;
+    window.loadAll=safeSearchStable;
+    window.apexiqRenderBadgesV50107=renderBadgesStable;
+    window.apexiqComputeBadgeStateV50107=safeCompute;
+    document.documentElement.dataset.v50107="render-lock";
+  }
+  document.addEventListener("click",function(e){
+    var f=e.target&&e.target.closest&&e.target.closest("[data-aiq-badge-filter-v50107]");
+    if(f){e.preventDefault();e.stopPropagation();if(e.stopImmediatePropagation)e.stopImmediatePropagation();localStorage.setItem("apexiq:badgeFilter:v50107",f.getAttribute("data-aiq-badge-filter-v50107")||"All");renderBadgesStable()}
+  },true);
+  function boot(){
+    try{Object.keys(localStorage).forEach(function(k){if(/apexiq_badge_state_v5010[0-6]|apexiq_stat_vault_v5010[0-6]/i.test(k))localStorage.removeItem(k)})}catch(_){}
+    installExports();
+    renderVisible();
+    [150,700,1500].forEach(function(ms){setTimeout(function(){try{installExports();if(currentPanel()==="dashboard")cleanupCases()}catch(e){}},ms)});
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
+})();
+</script>
+<!-- === /ApexIQ v4.9.9.107 Render Lock + Stable Badge State + Legend Card Stabilizer === -->
+
 </body>
 </html>
 
