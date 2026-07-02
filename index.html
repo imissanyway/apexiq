@@ -10583,6 +10583,121 @@ body:not([data-aiq-profile-ready="1"]) .v49919ProfileBadgeCase,body:not([data-ai
 </script>
 <!-- === /ApexIQ v4.9.9.111 Frozen UI Recovery Guard === -->
 
+
+<!-- === ApexIQ v4.9.9.112 Legend Card Recovery + Debug Copy Fix === -->
+<style id="apexiq-v50112-legend-card-recovery-css">
+/* v112: recover the stable dark legend card system from today's working render. No Meta, ranked parser, beta/admin, Worker, packs, or sticker changes. */
+#legendsPreview.aiq-v50112-empty-before-search,
+#legendsPanel.aiq-v50112-empty-before-search{display:none!important;}
+.aiq-v50112-hide-before-search{display:none!important;}
+#legendsPreview,#legendsPanel{align-items:stretch;}
+#legendsPreview .legend-card.aiq-v50112-recovered-card,
+#legendsPanel .legend-card.aiq-v50112-recovered-card{
+  display:grid!important;
+  grid-template-columns:96px minmax(0,1fr)!important;
+  gap:16px!important;
+  min-height:224px!important;
+  height:auto!important;
+  padding:18px!important;
+  overflow:hidden!important;
+  background:#071628!important;
+  color:#f8fafc!important;
+  border:1px solid rgba(148,163,184,.22)!important;
+  border-top:4px solid var(--brand,#ff7a22)!important;
+  border-radius:0!important;
+  clip-path:polygon(0 0,100% 0,100% calc(100% - 24px),calc(100% - 24px) 100%,0 100%)!important;
+  box-shadow:none!important;
+  align-content:start!important;
+}
+#legendsPreview .legend-card.aiq-v50112-recovered-card .legend-visual,
+#legendsPanel .legend-card.aiq-v50112-recovered-card .legend-visual{
+  display:grid!important;place-items:center!important;align-self:start!important;width:96px!important;min-width:96px!important;min-height:96px!important;overflow:visible!important;
+}
+#legendsPreview .legend-card.aiq-v50112-recovered-card .legend-visual img,
+#legendsPanel .legend-card.aiq-v50112-recovered-card .legend-visual img{
+  width:92px!important;height:92px!important;object-fit:contain!important;filter:drop-shadow(0 12px 20px rgba(0,0,0,.35))!important;max-width:92px!important;max-height:92px!important;
+}
+#legendsPreview .legend-card.aiq-v50112-recovered-card .legend-body,
+#legendsPanel .legend-card.aiq-v50112-recovered-card .legend-body{min-width:0!important;display:grid!important;gap:10px!important;align-content:start!important;overflow:hidden!important;}
+#legendsPreview .legend-card.aiq-v50112-recovered-card .legend-title,
+#legendsPanel .legend-card.aiq-v50112-recovered-card .legend-title{display:flex!important;justify-content:space-between!important;gap:10px!important;align-items:flex-start!important;margin:0!important;}
+#legendsPreview .legend-card.aiq-v50112-recovered-card .legend-title h3,
+#legendsPanel .legend-card.aiq-v50112-recovered-card .legend-title h3{margin:0!important;color:#f8fafc!important;font-size:1.08rem!important;line-height:1.1!important;white-space:normal!important;word-break:normal!important;overflow-wrap:anywhere!important;}
+#legendsPreview .legend-card.aiq-v50112-recovered-card .legend-title small,
+#legendsPanel .legend-card.aiq-v50112-recovered-card .legend-title small{display:block!important;margin-top:3px!important;color:#94a3b8!important;font-size:.76rem!important;line-height:1.18!important;text-align:left!important;}
+.aiq-v50112-statgrid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;margin:0!important;align-items:start!important;}
+.aiq-v50112-stat{display:grid!important;gap:3px!important;min-width:0!important;min-height:54px!important;padding:9px 10px!important;border-radius:11px!important;background:#fff3eb!important;color:#0d2557!important;border:1px solid rgba(13,37,87,.08)!important;box-shadow:none!important;}
+.aiq-v50112-stat em{font-style:normal!important;font-size:.69rem!important;line-height:1.05!important;color:#64748b!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;max-width:100%!important;}
+.aiq-v50112-stat b{font-size:1.02rem!important;line-height:1.1!important;color:#07172b!important;font-variant-numeric:tabular-nums!important;overflow-wrap:anywhere!important;word-break:normal!important;}
+.aiq-v50112-count{display:inline-flex!important;align-items:center!important;justify-content:center!important;min-width:48px!important;min-height:30px!important;border-radius:13px!important;background:rgba(255,255,255,.08)!important;border:1px solid rgba(148,163,184,.22)!important;color:#dbeafe!important;font-weight:900!important;font-size:.78rem!important;white-space:nowrap!important;}
+.aiq-v50112-badges{display:flex!important;flex-wrap:wrap!important;gap:7px!important;align-items:center!important;min-width:0!important;overflow:hidden!important;}
+.aiq-v50112-badges .badge-shelf{display:flex!important;flex-wrap:wrap!important;gap:7px!important;min-width:0!important;}
+.aiq-v50112-badges .badge-chip{min-height:30px!important;max-width:100%!important;border-radius:999px!important;padding:4px 8px!important;background:rgba(255,255,255,.08)!important;border:1px solid rgba(255,255,255,.15)!important;color:#f8fafc!important;}
+.aiq-v50112-badges .badge-chip img{width:24px!important;height:24px!important;object-fit:contain!important;}
+.aiq-v50112-badges .badge-chip em{max-width:120px!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;}
+.aiq-v50112-empty{border:1px solid rgba(148,163,184,.22)!important;border-radius:14px!important;background:rgba(15,23,42,.72)!important;padding:14px!important;color:#94a3b8!important;}
+#profilePanel .badge-case .aiq-v50109-mini-grid,
+#profilePanel .aiq-v50111-profile-badge-case .aiq-v50109-mini-grid,
+#profilePanel .aiq-v50112-profile-badge-case .aiq-v50109-mini-grid{display:flex!important;gap:10px!important;flex-wrap:wrap!important;justify-content:center!important;align-items:center!important;margin-top:12px!important;}
+#profilePanel .badge-case .aiq-v50109-mini,
+#profilePanel .aiq-v50111-profile-badge-case .aiq-v50109-mini,
+#profilePanel .aiq-v50112-profile-badge-case .aiq-v50109-mini{width:62px!important;height:62px!important;border-radius:16px!important;display:grid!important;place-items:center!important;padding:0!important;position:relative!important;}
+#profilePanel .badge-case .aiq-v50109-mini img,
+#profilePanel .aiq-v50111-profile-badge-case .aiq-v50109-mini img,
+#profilePanel .aiq-v50112-profile-badge-case .aiq-v50109-mini img{width:48px!important;height:48px!important;object-fit:contain!important;display:block!important;margin:auto!important;}
+#profilePanel .badge-case .aiq-v50109-mini span,
+#profilePanel .aiq-v50111-profile-badge-case .aiq-v50109-mini span,
+#profilePanel .aiq-v50112-profile-badge-case .aiq-v50109-mini span{position:absolute!important;right:3px!important;bottom:2px!important;font-size:.64rem!important;line-height:1!important;background:#0f172a!important;color:#f8fafc!important;border-radius:6px!important;padding:2px 4px!important;}
+.aiq-v50112-debug-bar{display:grid;gap:9px;margin:0 0 12px;padding:12px;border:1px solid rgba(96,165,250,.38);border-radius:15px;background:rgba(96,165,250,.08);}
+.aiq-v50112-debug-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.aiq-v50112-debug-row button,.aiq-v50112-debug-row a{border:1px solid rgba(96,165,250,.45);background:rgba(15,23,42,.8);color:#dbeafe;border-radius:12px;padding:9px 12px;font-weight:900;text-decoration:none;cursor:pointer;}
+.aiq-v50112-debug-text{width:100%;min-height:220px;max-height:50vh;resize:vertical;border-radius:12px;border:1px solid rgba(96,165,250,.35);background:#020617;color:#dbeafe;padding:10px;font:11px/1.35 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre;}
+.platform-card .action-row{display:flex!important;gap:10px!important;flex-wrap:wrap!important;align-items:center!important;margin-top:10px!important;}
+.platform-card .action-row a.aiq-v50112-official-board,
+.platform-card a.aiq-v50112-official-board{display:inline-flex!important;align-items:center!important;justify-content:center!important;min-height:42px!important;padding:0 16px!important;border-radius:14px!important;background:rgba(255,255,255,.055)!important;border:1px solid var(--line,#334155)!important;color:var(--text,#f8fafc)!important;text-decoration:none!important;font-weight:900!important;white-space:nowrap!important;}
+@media(max-width:720px){#legendsPreview .legend-card.aiq-v50112-recovered-card,#legendsPanel .legend-card.aiq-v50112-recovered-card{grid-template-columns:82px minmax(0,1fr)!important;gap:12px!important;clip-path:none!important;border-radius:18px!important;}.aiq-v50112-statgrid{grid-template-columns:1fr!important;}#legendsPreview .legend-card.aiq-v50112-recovered-card .legend-visual,#legendsPanel .legend-card.aiq-v50112-recovered-card .legend-visual{width:82px!important;min-width:82px!important}#legendsPreview .legend-card.aiq-v50112-recovered-card .legend-visual img,#legendsPanel .legend-card.aiq-v50112-recovered-card .legend-visual img{width:74px!important;height:74px!important}}
+</style>
+<script id="apexiq-v50112-legend-card-recovery-js">
+(function(){
+  "use strict";
+  var BUILD="v4.9.9.112-legend-card-recovery-debug-copy";
+  var V="v50112";
+  function $(s,r){return (r||document).querySelector(s)}
+  function all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+  function safe(v){try{if(typeof esc==="function")return esc(v)}catch(_){}return String(v==null?"":v).replace(/[&<>\"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
+  function fmt(v){try{if(typeof window.fmt==="function")return window.fmt(v)}catch(_){}var n=Number(String(v==null?"":v).replace(/[^0-9.-]/g,""));return Number.isFinite(n)?n.toLocaleString():String(v==null?"—":v)}
+  function profile(){try{return window.state&&window.state.profile}catch(_){return null}}
+  function hasProfile(){var p=profile();return !!(p&&typeof p==="object"&&!p.fastMode)}
+  function getLegendData(){try{return typeof buildLegendData==="function"?buildLegendData():[]}catch(e){console.warn(BUILD,"buildLegendData failed",e);return[]}}
+  function imgFor(pack){try{return typeof packImage==="function"?packImage(pack):""}catch(_){return""}}
+  function badgeHTML(row){try{return row&&typeof badgeShelf==="function"?badgeShelf(row):""}catch(_){return""}}
+  function statClean(stats,limit){var out=[];(stats||[]).forEach(function(s){if(!s||out.length>=limit)return;var label=String(s.label||s.name||"").trim();var value=s.value!=null?s.value:s.val;if(!label||value==null||value===""||String(value).toLowerCase()==="not returned")return;out.push({label:label,value:value})});return out}
+  window.__apexiqV50112=window.__apexiqV50112||{build:BUILD,base:"v4.9.9.111 with recovered stable v49919-style card layout",renderer:"recovered stable dark cards",renders:0,clearedObservers:false,blockedPreSearch:0,debugCopies:0,patchedAt:Date.now()};
+  function dashboardLegendBlock(){var p=$("#legendsPreview");return p&&(p.closest(".block")||p.closest("section")||p.parentElement)}
+  function clearLegendContainers(){["#legendsPreview","#legendsPanel"].forEach(function(sel){var node=$(sel);if(node){node.innerHTML="";node.classList.add("aiq-v50112-empty-before-search")}});var block=dashboardLegendBlock();if(block)block.classList.add("aiq-v50112-hide-before-search")}
+  function showLegendContainers(){["#legendsPreview","#legendsPanel"].forEach(function(sel){var node=$(sel);if(node)node.classList.remove("aiq-v50112-empty-before-search")});var block=dashboardLegendBlock();if(block)block.classList.remove("aiq-v50112-hide-before-search")}
+  function cloneLegendContainersOnce(){["#legendsPreview","#legendsPanel"].forEach(function(sel){var node=$(sel);if(!node||node.__aiqV50112Cloned)return;var clone=node.cloneNode(false);clone.__aiqV50112Cloned=true;clone.removeAttribute("data-aiq-v50111-observed");node.replaceWith(clone)});window.__apexiqV50112.clearedObservers=true}
+  function card(d,preview){d=d||{};var pack=d.pack||{};var name=pack.name||d.legend||"Legend";var img=imgFor(pack);var stats=statClean(d.stats,preview?3:8);var src=(d.row&&d.row.source)||(d.isSelected||d.selected?"selected profile":"trusted rows");var badges=badgeHTML(d.row);return '<article class="legend-card v49919LegendCard aiq-v50112-recovered-card '+(stats.length?'has-data':'waiting')+'" data-legend="'+safe(name)+'">'+
+    '<div class="legend-visual">'+(img?'<img loading="lazy" src="'+safe(img)+'" alt="'+safe(name)+'">':'<b>'+safe(name.slice(0,2).toUpperCase())+'</b>')+'</div>'+
+    '<div class="legend-body"><div class="legend-title"><div><h3>'+safe(name)+(d.isSelected||d.selected?' · selected':'')+'</h3><small>'+safe(src)+'</small></div><span class="aiq-v50112-count">'+stats.length+' stats</span></div>'+
+    (stats.length?'<div class="aiq-v50112-statgrid">'+stats.map(function(s){return '<span class="aiq-v50112-stat"><em>'+safe(s.label)+'</em><b>'+safe(fmt(s.value))+'</b></span>'}).join('')+'</div>':'<div class="aiq-v50112-empty">Waiting for trusted tracker rows.</div>')+
+    (badges?'<div class="aiq-v50112-badges">'+badges+'</div>':'')+'</div></article>'}
+  function renderRecoveredLegends(reason){cloneLegendContainersOnce();if(!hasProfile()){clearLegendContainers();window.__apexiqV50112.blockedPreSearch++;return}showLegendContainers();var data=getLegendData();var prev=$("#legendsPreview"),panel=$("#legendsPanel");if(prev)prev.innerHTML=data.slice(0,4).map(function(d){return card(d,true)}).join("");if(panel)panel.innerHTML=data.map(function(d){return card(d,false)}).join("");window.__apexiqV50112.renders++;window.__apexiqV50112.lastRender={time:Date.now(),reason:reason||"renderRecoveredLegends",cards:data.length};}
+  function installLegendRenderer(){window.renderLegends=function(){return renderRecoveredLegends("window.renderLegends")};try{window.eval("renderLegends = window.renderLegends")}catch(_){}}
+  function scheduleLegendRecovery(reason){[0,120,450,1200,2600].forEach(function(ms){setTimeout(function(){try{renderRecoveredLegends(reason+" +"+ms)}catch(e){console.warn(BUILD,e)}},ms)})}
+  function debugObject(){var st=null;try{st=window.apexiqBadgeState||(typeof window.apexiqComputeBadgeState==="function"?window.apexiqComputeBadgeState(profile()||{}):null)}catch(e){st={error:String(e)}}return {build:BUILD,profileLoaded:hasProfile(),legendRecovery:window.__apexiqV50112,badgeSummary:st&&st.summary,badgeSources:st&&st.sources,proof:st&&st.proof,badges:st&&Array.isArray(st.badges)?st.badges.map(function(b){return {id:b.id,name:b.name,progress:b.progress,tier:b.tierLabel||b.tier,source:b.source,confidence:b.confidence,counted:b.counted,ignored:b.ignored}}):[],registry:st&&st.registry,rejectedBadgeStateWrites:window.__apexiqRejectedBadgeStateWrites||[],oldV111:window.__apexiqV50111||null,oldV108:window.__apexiqV108Audit||null}}
+  function ensureDebugTools(){var panel=$("#badgesPanel");if(!panel)return;var json=JSON.stringify(debugObject(),null,2);var bar=$("#aiqV50112DebugBar");if(!bar){var debugOn=/[?&]badgeDebug=1\b/.test(location.search);panel.insertAdjacentHTML("afterbegin",'<section id="aiqV50112DebugBar" class="aiq-v50112-debug-bar"><div><b>Badge debug / audit</b><small style="display:block;color:var(--muted,#94a3b8)">Copy this JSON so badge math can be verified exactly.</small></div><div class="aiq-v50112-debug-row"><button type="button" id="aiqV50112CopyDebug">Copy Badge Debug JSON</button><button type="button" id="aiqV50112RefreshDebug">Refresh JSON</button><a href="'+safe(location.pathname+(location.search?location.search+(location.search.indexOf("badgeDebug=1")<0?"&badgeDebug=1":""):"?badgeDebug=1"))+'">Open debug mode ↗</a></div><textarea id="aiqV50112DebugText" class="aiq-v50112-debug-text" spellcheck="false" readonly '+(debugOn?'':'hidden')+'></textarea></section>');bar=$("#aiqV50112DebugBar");var copy=$("#aiqV50112CopyDebug"),refresh=$("#aiqV50112RefreshDebug"),ta=$("#aiqV50112DebugText");if(copy&&ta)copy.onclick=function(){ta.hidden=false;ta.value=JSON.stringify(debugObject(),null,2);ta.focus();ta.select();ta.setSelectionRange(0,ta.value.length);try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(ta.value)}else{document.execCommand("copy")}}catch(_){try{document.execCommand("copy")}catch(__){}}window.__apexiqV50112.debugCopies++};if(refresh&&ta)refresh.onclick=function(){ta.hidden=false;ta.value=JSON.stringify(debugObject(),null,2)}}var ta=$("#aiqV50112DebugText");if(ta&&!ta.value)ta.value=json;var hero=panel.querySelector(".aiq-v50109-hero");if(hero){var k=hero.querySelector(".aiq-v50109-kicker span:last-child");if(k)k.textContent="Stat Vault v112 audit copy"}}
+  function patchBadgeCaseSize(){var panel=$("#profilePanel");if(!panel||!hasProfile())return;var cases=all("section.badge-case",panel);cases.forEach(function(c){c.classList.add("aiq-v50112-profile-badge-case")})}
+  function patchOfficialButtons(){all(".platform-card").forEach(function(card){var head=(card.querySelector(".platform-head")||card).textContent||"";var s=head.toLowerCase();var plat=/switch|nintendo/.test(s)?"SWITCH":(/xbox|x1/.test(s)?"X1":(/playstation|ps4|ps5|\bps\b/.test(s)?"PS4":"PC"));var url="https://apexlegendsstatus.com/live-ranked-leaderboards/Battle_Royale/"+plat;var row=card.querySelector(".action-row");if(!row){var anchor=card.querySelector(".leader-list")||card.querySelector(".empty")||card;anchor.insertAdjacentHTML("afterend",'<div class="action-row"></div>');row=card.querySelector(".action-row")}var links=all("a",row).filter(function(a){return /official|board/i.test(a.textContent||"")});var link=links[0];links.slice(1).forEach(function(x){x.remove()});if(!link){row.insertAdjacentHTML("beforeend",'<a class="ghost aiq-v50112-official-board" target="_blank" rel="noopener noreferrer">Official board ↗</a>');link=row.querySelector("a:last-child")}link.classList.add("ghost","aiq-v50112-official-board");link.href=url;link.target="_blank";link.rel="noopener noreferrer";link.textContent="Official board ↗"})}
+  function updateBuildLog(){var entry='<li data-aiq-v50112><small>v4.9.9.112</small><b>Legend card recovery + debug copy fix</b><span>Recovered the stable dark legend-card system from today\'s working render, hid Legend Snapshot before profile search, enlarged and centered profile badge-case icons, added an always-available Copy Badge Debug JSON tool, preserved v109 badge math, and reinforced Official board button alignment.</span></li>';var roadmap='<li data-aiq-v50112-roadmap><b>Current roadmap status</b><span>Legend-card recovery: active and locked to recovered stable cards. Stat Vault / Badge Engine: audit mode active with copyable JSON. Automatic stat refresh: client/session only unless verified. Server-side background refresh: planned, not active without Worker cron. Badge proof vault: founder verified counts active; admin proof assignment UI still planned.</span></li>';all("#aiqV49948BuildHub,#aiqV49948BuildHubSettings,.aiq-v49948-buildhub").forEach(function(hub){var badge=hub.querySelector(".aiq-v49948-build-badge");if(badge)badge.textContent="v4.9.9.112";var lists=all(".aiq-v49948-build-list",hub);if(lists[0]&&!lists[0].querySelector("[data-aiq-v50112]"))lists[0].insertAdjacentHTML("afterbegin",entry);if(lists[1]&&!lists[1].querySelector("[data-aiq-v50112-roadmap]"))lists[1].insertAdjacentHTML("afterbegin",roadmap)})}
+  function after(reason){try{renderRecoveredLegends(reason||"after");patchBadgeCaseSize();patchOfficialButtons();ensureDebugTools();updateBuildLog()}catch(e){console.warn(BUILD,e)}}
+  function wrap(name,fn){var old=window[name];if(typeof old!=="function"||old.__v50112Wrapped)return;var w=function(){var ret=old.apply(this,arguments);scheduleLegendRecovery(name);setTimeout(function(){fn(name)},180);return ret};w.__v50112Wrapped=true;w.__v50112Original=old;window[name]=w;try{window.eval(name+" = window['"+name+"']")}catch(_){}}
+  function install(){installLegendRenderer();["renderProfile","renderAll","renderBadgesPanel","renderRanked","renderSettings","switchPanel"].forEach(function(n){wrap(n,after)});["apexiqSafeSearch","apexiqSearchPlayer","loadAll"].forEach(function(n){var old=window[n];if(typeof old==="function"&&!old.__v50112Wrapped){var w=async function(){try{return await old.apply(this,arguments)}finally{scheduleLegendRecovery(n+" final");[300,1300,3200].forEach(function(ms){setTimeout(function(){after(n+" final "+ms)},ms)})}};w.__v50112Wrapped=true;w.__v50112Original=old;window[n]=w;try{window.eval(n+" = window['"+n+"']")}catch(_){}}});after("boot");[500,1600,3600].forEach(function(ms){setTimeout(function(){after("scheduled "+ms)},ms)})}
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",install,{once:true});else install();
+})();
+</script>
+<!-- === /ApexIQ v4.9.9.112 Legend Card Recovery + Debug Copy Fix === -->
+
 </body>
 </html>
 
