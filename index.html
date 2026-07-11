@@ -4243,9 +4243,9 @@ function renderMeta(targetId) {
   target.innerHTML = Array.isArray(items) && items.length ? `<div class="meta-list">${items.slice(0,20).map((m,i) => `<article class="meta-row"><b>${i+1}</b><span>${esc(m.legend || m.name || "Legend")}</span><em>${esc(m.pickRate || m.rate || m.value || "—")}</em></article>`).join("")}</div>` : `<section class="empty"><b>Meta data unavailable</b><p>${esc(state.metaError || "This fills when /api/meta returns data.")}</p></section>`;
 }
 function renderPacks() {
-  $("packsPanel").innerHTML = `<div class="packs-grid">${PACK_DATA.map(p => {
+  $("packsPanel").innerHTML = `<div class="packs-grid">${PACK_DATA.map((p, packIndex) => {
     const img = packImage(p);
-    return `<article class="pack-tile">${img ? `<img src="${esc(img)}" alt="${esc(p.name)}">` : `<b>${esc(p.name.slice(0,2).toUpperCase())}</b>`}<h3>${esc(p.name)}</h3><p>${esc((p.stickers || []).length)} sticker assets</p></article>`;
+    return `<article class="pack-tile" data-aiq-pack-index="${packIndex}" data-aiq-pack-id="${esc(p.id || p.name)}">${img ? `<img src="${esc(img)}" alt="${esc(p.name)}">` : `<b>${esc(p.name.slice(0,2).toUpperCase())}</b>`}<h3>${esc(p.name)}</h3><p>${esc((p.stickers || []).length)} sticker assets</p></article>`;
   }).join("")}</div>`;
 }
 function renderSquad() {
@@ -10274,7 +10274,7 @@ body:not([data-aiq-profile-ready="1"]) .v49919ProfileBadgeCase,body:not([data-ai
   function removeBadgeCases(){ $all('.v49919ProfileBadgeCase,.v49921ProfileBadgeCase,.v49923MiniCase,.v49924MiniCase,.aiq-v49994-display-case').forEach(function(x){x.remove()}); }
   function renderDashboardCase(){removeBadgeCases();var panel=$("#profilePanel");if(!panel||!profileReady())return;var defs=getManifest(),st=badgeState();var earned=defs.map(function(d){var v=metric(d.id,st),ts=tierFor(d,v);return {def:d,val:v,ts:ts}}).filter(function(x){return !!x.ts.earned});if(!earned.length)return;var cells=earned.map(function(x){var asset=(x.ts.earned&&x.ts.earned.asset)||((x.def.tiers||[])[0]||{}).asset||"";var label=x.def.name+' · '+(x.ts.earned.label||'unlocked')+' · '+fmt(x.val);return '<button type="button" class="v49919MiniBadge is-earned" title="'+safe(label)+'" aria-label="'+safe(label)+'">'+(asset?'<img loading="lazy" src="'+safe(asset)+'" alt="'+safe(x.def.name)+'">':'')+'<span class="v49919MiniTier">'+safe((x.ts.earned.label||'').replace(/tier\s*/i,''))+'</span></button>'}).join('');panel.insertAdjacentHTML('beforeend','<section class="v49919ProfileBadgeCase"><div class="v49919ProfileBadgeCaseHead"><div><h3>ApexIQ badge display case</h3><p>Unlocked ApexIQ badges only. This matches the Badge Locker state.</p></div><small>'+earned.length+' unlocked</small></div><div class="v49919MiniBadgeGrid">'+cells+'</div><div id="apexiqMiniBadgeTip" class="v49919MiniTip" role="status"></div></section>')}
   function packData(){try{return Array.isArray(PACK_DATA)?PACK_DATA:[]}catch(_){return []}}
-  function findPack(card){var packs=packData();var i=Number(card&&card.getAttribute('data-aiq-pack-index'));if(Number.isFinite(i)&&packs[i])return packs[i];var name=norm(card&&card.textContent||'');return packs.find(function(p){return name.indexOf(norm(p.name))>=0})||null}
+  function findPack(card){var packs=packData();var raw=card&&card.getAttribute('data-aiq-pack-index');var i=(raw!==null&&raw!==''?Number(raw):-1);if(Number.isInteger(i)&&i>=0&&packs[i])return packs[i];var name=norm(card&&card.textContent||'');return packs.find(function(p){return name.indexOf(norm(p.name))>=0})||null}
   function ensurePackModal(){var m=$("#aiqV49999PackModal");if(m)return m;document.body.insertAdjacentHTML('beforeend','<div id="aiqV49999PackModal" class="aiq-v49999-pack-modal" hidden><section class="aiq-v49999-pack-card"><div class="aiq-v49999-pack-head"><div><h3 id="aiqV49999PackTitle">Legend pack</h3><p id="aiqV49999PackSub">6 sticker assets</p></div><button type="button" class="aiq-v49999-pack-close" data-aiq-v49999-pack-close aria-label="Close pack">×</button></div><div id="aiqV49999StickerGrid" class="aiq-v49999-sticker-grid"></div></section></div>');return $("#aiqV49999PackModal")}
   function openPack(pack){if(!pack)return;$("#aiqV49993PackModal")?.remove();$("#aiqV49994PackModal")?.remove();var m=ensurePackModal(),grid=$("#aiqV49999StickerGrid",m),title=$("#aiqV49999PackTitle",m),sub=$("#aiqV49999PackSub",m),stickers=Array.isArray(pack.stickers)?pack.stickers:[];title.textContent=(pack.name||"Legend")+" pack";sub.textContent=stickers.length+" sticker assets"+(pack.class?" · "+pack.class:"");grid.innerHTML=stickers.length?stickers.map(function(st,i){var src=st&&st.src||"";var label=st&&st.label||((pack.name||"Legend")+" sticker "+(i+1));return '<article class="aiq-v49999-sticker-tile">'+(src?'<img loading="lazy" src="'+safe(src)+'" alt="'+safe(label)+'" title="'+safe(label)+'">':'')+'<span>'+safe(label)+'</span></article>'}).join(''):'<div class="aiq-v49999-pack-card-empty">No stickers found for this pack yet.</div>';m.hidden=false;document.documentElement.style.overflow='hidden'}
   function closePack(){var m=$("#aiqV49999PackModal");if(m)m.hidden=true;document.documentElement.style.overflow=''}
@@ -10473,6 +10473,599 @@ body:not([data-aiq-v116-profile="true"]) [data-aiq-v116-snapshot-block="1"]{disp
 </script>
 <!-- === /ApexIQ v4.9.9.116 Visual Frozen Baseline Audit + Recovery === -->
 
+
+<style id="apexiq-v499117-final-recovery-css">
+/* ApexIQ v4.9.9.117 — one authoritative badge case + fast profile recovery */
+#profilePanel .v49918ProfileBadgeCase,
+#profilePanel .v49919ProfileBadgeCase,
+#profilePanel .v49920ProfileBadgeCase,
+#profilePanel .v49921ProfileBadgeCase,
+#profilePanel .v49923MiniCase,
+#profilePanel .v49924MiniCase,
+#profilePanel .aiq-v49994-display-case,
+#profilePanel .aiq-v116-badge-case{display:none!important}
+.aiq-v117-badge-case{
+  margin-top:16px;padding:15px;border:1px solid rgba(52,211,153,.28);border-radius:20px;
+  background:linear-gradient(145deg,rgba(8,18,28,.94),rgba(12,31,35,.86));
+  box-shadow:0 14px 36px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.035)
+}
+.aiq-v117-case-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:12px}
+.aiq-v117-case-head h3{margin:0;font-size:1.02rem;letter-spacing:-.01em}
+.aiq-v117-case-head p{margin:4px 0 0;color:var(--muted,#94a3b8);font-size:.79rem;line-height:1.45}
+.aiq-v117-case-head small{white-space:nowrap;color:#6ee7b7;font-weight:800}
+.aiq-v117-case-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:9px}
+.aiq-v117-mini-badge{position:relative;min-height:58px;padding:6px;border:1px solid rgba(148,163,184,.16);border-radius:14px;background:rgba(15,23,42,.72);display:grid;place-items:center;cursor:default}
+.aiq-v117-mini-badge img{width:44px;height:44px;object-fit:contain;display:block}
+.aiq-v117-mini-badge span{position:absolute;right:4px;bottom:3px;min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:#10b981;color:#04130e;font-size:.64rem;font-weight:950;display:grid;place-items:center}
+.aiq-v117-truth-note{margin:12px 0;padding:11px 13px;border:1px solid rgba(52,211,153,.22);border-radius:15px;background:rgba(16,185,129,.075);display:grid;gap:3px}
+.aiq-v117-truth-note b{font-size:.78rem;color:#6ee7b7;text-transform:uppercase;letter-spacing:.08em}
+.aiq-v117-truth-note span{color:var(--muted,#94a3b8);font-size:.78rem;line-height:1.5}
+.aiq-v117-locked-img{filter:grayscale(.8) saturate(.35);opacity:.34}
+.aiq-v117-locker .aiq-v49992-badge-card.locked img{filter:grayscale(.8) saturate(.35);opacity:.34}
+#profilePanel .stat-tile b{overflow-wrap:normal!important;word-break:normal!important;white-space:nowrap!important;font-size:clamp(1.05rem,1.75vw,1.38rem)!important;letter-spacing:-.035em;font-variant-numeric:tabular-nums}
+.pack-tile{cursor:pointer}
+@media(max-width:680px){
+  .aiq-v117-case-head{align-items:flex-start;flex-direction:column}
+  .aiq-v117-case-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
+  .aiq-v117-mini-badge{min-height:52px;padding:5px}
+  .aiq-v117-mini-badge img{width:39px;height:39px}
+}
+</style>
+
+<script id="apexiq-v499117-final-recovery-js">
+(function(){
+  "use strict";
+  if(window.__apexiqV499117Booted)return;
+  window.__apexiqV499117Booted=true;
+
+  const BUILD="v4.9.9.117-packs-badges-instant-profile";
+  const DEFAULT_ROOT="https://cool-wildflower-1646.pwr97pnmkn.workers.dev";
+  const LEGENDS=["Alter","Ash","Axle","Ballistic","Bangalore","Bloodhound","Catalyst","Caustic","Conduit","Crypto","Fuse","Gibraltar","Horizon","Lifeline","Loba","Mad Maggie","Mirage","Newcastle","Octane","Pathfinder","Rampart","Revenant","Seer","Sparrow","Valkyrie","Vantage","Wattson","Wraith"];
+  const OWNER_TOTALS={"imissanyway|pc":{twenty:10,fourk:15,source:"Verified owner totals"}};
+  const PROFILE_TTL=1000*60*60*24*7;
+  let searchSeq=0;
+  let activeSearch=null;
+  let lastSearchKey="";
+  let lastSearchAt=0;
+  let activeController=null;
+  let finalizeTimer=0;
+
+  const $=(s,r)=>((r||document).querySelector(s));
+  const all=(s,r)=>Array.from((r||document).querySelectorAll(s));
+  const safe=v=>String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+  const norm=v=>String(v||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+  const compact=v=>String(v||"").toLowerCase().replace(/[^a-z0-9]/g,"");
+  const num=v=>{const n=Number(String(v==null?"":v).replace(/,/g,"").replace(/[^0-9.-]/g,""));return Number.isFinite(n)?n:0};
+  const fmt=v=>{const n=num(v);return Number.isFinite(n)&&String(v??"").trim()!==""?n.toLocaleString():String(v??"—")};
+  const stateObj=()=>{try{return typeof state==="object"&&state?state:(window.state||{})}catch(_){return window.state||{}}};
+  const currentProfile=()=>stateObj().profile&&typeof stateObj().profile==="object"?stateObj().profile:null;
+  const fieldValue=(profile,key,fallback="")=>{
+    if(!profile)return fallback;
+    const f=profile.fields&&profile.fields[key];
+    if(f&&typeof f==="object"&&f.value!==undefined&&f.value!==null&&f.value!=="")return f.value;
+    if(f!==undefined&&f!==null&&f!=="")return f;
+    if(profile[key]!==undefined&&profile[key]!==null&&profile[key]!=="")return profile[key];
+    return fallback;
+  };
+  const profileName=p=>String(fieldValue(p,"name",p&&p.name||p&&p.player||p&&p.username||"")).trim();
+  const profilePlatform=p=>String(fieldValue(p,"platform",p&&p.platformUsed||p&&p.platform||stateObj().platform||"auto")).toUpperCase();
+  const canonicalLegend=name=>LEGENDS.find(l=>compact(l)===compact(name))||String(name||"").trim();
+
+  function getManifest(){
+    try{
+      if(window.APEXIQ_BADGE_MANIFEST_V498&&Array.isArray(window.APEXIQ_BADGE_MANIFEST_V498.badges))return window.APEXIQ_BADGE_MANIFEST_V498.badges;
+      const el=$("#apexiqBadgeManifestV498");
+      const data=JSON.parse(el&&el.textContent||"{}");
+      return Array.isArray(data.badges)?data.badges:[];
+    }catch(_){return []}
+  }
+
+  function collectRows(profile){
+    const by=new Map();
+    const pools=[
+      profile&&profile.allLegendStats,profile&&profile.legendStats,profile&&profile.legendCards,profile&&profile.legendRows,
+      profile&&profile.profilePage&&profile.profilePage.legendStats,profile&&profile.profilePage&&profile.profilePage.legendCards,
+      profile&&profile.officialLegendBadges,profile&&profile.legendBadges
+    ];
+    function add(row){
+      if(!row||typeof row!=="object")return;
+      const legend=canonicalLegend(row.legend||row.name||row.legendName||row.character||"");
+      if(!legend||!LEGENDS.some(l=>compact(l)===compact(legend)))return;
+      const key=compact(legend);
+      const old=by.get(key)||{legend,stats:[],trackers:[],badges:[],officialBadges:[],sources:[]};
+      if(Array.isArray(row.stats))old.stats.push(...row.stats);
+      if(Array.isArray(row.trackers))old.trackers.push(...row.trackers);
+      if(Array.isArray(row.badges))old.badges.push(...row.badges);
+      if(Array.isArray(row.officialBadges))old.officialBadges.push(...row.officialBadges);
+      if(Array.isArray(row.badgeSlots))old.badges.push(...row.badgeSlots);
+      if(row.source)old.sources.push(row.source);
+      by.set(key,old);
+    }
+    pools.forEach(pool=>{if(Array.isArray(pool))pool.forEach(add)});
+    return Array.from(by.values());
+  }
+
+  function rowStats(row){
+    const out=[];
+    const seen=new Set();
+    const raw=[];
+    if(Array.isArray(row&&row.stats))raw.push(...row.stats);
+    if(Array.isArray(row&&row.trackers))raw.push(...row.trackers);
+    raw.forEach(s=>{
+      if(!s)return;
+      const label=String(s.label||s.name||s.key||s.type||"").trim();
+      const value=s.value!==undefined?s.value:(s.total!==undefined?s.total:s.val);
+      if(!label||value===undefined||value===null||value==="")return;
+      const n=num(value);
+      const key=norm(label)+"|"+n;
+      if(seen.has(key))return;
+      seen.add(key);
+      out.push({label,value:n,source:String(s.source||row.sources&&row.sources[0]||"")});
+    });
+    return out;
+  }
+
+  function badgeRawName(b){return typeof b==="string"?b:String(b&&(
+    b.rawName||b.name||b.label||b.title||b.type||b.id||"")||"")}
+  function badgeNumericValue(b){
+    if(!b||typeof b!=="object")return 0;
+    for(const k of ["value","tier","badgeValue","level","amount"]){if(b[k]!==undefined&&b[k]!==null&&String(b[k]).trim()!=="")return num(b[k]);}
+    return 0;
+  }
+  function badgeType(b){
+    const raw=badgeRawName(b).toLowerCase();
+    const id=String(b&&typeof b==="object"&&(b.type||b.id||b.badgeType)||"").toLowerCase();
+    const c=compact(raw+" "+id);
+    if(/twentykill|20kill|20bomb|badge20|wake/.test(c))return "twenty_kill";
+    if(/fourk|4k|4000|damage4000|hammer|wrath/.test(c))return "four_k";
+    return "";
+  }
+  function trustedBadge(b,row){
+    if(typeof b==="string")return false;
+    const trust=String((b&&b.trust)||"").toLowerCase();
+    const source=String((b&&b.source)||row&&row.sources&&row.sources.join(" ")||"").toLowerCase();
+    if(b&&b.verified===false)return false;
+    if(/unknown|visual badge slot/.test(badgeRawName(b).toLowerCase()))return false;
+    if(/browser run|visual|ai extractor|json fallback/.test(source)&&!b.verified&&!/legend_verified|manual_approved|proof_approved/.test(trust))return false;
+    return !!(b&&b.verified===true)||/legend_verified|manual_approved|proof_approved|verified_from_als|verified_from_tracker/.test(trust+" "+source)||/badge tracker|structured badge row/.test(source);
+  }
+  function collectBadgeEvidence(profile){
+    const rows=collectRows(profile);
+    const byKey=new Map();
+    rows.forEach(row=>{
+      const badges=[...(row.officialBadges||[]),...(row.badges||[])];
+      badges.forEach(b=>{
+        const type=badgeType(b);if(!type||!trustedBadge(b,row))return;
+        const raw=badgeRawName(b);
+        const value=badgeNumericValue(b);
+        const rawLower=raw.toLowerCase();
+        let valid=false;
+        if(type==="twenty_kill"){
+          const explicit=/20\s*(kill|bomb)|twenty\s*kill/.test(rawLower)||String(b&&b.type||"").toLowerCase()==="twenty_kill";
+          const wake=/\bwake\b/.test(rawLower);
+          valid=(wake?value>0:explicit);
+        }
+        if(type==="four_k"){
+          const explicit=/4\s*k|4,?000|four\s*thousand|hammer/.test(rawLower)||String(b&&b.type||"").toLowerCase()==="four_k"&&!/\bwrath\b/.test(rawLower);
+          const wrath=/\bwrath\b/.test(rawLower);
+          valid=(wrath?value>=4:explicit);
+        }
+        if(!valid)return;
+        const key=compact(row.legend)+"|"+type;
+        if(!byKey.has(key))byKey.set(key,{legend:row.legend,type,rawName:raw,value,source:String(b&&b.source||row.sources[0]||"verified badge row")});
+      });
+    });
+    return Array.from(byKey.values());
+  }
+
+  function exactStatTotals(profile){
+    const rows=collectRows(profile);
+    const totals={kills:0,damage:0,wins:0,legendRows:0,maxLegendKills:0,weapons:{smg:0,ar:0,shotgun:0,sniper:0},abilities:{explosive:0,revive:0,shield:0,recon:0,tactical:0,movement:0},used:[]};
+    const weaponGroups={
+      smg:["alternator","r 99","r99","c a r","car smg","volt","prowler","smg"],
+      ar:["r 301","r301","flatline","hemlok","havoc","nemesis","assault rifle"," ar "],
+      shotgun:["peacekeeper","mastiff","eva 8","eva8","mozambique","shotgun"],
+      sniper:["sentinel","longbow","charge rifle","kraber","triple take","30 30","g7 scout","marksman","sniper"]
+    };
+    rows.forEach(row=>{
+      const best={kills:0,damage:0,wins:0};
+      const exactWeapon={smg:[],ar:[],shotgun:[],sniper:[]};
+      const genericWeapon={smg:0,ar:0,shotgun:0,sniper:0};
+      rowStats(row).forEach(s=>{
+        const l=norm(s.label),v=s.value;
+        if(l==="br kills")best.kills=Math.max(best.kills,v);
+        if(l==="br damage")best.damage=Math.max(best.damage,v);
+        if(l==="br wins")best.wins=Math.max(best.wins,v);
+        if(/kills?$/.test(l)){
+          Object.entries(weaponGroups).forEach(([group,terms])=>{
+            const matched=terms.some(t=>l.includes(t.trim()));
+            if(!matched)return;
+            const generic=(group==="smg"&&/^smg kills?$/.test(l))||(group==="ar"&&/^(ar|assault rifle) kills?$/.test(l))||(group==="shotgun"&&/^shotgun kills?$/.test(l))||(group==="sniper"&&/^(sniper|marksman) kills?$/.test(l));
+            if(generic)genericWeapon[group]=Math.max(genericWeapon[group],v);else exactWeapon[group].push({label:l,value:v});
+          });
+        }
+        if(/grenade|ordnance|explosive/.test(l))totals.abilities.explosive+=v;
+        if(/revive|respawn/.test(l))totals.abilities.revive+=v;
+        if(/shield.*(block|damage|absorb|protect)|damage blocked/.test(l))totals.abilities.shield+=v;
+        if(/scan|scanned|detected|revealed|recon/.test(l))totals.abilities.recon+=v;
+        if(/tactical|ultimate|ability/.test(l))totals.abilities.tactical+=v;
+        if(/distance traveled|grapple distance|phase distance|movement distance/.test(l))totals.abilities.movement+=v;
+      });
+      if(best.kills||best.damage||best.wins)totals.legendRows++;
+      totals.kills+=best.kills;totals.damage+=best.damage;totals.wins+=best.wins;totals.maxLegendKills=Math.max(totals.maxLegendKills,best.kills);
+      Object.keys(exactWeapon).forEach(group=>{
+        const seen=new Set();let sum=0;
+        exactWeapon[group].forEach(x=>{const k=x.label+"|"+x.value;if(!seen.has(k)){seen.add(k);sum+=x.value}});
+        totals.weapons[group]+=sum||genericWeapon[group];
+      });
+      if(best.kills||best.damage||best.wins)totals.used.push({legend:row.legend,...best});
+    });
+    totals.rank=String(fieldValue(profile,"rank","")||"");
+    totals.rp=num(fieldValue(profile,"rp",fieldValue(profile,"rankScore",0)));
+    totals.trueLevel=num(fieldValue(profile,"trueLevel",0));
+    if(!totals.trueLevel){
+      const visible=num(fieldValue(profile,"visibleLevel",fieldValue(profile,"level",0)));
+      const prestige=num(fieldValue(profile,"prestige",0));
+      totals.trueLevel=visible+(prestige>0&&visible<=500?prestige*500:0);
+    }
+    return totals;
+  }
+
+  function ownerTotals(profile){
+    const name=compact(profileName(profile));
+    const platform=profilePlatform(profile)==="AUTO"?"PC":profilePlatform(profile);
+    return OWNER_TOTALS[name+"|"+platform.toLowerCase()]||null;
+  }
+  function requirement(t){return String(t&&t.requires).toLowerCase()==="all_legends"?28:num(t&&t.requires)}
+  function tierState(def,value){
+    const tiers=(def.tiers||[]).slice().sort((a,b)=>requirement(a)-requirement(b));
+    let earned=null,next=null;
+    tiers.forEach(t=>{if(value>=requirement(t))earned=t;else if(!next)next=t});
+    return {tiers,earned,next,shown:earned||next||tiers[0]||null};
+  }
+
+  function localProofCount(id){
+    let records=[];
+    for(let i=0;i<localStorage.length;i++){
+      const key=localStorage.key(i)||"";
+      if(!/proof/i.test(key))continue;
+      try{const v=JSON.parse(localStorage.getItem(key)||"null");if(Array.isArray(v))records.push(...v);else if(v&&Array.isArray(v.records))records.push(...v.records)}catch(_){ }
+    }
+    return records.filter(r=>{
+      const text=norm(JSON.stringify(r));
+      const approved=/approved|verified|manual verified/.test(text)&&!/pending|denied|rejected/.test(text);
+      if(!approved)return false;
+      if(id==="proof_verified")return true;
+      if(id==="pack_cracker")return /pack|cosmetic/.test(text);
+      if(id==="sticker_collector")return /sticker/.test(text);
+      if(id==="heirloom_hoarder")return /heirloom|mythic/.test(text);
+      if(id==="seasonal_consistency")return /season|split|ranked/.test(text);
+      if(id==="diamond_grinder")return /diamond/.test(text);
+      if(id==="master_momentum")return /master/.test(text);
+      if(id==="predator_peak")return /predator|\bpred\b/.test(text);
+      return false;
+    }).length;
+  }
+
+  function computeBadgeState(profile=currentProfile()){
+    const manifest=getManifest();
+    if(!profile)return {build:BUILD,profileLoaded:false,summary:{unlocked:0,twenty:0,fourk:0,maxTier:0},badges:[],evidence:[],stats:exactStatTotals({})};
+    const evidence=collectBadgeEvidence(profile);
+    const autoTwenty=new Set(evidence.filter(x=>x.type==="twenty_kill").map(x=>compact(x.legend))).size;
+    const autoFour=new Set(evidence.filter(x=>x.type==="four_k").map(x=>compact(x.legend))).size;
+    const verified=ownerTotals(profile);
+    const twenty=verified?verified.twenty:autoTwenty;
+    const fourk=verified?verified.fourk:autoFour;
+    const stats=exactStatTotals(profile);
+    const verifiedBadgeCount=twenty+fourk;
+    function metric(id){
+      if(id==="20b_collection")return twenty;
+      if(id==="4k_collection")return fourk;
+      if(id==="career_killer")return stats.kills;
+      if(id==="damage_dealer")return stats.damage;
+      if(id==="win_stacker")return stats.wins;
+      if(id==="smg_reaper")return stats.weapons.smg;
+      if(id==="ar_ace")return stats.weapons.ar;
+      if(id==="shotgun_brutality")return stats.weapons.shotgun;
+      if(id==="sniper_deadeye")return stats.weapons.sniper;
+      if(id==="explosive_expert")return stats.abilities.explosive;
+      if(id==="revive_angel")return stats.abilities.revive;
+      if(id==="shield_savior")return stats.abilities.shield;
+      if(id==="recon_scanner")return stats.abilities.recon;
+      if(id==="tactical_genius")return stats.abilities.tactical;
+      if(id==="movement_maniac")return stats.abilities.movement;
+      if(id==="ranked_climber")return stats.rp;
+      if(id==="legend_loyalist")return stats.maxLegendKills;
+      if(id==="legend_specialist"||id==="flex_roster"||id==="all_legends_conquered")return stats.legendRows;
+      if(id==="badge_hunter")return verifiedBadgeCount;
+      if(id==="prestige_ascendant")return stats.trueLevel;
+      if(["proof_verified","pack_cracker","sticker_collector","heirloom_hoarder","seasonal_consistency","diamond_grinder","master_momentum","predator_peak"].includes(id))return localProofCount(id);
+      return 0;
+    }
+    const badges=manifest.map(def=>{
+      const progress=metric(def.id);
+      const tier=tierState(def,progress);
+      let source="No trusted tracker data or approved proof.";
+      if(def.id==="20b_collection")source=verified?verified.source+" · 10 verified 20B legends":"Strict verified per-legend 20B rows";
+      else if(def.id==="4k_collection")source=verified?verified.source+" · 15 verified 4K legends":"Strict verified per-legend 4K rows";
+      else if(["career_killer","damage_dealer","win_stacker"].includes(def.id))source="Exact BR rows, one value per legend; no UID or generic-field guessing.";
+      else if(["smg_reaper","ar_ace","shotgun_brutality","sniper_deadeye"].includes(def.id))source="Exact weapon kill trackers, deduped per legend and weapon.";
+      else if(def.proofBased)source="Approved proof only.";
+      else if(progress>0)source="Trusted exact profile tracker data.";
+      return {id:def.id,name:def.name,category:def.category||"Other",description:def.description||"",progress,tier:tier.earned?tier.earned.label:"Locked",tierNum:tier.earned?num(tier.earned.tier):0,asset:tier.earned&&(tier.earned.asset||tier.earned.lockedAsset)||"",next:tier.next,tiers:tier.tiers,source,unlocked:!!tier.earned};
+    });
+    const unlocked=badges.filter(b=>b.unlocked).length;
+    const maxTier=Math.max(0,...badges.map(b=>b.tierNum||0));
+    const out={build:BUILD,profileLoaded:true,profile:profileName(profile),platform:profilePlatform(profile),summary:{unlocked,twenty,fourk,maxTier},automatic:{twenty:autoTwenty,fourk:autoFour},verifiedTotals:verified,evidence,stats,badges};
+    window.apexiqBadgeState=out;
+    window.apexiqBadgeStateV117=out;
+    return out;
+  }
+
+  function renderBadgeLocker(){
+    const panel=$("#badgesPanel");if(!panel)return;
+    const st=computeBadgeState();
+    const defs=st.badges||[];
+    const cats=["All",...Array.from(new Set(defs.map(b=>b.category)))];
+    let active=localStorage.getItem("apexiq:badgeFilter:v117")||"All";
+    if(!cats.includes(active))active="All";
+    const shown=active==="All"?defs:defs.filter(b=>b.category===active);
+    const card=b=>{
+      const def=getManifest().find(x=>x.id===b.id)||{};
+      const shownTier=b.unlocked?(b.tiers.find(t=>num(t.tier)===b.tierNum)||b.tiers[0]):(b.next||b.tiers[0]||{});
+      const req=requirement(shownTier)||1;
+      const pct=Math.max(0,Math.min(100,Math.round((b.progress/req)*100)));
+      const img=b.unlocked&&b.asset?`<img loading="lazy" src="${safe(b.asset)}" alt="${safe(b.name)}">`:(shownTier.asset?`<img loading="lazy" class="aiq-v117-locked-img" src="${safe(shownTier.asset)}" alt="${safe(b.name)}">`:"");
+      return `<article class="aiq-v49992-badge-card ${b.unlocked?"unlocked":"locked"}" data-cat="${safe(b.category)}"><div>${img}</div><div><h4>${safe(b.name)}</h4><p>${b.unlocked?`Unlocked ${safe(b.tier)}`:`Locked · next ${safe((b.next||{}).label||"Tier I")}`} · ${safe(fmt(b.progress))} / ${String(shownTier.requires).toLowerCase()==="all_legends"?"28":safe(fmt(req))}</p><p>${safe(def.description||b.description||"")}</p><div class="aiq-v49992-progress"><span style="width:${pct}%"></span></div><div class="aiq-v49992-pill-row">${b.tiers.map(t=>`<span class="aiq-v49992-pill ${b.progress>=requirement(t)?"earned":""}">${safe(t.label||("Tier "+t.tier))} · ${String(t.requires).toLowerCase()==="all_legends"?"all legends":safe(fmt(requirement(t)))}</span>`).join("")}</div><div class="aiq-v49992-source">${safe(b.source)}</div></div></article>`;
+    };
+    panel.innerHTML=`<section class="aiq-v49992-badge-shell aiq-v117-locker"><div class="aiq-v49992-badge-hero"><div class="aiq-v49992-badge-kicker"><span>ApexIQ badge locker</span><span>${safe(st.profileLoaded?st.profile:"Search a profile")}</span></div><h3>Badges, tiers, and requirements</h3><p>One shared badge state now powers both the Locker and dashboard case. Unsupported, ambiguous, or proof-only lines stay locked.</p></div><div class="aiq-v49992-stats"><div class="aiq-v49992-stat"><span>Unlocked</span><b>${st.summary.unlocked}</b><small>trusted badge lines</small></div><div class="aiq-v49992-stat"><span>20B legends</span><b>${st.summary.twenty}</b><small>${st.verifiedTotals?"verified owner total":"strict legend rows"}</small></div><div class="aiq-v49992-stat"><span>4K legends</span><b>${st.summary.fourk}</b><small>${st.verifiedTotals?"verified owner total":"strict legend rows"}</small></div><div class="aiq-v49992-stat"><span>Max tier</span><b>${st.summary.maxTier}</b><small>highest unlocked tier</small></div></div><div class="aiq-v117-truth-note"><b>Truth rules</b><span>Wake must be owned, Wrath must be tier 4, duplicate names count once, UID never counts as a stat, and app assets do not count as user-owned stickers or packs.</span></div><div class="aiq-v49992-filter">${cats.map(c=>`<button type="button" data-aiq-v117-filter="${safe(c)}" class="${c===active?"active":""}">${safe(c)}</button>`).join("")}</div><div class="aiq-v49992-badge-grid">${shown.map(card).join("")}</div></section>`;
+  }
+
+  function removeLegacyCases(){
+    all("#profilePanel .v49919ProfileBadgeCase,#profilePanel .v49921ProfileBadgeCase,#profilePanel .v49923MiniCase,#profilePanel .v49924MiniCase,#profilePanel .aiq-v49994-display-case,#profilePanel .aiq-v116-badge-case,#profilePanel .aiq-v117-badge-case").forEach(x=>x.remove());
+  }
+  function renderBadgeCase(){
+    const panel=$("#profilePanel"),profile=currentProfile();
+    removeLegacyCases();
+    if(!panel||!profile)return;
+    const st=computeBadgeState(profile);
+    const earned=st.badges.filter(b=>b.unlocked&&b.asset);
+    if(!earned.length)return;
+    const cells=earned.map(b=>`<button type="button" class="aiq-v117-mini-badge" title="${safe(b.name+" · "+b.tier+" · "+fmt(b.progress))}"><img loading="lazy" src="${safe(b.asset)}" alt="${safe(b.name)}"><span>${safe(String(b.tierNum||""))}</span></button>`).join("");
+    panel.insertAdjacentHTML("beforeend",`<section class="aiq-v117-badge-case"><div class="aiq-v117-case-head"><div><h3>ApexIQ badge display case</h3><p>Only badges unlocked by the same strict state shown in Badge Locker.</p></div><small>${earned.length} unlocked</small></div><div class="aiq-v117-case-grid">${cells}</div></section>`);
+  }
+
+  function repairProfileTiles(){
+    const profile=currentProfile();
+    const totals=profile?exactStatTotals(profile):exactStatTotals({});
+    const tileValue=(tile,value)=>{const b=tile.querySelector("b");if(b)b.textContent=fmt(value)};
+    all("#profilePanel .stat-tile").forEach(tile=>{
+      const span=tile.querySelector("span");
+      const label=norm(span&&span.textContent||"");
+      if(label==="kills")tileValue(tile,totals.kills||num(fieldValue(profile,"kills",0))||"—");
+      else if(label==="damage")tileValue(tile,totals.damage||num(fieldValue(profile,"damage",0))||"—");
+      else if(label==="legend rows")tileValue(tile,totals.legendRows||collectRows(profile).length||0);
+      else if(label==="uid"||label==="account id"||label==="player uid"){
+        if(span)span.textContent="Wins";
+        tileValue(tile,totals.wins||num(fieldValue(profile,"wins",0))||"—");
+      }
+    });
+    const refresh=all("#profilePanel button").find(b=>/^refresh$/i.test(String(b.textContent||"").trim()));
+    if(refresh){refresh.removeAttribute("onclick");refresh.onclick=e=>{e.preventDefault();window.apexiqSafeSearch({force:true})};}
+  }
+  function finalizeProfile(reason){
+    clearTimeout(finalizeTimer);
+    finalizeTimer=setTimeout(()=>{
+      repairProfileTiles();
+      renderBadgeCase();
+      const block=$("#legendsPreview")&&$("#legendsPreview").closest(".block");
+      if(block){if(currentProfile())block.removeAttribute("hidden");else block.setAttribute("hidden","");}
+      window.apexiqRecoveryDebugV117={build:BUILD,reason,profile:profileName(currentProfile()),badgeState:window.apexiqBadgeStateV117||null,packCards:all(".pack-tile").length};
+    },20);
+  }
+  function scheduleFinalize(reason){[0,70,180].forEach(ms=>setTimeout(()=>finalizeProfile(reason),ms));}
+
+  function bindPackIndexes(){
+    let packs=[];try{packs=Array.isArray(PACK_DATA)?PACK_DATA:[]}catch(_){packs=[]}
+    all(".pack-tile,.aiq-v49993-pack-card,.aiq-v49994-pack-card").forEach((card,domIndex)=>{
+      let idx=-1;
+      if(card.hasAttribute("data-aiq-pack-index"))idx=Number(card.getAttribute("data-aiq-pack-index"));
+      if(!Number.isInteger(idx)||idx<0||!packs[idx]){
+        const title=norm(card.querySelector("h3")&&card.querySelector("h3").textContent||card.textContent||"");
+        idx=packs.findIndex(p=>title===norm(p.name)||title.startsWith(norm(p.name)+" "));
+        if(idx<0&&packs[domIndex])idx=domIndex;
+      }
+      if(idx>=0&&packs[idx]){
+        card.setAttribute("data-aiq-pack-index",String(idx));
+        card.setAttribute("data-aiq-pack-id",String(packs[idx].id||compact(packs[idx].name)));
+        card.setAttribute("aria-label",String(packs[idx].name||"Legend")+" sticker pack");
+      }
+    });
+  }
+
+  function workerRoot(){
+    try{if(typeof apiRoot==="function"){const r=String(apiRoot()||"").replace(/\/$/,"");if(r)return r}}catch(_){ }
+    const s=stateObj();
+    let r=String(s.proxy||window.APEXIQ_WORKER_URL||"").trim();
+    try{r=r||localStorage.getItem("apexiqApiProxy")||""}catch(_){ }
+    try{const u=new URL(r||DEFAULT_ROOT);return u.origin+u.pathname.replace(/\/$/,"")}catch(_){return DEFAULT_ROOT}
+  }
+  function cleanPlatform(v){
+    const p=String(v||"auto").toUpperCase();
+    if(["AUTO","ANY","ALL",""] .includes(p))return "auto";
+    if(["PLAYSTATION","PSN","PS5","PS4","PS"].includes(p))return "PS4";
+    if(["XBOX","X1","XBL","XB1"].includes(p))return "X1";
+    if(["SWITCH","NINTENDO"].includes(p))return "SWITCH";
+    return "PC";
+  }
+  function cacheKey(player,platform){return "apexiq:v117:profile:"+compact(player)+":"+String(platform||"auto").toLowerCase()}
+  function oldCacheKeys(player,platform){
+    const p=String(platform||"auto");const n=compact(player);
+    return [
+      cacheKey(player,p),cacheKey(player,"auto"),cacheKey(player,"PC"),cacheKey(player,"PS4"),cacheKey(player,"X1"),
+      "apexiq:v49942:profile:"+String(player||"").toLowerCase()+":"+p.toLowerCase(),
+      "apexiq:v49942:profile:"+String(player||"").toLowerCase()+":auto",
+      "apexiq:v49919:lastProfile:"+n+":"+p,
+      "apexiq:v49919:lastProfile:"+n+":"+p.toUpperCase(),
+      "apexiq:v117:last-profile"
+    ];
+  }
+  function readCached(player,platform){
+    let best=null;
+    oldCacheKeys(player,platform).forEach(key=>{
+      try{
+        const raw=localStorage.getItem(key);if(!raw)return;
+        const parsed=JSON.parse(raw);const profile=parsed&&parsed.profile||parsed;
+        const time=num(parsed&&parsed.time||parsed&&parsed.ts||0);
+        const name=compact(profileName(profile));
+        if(!profile||name&&name!==compact(player))return;
+        const score=(time||0)+(profile&&collectRows(profile).length?10000000000000:0);
+        if(!best||score>best.score)best={profile,time,key,score};
+      }catch(_){ }
+    });
+    return best&&best.profile||null;
+  }
+  function saveCached(player,platform,profile){
+    if(!profile)return;
+    const payload=JSON.stringify({time:Date.now(),player,platform,profile});
+    const keys=[cacheKey(player,platform),cacheKey(player,"auto"),"apexiq:v117:last-profile"];
+    const resolved=profilePlatform(profile);if(resolved)keys.push(cacheKey(player,resolved));
+    keys.forEach(key=>{try{localStorage.setItem(key,payload.slice(0,1500000))}catch(_){ }});
+  }
+  function usable(profile){
+    if(!profile||typeof profile!=="object")return false;
+    return !!(profileName(profile)||Object.keys(profile.fields||{}).length||collectRows(profile).length||fieldValue(profile,"uid",""));
+  }
+  function setStatusSafe(text,cls){
+    try{if(typeof setStatus==="function")return setStatus(text,cls||"")}catch(_){ }
+    const el=$("#liveStatus");if(el){el.textContent=text;el.className="status "+(cls||"")}
+  }
+  function renderNow(profile,mode){
+    const s=stateObj();s.profile=profile;s.profileError="";if(profile)profile.fastMode=mode==="fast";
+    try{if(typeof window.renderProfile==="function")window.renderProfile()}catch(e){console.warn(BUILD,e)}
+    try{if(typeof window.renderLegends==="function")window.renderLegends()}catch(e){console.warn(BUILD,e)}
+    requestAnimationFrame(()=>scheduleFinalize("render "+mode));
+    if((document.querySelector(".tab-button.active[data-go]")||{}).dataset?.go==="badges")renderBadgeLocker();
+  }
+  async function fetchJson(path,params,timeout,force,signal){
+    const u=new URL(workerRoot()+path);
+    Object.entries(params||{}).forEach(([k,v])=>{if(v!==undefined&&v!==null&&v!=="")u.searchParams.set(k,String(v))});
+    u.searchParams.set("client","v499117");
+    const ctrl=new AbortController();
+    const abort=()=>ctrl.abort();
+    if(signal){if(signal.aborted)abort();else signal.addEventListener("abort",abort,{once:true})}
+    const timer=setTimeout(abort,timeout);
+    try{
+      const res=await fetch(u.toString(),{headers:{Accept:"application/json"},cache:force?"no-store":"default",signal:ctrl.signal});
+      const text=await res.text();let data;
+      try{data=JSON.parse(text)}catch(_){throw new Error("Worker returned non-JSON")}
+      if(!res.ok||data&&data.error)throw new Error(data.error||("HTTP "+res.status));
+      return data;
+    }finally{clearTimeout(timer);if(signal)signal.removeEventListener("abort",abort)}
+  }
+  function envelope(data){return data&&typeof data==="object"?(data.profile||data.profilePage||(data.ok?data:null)):null}
+
+  window.apexiqSafeSearch=async function(options){
+    const active=document.activeElement;
+    const explicitRefresh=options&&typeof options==="object"&&options.force===true;
+    const refreshButton=active&&active.closest&&active.closest("#profilePanel")&&/^refresh$/i.test(String(active.textContent||"").trim());
+    const force=explicitRefresh||refreshButton;
+    const s=stateObj();
+    const player=String($("#playerInput")?.value||s.player||"imissanyway").trim()||"imissanyway";
+    const platform=cleanPlatform($("#platformInput")?.value||s.platform||"auto");
+    const key=compact(player)+"|"+platform;
+    if(activeSearch&&key===lastSearchKey&&Date.now()-lastSearchAt<350)return activeSearch;
+    lastSearchKey=key;lastSearchAt=Date.now();
+    if(activeController)activeController.abort();
+    activeController=new AbortController();
+    const signal=activeController.signal;
+    const seq=++searchSeq;
+    s.player=player;s.platform=platform;s.profileError="";
+    try{localStorage.setItem("apexiq:lastPlayer",player);localStorage.setItem("apexiq:platform",platform)}catch(_){ }
+    const btn=$("#searchForm button[type='submit']");if(btn){btn.disabled=true;btn.textContent=force?"Refreshing…":"Searching…"}
+    setStatusSafe(force?"REFRESHING":"SEARCHING","syncing");
+
+    const cached=readCached(player,platform);
+    if(cached&&usable(cached)){
+      renderNow(cached,"cache");
+      setStatusSafe("CACHE READY","syncing");
+    }else if(!currentProfile()){
+      const panel=$("#profilePanel");if(panel)panel.innerHTML=`<section class="empty"><b>Searching ${safe(player)}…</b><p>Fast profile and full legend data are loading together.</p></section>`;
+    }
+
+    const job=(async()=>{
+      let fullApplied=false;let fastError="";let fullError="";
+      const fastPromise=fetchJson("/api/player-lite",{player,platform,refresh:force?"1":""},9000,force,signal).then(data=>{
+        if(seq!==searchSeq||signal.aborted||fullApplied)return null;
+        const p=envelope(data);if(usable(p)){renderNow(p,"fast");setStatusSafe("FAST READY","syncing");return p}return null;
+      }).catch(e=>{fastError=e.name==="AbortError"?"":e.message||String(e);return null});
+      const fullPromise=fetchJson("/api/player",{player,platform,refresh:force?"1":"",rankedFallback:"0"},65000,force,signal).then(data=>{
+        if(seq!==searchSeq||signal.aborted)return null;
+        const p=envelope(data);if(!usable(p))throw new Error("Worker returned no usable profile data.");
+        fullApplied=true;saveCached(player,platform,p);renderNow(p,"full");setStatusSafe("LIVE READY","good");return p;
+      }).catch(e=>{fullError=e.name==="AbortError"?"":e.message||String(e);return null});
+      const [fast,full]=await Promise.all([fastPromise,fullPromise]);
+      if(seq!==searchSeq||signal.aborted)return full||fast||cached||null;
+      if(!full){
+        if(fast||cached){setStatusSafe(fast?"FAST READY":"CACHE READY","syncing");}
+        else{
+          s.profile=null;s.profileError=fullError||fastError||"Profile request failed.";
+          try{window.renderProfile&&window.renderProfile();window.renderLegends&&window.renderLegends()}catch(_){ }
+          setStatusSafe("SEARCH FAIL","bad");
+        }
+      }
+      scheduleFinalize("search complete");
+      return full||fast||cached||null;
+    })();
+    activeSearch=job;
+    try{return await job}finally{
+      if(seq===searchSeq){activeSearch=null;if(btn){btn.disabled=false;btn.textContent="Search"}}
+    }
+  };
+
+  const previousRenderProfile=window.renderProfile;
+  if(typeof previousRenderProfile==="function"){
+    window.renderProfile=function(){const r=previousRenderProfile.apply(this,arguments);scheduleFinalize("renderProfile");return r};
+    try{renderProfile=window.renderProfile}catch(_){ }
+  }
+  const previousRenderPacks=window.renderPacks;
+  if(typeof previousRenderPacks==="function"){
+    window.renderPacks=function(){const r=previousRenderPacks.apply(this,arguments);bindPackIndexes();return r};
+    try{renderPacks=window.renderPacks}catch(_){ }
+  }
+  const previousSwitch=window.switchPanel;
+  if(typeof previousSwitch==="function"){
+    window.switchPanel=function(panel){const r=previousSwitch.apply(this,arguments);setTimeout(()=>{bindPackIndexes();if(panel==="badges")renderBadgeLocker();if(panel==="dashboard")scheduleFinalize("switch dashboard")},130);return r};
+    try{switchPanel=window.switchPanel}catch(_){ }
+  }
+  window.renderBadgesPanel=renderBadgeLocker;
+  window.renderBadges=renderBadgeLocker;
+  window.apexiqRenderBadgesV49999=renderBadgeLocker;
+  window.apexiqComputeBadgeStateV117=computeBadgeState;
+  window.apexiqRenderBadgeCaseV117=renderBadgeCase;
+
+  document.addEventListener("click",e=>{
+    const filter=e.target.closest&&e.target.closest("[data-aiq-v117-filter]");
+    if(filter){e.preventDefault();localStorage.setItem("apexiq:badgeFilter:v117",filter.getAttribute("data-aiq-v117-filter")||"All");renderBadgeLocker();}
+  },true);
+
+  function boot(){
+    document.documentElement.dataset.apexiqV117="truth-speed";
+    bindPackIndexes();
+    const s=stateObj();
+    const player=String($("#playerInput")?.value||s.player||localStorage.getItem("apexiq:lastPlayer")||"").trim();
+    const platform=cleanPlatform($("#platformInput")?.value||s.platform||localStorage.getItem("apexiq:platform")||"auto");
+    if(player&&!currentProfile()){
+      const cached=readCached(player,platform);
+      if(cached&&usable(cached))renderNow(cached,"cache");
+    }
+    scheduleFinalize("boot");
+    [250,900,1800].forEach(ms=>setTimeout(()=>{bindPackIndexes();scheduleFinalize("boot settled "+ms);if((document.querySelector(".tab-button.active[data-go]")||{}).dataset?.go==="badges")renderBadgeLocker()},ms));
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
+})();
+
+</script>
 </body>
 </html>
 
