@@ -11033,5 +11033,79 @@ body:not([data-aiq-v116-profile="true"]) [data-aiq-v116-snapshot-block="1"]{disp
 </script>
 <!-- === /ApexIQ v4.9.9.122 FINAL BADGE AUTHORITY + SCRIPT ORDER FIX === -->
 
+<!-- === ApexIQ v4.9.9.123 BADGE CONFIDENCE STATES === -->
+<style id="apexiq-v499123-badge-confidence-css">
+.aiq-v123-confidence{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 9px;font-size:.72rem;font-weight:1000;letter-spacing:.02em;border:1px solid var(--line,#334155);white-space:nowrap}
+.aiq-v123-confidence.verified{background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.32)}
+.aiq-v123-confidence.partial{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.34)}
+.aiq-v123-confidence.unknown{background:rgba(148,163,184,.10);border-color:rgba(148,163,184,.28)}
+.aiq-v49992-badge-card[data-aiq-confidence="unknown"]{opacity:.82}
+.aiq-v49992-badge-card[data-aiq-confidence="unknown"] .aiq-v49992-progress span{width:0!important}
+.aiq-v49992-badge-card[data-aiq-confidence="unknown"] .aiq-v49992-pill{opacity:.55}
+.aiq-v123-card-status{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:7px 0}
+.aiq-v123-card-status p{margin:0!important}
+.aiq-v123-case-note{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:5px;color:var(--muted,#94a3b8);font-size:.82rem}
+.aiq-v116-mini-badge[data-aiq-confidence="partial"]::after{content:"MIN";position:absolute;right:3px;bottom:3px;border-radius:999px;padding:2px 4px;font-size:.48rem;font-weight:1000;line-height:1;background:rgba(245,158,11,.94);color:#111827;border:1px solid rgba(255,255,255,.28)}
+.aiq-v116-mini-badge{position:relative}
+</style>
+<script id="apexiq-v499123-badge-confidence-js">
+(function(){
+  "use strict";
+  var BUILD="v4.9.9.123-badge-confidence-states";
+  var baseCompute=typeof window.apexiqComputeBadgeStateV122==="function"?window.apexiqComputeBadgeStateV122:(typeof window.apexiqComputeBadgeStateV119==="function"?window.apexiqComputeBadgeStateV119:null);
+  var rendering=false,observerTimer=0;
+  function $(s,r){return (r||document).querySelector(s)}
+  function all(s,r){return Array.from((r||document).querySelectorAll(s))}
+  function n(v){var x=Number(String(v==null?"":v).replace(/,/g,""));return Number.isFinite(x)?x:0}
+  function norm(v){return String(v==null?"":v).toLowerCase().replace(/[^a-z0-9]+/g," ").trim()}
+  function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]})}
+  function fmt(v){return n(v).toLocaleString()}
+  function manifest(){try{var m=window.APEXIQ_BADGE_MANIFEST_V498;return m&&Array.isArray(m.badges)?m.badges:JSON.parse($("#apexiqBadgeManifestV498").textContent||"{}").badges||[]}catch(_){return []}}
+  function req(t){return String(t&&t.requires).toLowerCase()==="all_legends"?28:n(t&&t.requires)}
+  function usedCount(metric){return Math.max(n(metric&&metric.count),Array.isArray(metric&&metric.used)?metric.used.length:0,Array.isArray(metric&&metric.counted)?metric.counted.length:0)}
+  var trackerDependent=new Set(["20b_collection","4k_collection","career_killer","damage_dealer","win_stacker","smg_reaper","ar_ace","shotgun_brutality","sniper_deadeye","explosive_expert","revive_angel","shield_savior","recon_scanner","tactical_genius","movement_maniac","legend_loyalist","legend_specialist","flex_roster","all_legends_conquered"]);
+  function confidenceFor(id,metric){
+    metric=metric||{};var value=n(metric.value),count=usedCount(metric),source=String(metric.source||""),conf=norm(metric.confidence);
+    var verified=/founder verified|strict verified|approved proof|manual verified|trusted account|trusted profile|verified account|verified collection|explicit verified/i.test(source)||conf==="verified";
+    var missing=/^needs\b|no trusted|no user owned|not returned|missing|unavailable/i.test(source)||conf==="missing";
+    if((id==="20b_collection"||id==="4k_collection")&&value===0&&count===0)return {state:"unknown",label:"Unknown",reason:"Badge ownership data was not returned for this profile."};
+    if(trackerDependent.has(id)&&value===0&&(missing||count===0&&!verified))return {state:"unknown",label:"Unknown",reason:"Public tracker data was not returned for this badge."};
+    if(verified)return {state:"verified",label:"Verified",reason:"Backed by explicit verified ownership, trusted account data, or approved proof."};
+    if(value>0||count>0)return {state:"partial",label:"Tracked minimum",reason:"The returned rows prove at least this amount, but may not cover the full account."};
+    return {state:"unknown",label:"Unknown",reason:"There is not enough public data to calculate this badge."};
+  }
+  function patchState(st){
+    if(!st||typeof st!=="object")return st;
+    st.build=BUILD;st.version="v4.9.9.123";st.confidenceModel="verified-partial-unknown";
+    var verifiedUnlocked=0,partialUnlocked=0,unknown=0;
+    if(st.metrics)Object.keys(st.metrics).forEach(function(id){var c=confidenceFor(id,st.metrics[id]);st.metrics[id].confidenceState=c.state;st.metrics[id].confidenceLabel=c.label;st.metrics[id].confidenceReason=c.reason});
+    if(Array.isArray(st.badges))st.badges.forEach(function(b){var metric=st.metrics&&st.metrics[b.id]||{},c=confidenceFor(b.id,metric);b.confidenceState=c.state;b.confidenceLabel=c.label;b.confidenceReason=c.reason;b.confidence=c.state;b.source=metric.source||b.source;if(c.state==="unknown")unknown++;if(b.unlocked&&c.state==="verified")verifiedUnlocked++;if(b.unlocked&&c.state==="partial")partialUnlocked++});
+    st.summary=st.summary||{};st.summary.verifiedUnlocked=verifiedUnlocked;st.summary.partialUnlocked=partialUnlocked;st.summary.unknown=unknown;st.summary.source="ApexIQ shared badge state v123 · confidence-aware";
+    return st;
+  }
+  function compute(){var st=null;try{st=baseCompute?baseCompute():(window.apexiqBadgeStateV122||window.apexiqBadgeStateV119||null)}catch(e){console.warn(BUILD,e)}st=patchState(st);if(st){window.apexiqBadgeState=st;window.apexiqBadgeStateV119=st;window.apexiqBadgeStateV122=st;window.apexiqBadgeStateV123=st}return st}
+  window.apexiqComputeBadgeStateV119=compute;window.apexiqComputeBadgeStateV122=compute;window.apexiqComputeBadgeStateV123=compute;
+  function tierInfo(def,value){var tiers=(def.tiers||[]).slice().sort(function(a,b){return req(a)-req(b)}),earned=null,next=null;tiers.forEach(function(t){if(value>=req(t))earned=t;else if(!next)next=t});var need=next?req(next):(earned?req(earned):req(tiers[0]||{})),prev=earned?req(earned):0,pct=next?Math.max(0,Math.min(100,Math.round(((value-prev)/Math.max(1,need-prev))*100))):(earned?100:0);return {tiers:tiers,earned:earned,next:next,need:need,pct:pct,asset:(earned&&earned.asset)||(next&&(next.lockedAsset||next.asset))||((tiers[0]||{}).asset)||""}}
+  function confidenceChip(c){return '<span class="aiq-v123-confidence '+esc(c.state)+'" title="'+esc(c.reason)+'">'+esc(c.label)+'</span>'}
+  function card(def,st){var metric=st.metrics&&st.metrics[def.id]||{value:0,source:"No trusted source returned."},value=n(metric.value),c=confidenceFor(def.id,metric),ti=tierInfo(def,value),unlocked=!!ti.earned,status="";
+    if(c.state==="unknown")status="Public data not returned";else if(unlocked)status=(ti.next?"Unlocked "+(ti.earned.label||"tier")+" · next "+ti.next.label:"Unlocked "+(ti.earned.label||"tier")+" · max tier");else status="Locked · next "+((ti.next||{}).label||"Tier I");
+    var progress=c.state==="unknown"?0:ti.pct,valueText=c.state==="unknown"?"Unknown":fmt(value)+" / "+fmt(ti.need||1);
+    return '<article class="aiq-v49992-badge-card '+(unlocked?'unlocked':'locked')+'" data-cat="'+esc(def.category||'Other')+'" data-aiq-confidence="'+esc(c.state)+'"><div>'+(ti.asset?'<img loading="lazy" src="'+esc(ti.asset)+'" alt="'+esc(def.name)+'">':'')+'</div><div><h4>'+esc(def.name)+'</h4><div class="aiq-v123-card-status">'+confidenceChip(c)+'<p>'+esc(status)+' · '+esc(valueText)+'</p></div><p>'+esc(def.description||'ApexIQ badge progress line.')+'</p><div class="aiq-v49992-progress" aria-hidden="true"><span style="width:'+progress+'%"></span></div><div class="aiq-v49992-pill-row">'+ti.tiers.map(function(t){return '<span class="aiq-v49992-pill '+(c.state!=="unknown"&&value>=req(t)?'earned':'')+'">'+esc(t.label||("Tier "+t.tier))+' · '+esc(String(t.requires).toLowerCase()==="all_legends"?'all 28 legends':fmt(req(t)))+'</span>'}).join('')+'</div><div class="aiq-v49992-source">'+esc(c.reason)+'<br>'+esc(metric.source||'No trusted source returned.')+'</div></div></article>'}
+  function renderLocker(){if(rendering)return;var panel=$("#badgesPanel");if(!panel)return;var st=compute();if(!st||!Array.isArray(st.badges))return;var defs=manifest(),cats=["All"].concat(Array.from(new Set(defs.map(function(b){return b.category||"Other"})))),active=localStorage.getItem("apexiqBadgeFilterV123")||"All";if(cats.indexOf(active)<0)active="All";var shown=active==="All"?defs:defs.filter(function(b){return (b.category||"Other")===active}),s=st.summary||{};rendering=true;panel.innerHTML='<section class="aiq-v49992-badge-shell"><div class="aiq-v49992-badge-hero"><div class="aiq-v49992-badge-kicker"><span>ApexIQ badge locker</span><span>Confidence-aware</span></div><h3>Badges, tiers, and requirements</h3><p>Missing public data is now shown as Unknown instead of a real zero. Partial rows are labeled Tracked minimum.</p></div><div class="aiq-v49992-stats"><div class="aiq-v49992-stat"><span>Unlocked</span><b>'+n(s.unlocked)+'</b><small>evidence-backed badge lines</small></div><div class="aiq-v49992-stat"><span>Verified unlocked</span><b>'+n(s.verifiedUnlocked)+'</b><small>explicit badge/account proof</small></div><div class="aiq-v49992-stat"><span>Tracked unlocked</span><b>'+n(s.partialUnlocked)+'</b><small>proven minimum from public rows</small></div><div class="aiq-v49992-stat"><span>Unknown</span><b>'+n(s.unknown)+'</b><small>data not returned</small></div></div><div class="aiq-v49992-guide"><article><b>Confidence rules</b><ul><li><b>Verified:</b> explicit badge ownership, trusted account fields, or approved proof.</li><li><b>Tracked minimum:</b> returned rows prove at least the shown amount, but the account may have more.</li><li><b>Unknown:</b> no usable row was returned; this is not treated as a real zero.</li></ul></article><article><b>Safe tier behavior</b><ul><li>Tracked-minimum tiers may unlock only when the returned minimum itself crosses the requirement.</li><li>Unknown badges remain unearned and never claim zero ownership or zero career progress.</li><li>20B/4K totals are verified only from explicit ownership evidence.</li></ul></article></div><div class="aiq-v49992-filter">'+cats.map(function(cat){return '<button type="button" data-aiq-v123-filter="'+esc(cat)+'" class="'+(cat===active?'active':'')+'">'+esc(cat)+'</button>'}).join('')+'</div><div class="aiq-v49992-badge-grid">'+shown.map(function(def){return card(def,st)}).join('')+'</div></section>';rendering=false}
+  function removeCases(panel){all('.aiq-v116-badge-case,.aiq-v49994-display-case,.v49919ProfileBadgeCase,.v49921ProfileBadgeCase,.v49923MiniCase,.v49924MiniCase,[data-aiq-badge-case]',panel).forEach(function(x){x.remove()})}
+  function renderCase(){if(rendering)return;var panel=$("#profilePanel");if(!panel)return;var app=window.APEXIQ_STATE||window.ApexIQState||window.appState||window.state||{},profile=app.profile;if(!profile)return;var st=compute();if(!st||!Array.isArray(st.badges))return;var earned=st.badges.filter(function(b){return b&&b.unlocked&&n(b.tierNum)>0&&b.asset&&b.confidenceState!=="unknown"});rendering=true;removeCases(panel);if(earned.length){var verified=earned.filter(function(b){return b.confidenceState==="verified"}).length,partial=earned.length-verified;panel.insertAdjacentHTML("beforeend",'<section class="aiq-v116-badge-case" data-aiq-v122-authoritative="1" data-aiq-v123-authoritative="1" data-aiq-badge-case="v123"><div class="aiq-v116-badge-case-head"><div><h3>ApexIQ badge display case</h3><p>Evidence-backed unlocks only. Missing data is never treated as zero.</p><div class="aiq-v123-case-note"><span>'+verified+' verified</span><span>·</span><span>'+partial+' tracked minimum</span></div></div><small>'+earned.length+' unlocked</small></div><div class="aiq-v116-mini-grid">'+earned.map(function(b){return '<span class="aiq-v116-mini-badge" data-aiq-confidence="'+esc(b.confidenceState)+'" title="'+esc(b.name+' · '+b.tier+' · '+b.confidenceLabel+' · '+fmt(b.progress))+'"><img src="'+esc(b.asset)+'" alt="'+esc(b.name)+'"><em class="aiq-v116-mini-tier">'+esc(String(b.tier||'').replace('Tier ',''))+'</em></span>'}).join('')+'</div></section>')}rendering=false}
+  function sync(){compute();renderCase();var panel=$("#badgesPanel");if(panel&&!panel.hidden&&!panel.closest("[hidden]"))renderLocker()}
+  function schedule(){[20,260,1050].forEach(function(ms){setTimeout(sync,ms)})}
+  window.renderBadgesPanel=renderLocker;window.apexiqRenderBadgeGuideV49992=renderLocker;try{renderBadgesPanel=window.renderBadgesPanel}catch(_){}
+  document.addEventListener("click",function(e){var b=e.target&&e.target.closest&&e.target.closest("[data-aiq-v123-filter]");if(!b)return;localStorage.setItem("apexiqBadgeFilterV123",b.getAttribute("data-aiq-v123-filter")||"All");renderLocker()},true);
+  ["renderProfile","renderAll","loadAll"].forEach(function(name){var old=window[name];if(typeof old!=="function"||old.__aiqV123Wrapped)return;var wrapped=function(){var r=old.apply(this,arguments);if(r&&typeof r.then==="function")return r.then(function(v){schedule();return v},function(e){schedule();throw e});schedule();return r};wrapped.__aiqV123Wrapped=true;window[name]=wrapped;try{eval(name+"=window[name]")}catch(_){}});
+  var oldSwitch=window.switchPanel;if(typeof oldSwitch==="function"&&!oldSwitch.__aiqV123Wrapped){var sw=function(panel){var r=oldSwitch.apply(this,arguments);schedule();if(panel==="badges")setTimeout(renderLocker,30);return r};sw.__aiqV123Wrapped=true;window.switchPanel=sw;try{switchPanel=window.switchPanel}catch(_){}}
+  var root=$("#profilePanel");if(root)new MutationObserver(function(){if(rendering)return;clearTimeout(observerTimer);observerTimer=setTimeout(function(){var c=$("[data-aiq-badge-case]",root);if(c&&!c.hasAttribute("data-aiq-v123-authoritative"))renderCase()},40)}).observe(root,{childList:true,subtree:true});
+  function boot(){document.documentElement.dataset.apexiqBadgeConfidence="v123";schedule()}
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();window.addEventListener("load",schedule,{once:true});
+})();
+</script>
+<!-- === /ApexIQ v4.9.9.123 BADGE CONFIDENCE STATES === -->
+
 </body>
 </html>
