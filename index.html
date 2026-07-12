@@ -11107,5 +11107,189 @@ body:not([data-aiq-v116-profile="true"]) [data-aiq-v116-snapshot-block="1"]{disp
 </script>
 <!-- === /ApexIQ v4.9.9.124 BADGE CONFIDENCE + TACTICAL TRUTH === -->
 
+
+<!-- === ApexIQ v4.9.9.125 LEGEND SCOPE + DASHBOARD LABEL TRUTH === -->
+<style id="apexiq-v499125-legend-dashboard-truth-css">
+/* v125 is display/scope only. Badge computation, Worker, Ranked, Meta, Packs, Squad, themes, and frozen layouts are untouched. */
+#profilePanel .v49919StatGrid .stat-tile b,
+#profilePanel .v49919Scorebug .score-cell b,
+#profilePanel .v49919ProfileRank,
+#profilePanel .v49919ProfileRank > span,
+#profilePanel .v49919ProfileRank small{
+  white-space:nowrap!important;
+  word-break:normal!important;
+  overflow-wrap:normal!important;
+}
+#profilePanel .v49919StatGrid .stat-tile b{
+  display:block!important;
+  max-width:100%!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  font-size:clamp(.96rem,1.45vw,1.72rem)!important;
+  line-height:1.04!important;
+  letter-spacing:-.035em!important;
+}
+#profilePanel .v49919StatGrid .stat-tile.aiq-v125-medium-value b{
+  font-size:clamp(.86rem,1.18vw,1.42rem)!important;
+}
+#profilePanel .v49919StatGrid .stat-tile.aiq-v125-long-value b{
+  font-size:clamp(.70rem,.92vw,1.08rem)!important;
+  letter-spacing:-.05em!important;
+}
+#profilePanel .v49919StatGrid .stat-tile > span{
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+}
+#profilePanel .v49919ProfileRank small{display:block!important;max-width:100%!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+#legendsPreview .v49919StatChips b,
+#legendsPanel .v49919StatChips b,
+#legendsPreview .stat-chip b,
+#legendsPanel .stat-chip b{
+  white-space:nowrap!important;
+  word-break:normal!important;
+  overflow-wrap:normal!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+#legendsPreview .v49919TopNote,
+#legendsPanel .v49919TopNote{white-space:normal!important;overflow-wrap:anywhere!important;}
+.v49930PctText.est::before{content:""!important;}
+</style>
+<script id="apexiq-v499125-legend-dashboard-truth-js">
+(function(){
+  "use strict";
+  var BUILD="v4.9.9.125-legend-scope-dashboard-truth";
+  var patching=false,patchToken=0;
+  function $(s,r){return (r||document).querySelector(s)}
+  function all(s,r){return Array.from((r||document).querySelectorAll(s))}
+  function setText(el,text){if(el&&el.textContent!==text)el.textContent=text}
+  function setAttr(el,name,value){if(el&&el.getAttribute(name)!==String(value))el.setAttribute(name,String(value))}
+  function norm(v){return String(v==null?"":v).toLowerCase().replace(/[^a-z0-9]+/g," ").trim()}
+  function currentProfile(){try{return typeof state==="object"&&state&&state.profile?state.profile:(window.state&&window.state.profile)||null}catch(_){return window.state&&window.state.profile||null}}
+  function fieldValue(profile,key){
+    try{if(typeof field==="function")return field(profile,key,"")}catch(_){}
+    var f=profile&&profile.fields&&profile.fields[key];
+    return f&&typeof f==="object"&&"value" in f?f.value:(f!=null?f:(profile&&profile[key]));
+  }
+  function selectedLegend(){
+    var p=currentProfile()||{};
+    return String(fieldValue(p,"legend")||p.selectedLegend||p.legend||"").trim();
+  }
+  function accountScopedLabel(label){
+    var l=norm(label);
+    if(!l)return false;
+    if(/^(career|account|lifetime|overall|global|profile|player)\b/.test(l))return true;
+    if(/^total\s+(kills?|damage|wins?|games?|headshots?|assists?|knocks?|revives?|level|rp)\b/.test(l))return true;
+    if(/\baccount\s+(career|total)\b|\bcareer\s+total\b/.test(l))return true;
+    return false;
+  }
+  function numericText(v){return String(v||"").replace(/[^0-9.-]/g,"")}
+  function bestLegendStat(boxes){
+    var best=null,bestScore=-1;
+    boxes.forEach(function(box){
+      var label=(box.querySelector("em")||{}).textContent||"";
+      var value=(box.querySelector("b")||{}).textContent||"";
+      var l=norm(label),n=Number(numericText(value))||0,w=1;
+      if(/^br kills$|^kills$/.test(l))w=125;
+      else if(/^br damage$|^damage$/.test(l))w=.32;
+      else if(/^br wins$|^wins$/.test(l))w=2400;
+      else if(/games played/.test(l))w=35;
+      else if(/kills as kill leader/.test(l))w=45;
+      else if(/season.*kills/.test(l))w=18;
+      var score=n*w;
+      if(score>bestScore){bestScore=score;best={label:label,value:value}}
+    });
+    return best;
+  }
+  function patchPercentiles(root){
+    all(".v49930TinyNote",root||document).forEach(function(note){
+      if(/aiq estimate until als rank data returns/i.test(note.textContent||""))note.remove();
+    });
+    all(".v49930PctText.est",root||document).forEach(function(el){
+      var t=String(el.textContent||"").trim();
+      if(/^Top\s+/i.test(t))setText(el,t.replace(/^Top\s+/i,"Est. top "));
+    });
+  }
+  function patchLegendCard(card){
+    if(!card)return;
+    var removed=[];
+    var boxes=all(".v49919StatChips > span,.stat-chip",card);
+    boxes.forEach(function(box){
+      var label=((box.querySelector("em")||{}).textContent||"").trim();
+      if(accountScopedLabel(label)){removed.push(label);box.remove()}
+    });
+    var remaining=all(".v49919StatChips > span,.stat-chip",card);
+    var count=card.querySelector(".legend-title .badge-chip.small");
+    if(count)setText(count,remaining.length+" stats");
+    var note=card.querySelector(".v49919TopNote");
+    if(note){
+      var best=bestLegendStat(remaining);
+      if(best)setText(note,"Top legend tracker: "+best.label+": "+best.value);
+      else note.remove();
+    }
+    if(!remaining.length){
+      var holder=card.querySelector(".v49919StatChips");
+      if(holder&&!holder.querySelector(".v49919EmptySmall"))holder.innerHTML='<div class="v49919EmptySmall">No exact legend-scoped stat row was returned.</div>';
+    }
+    if(removed.length)setAttr(card,"data-aiq-v125-removed-account-stats",removed.join("|"));
+    setAttr(card,"data-aiq-v125-scope-clean","1");
+    patchPercentiles(card);
+  }
+  function patchLegendCards(){
+    all("#legendsPreview .legend-card,#legendsPanel .legend-card").forEach(patchLegendCard);
+    var p=$("#legendsPreview")&&$("#legendsPreview").closest(".block")&&$("#legendsPreview").closest(".block").querySelector(".section-title p");
+    if(p)setText(p,"Top returned legend-scoped trackers only. Account-wide career totals are excluded.");
+  }
+  function patchDashboard(){
+    var legend=selectedLegend();
+    all("#profilePanel .v49919StatGrid .stat-tile,#profilePanel .stat-grid .stat-tile").forEach(function(tile){
+      var labelEl=tile.querySelector(":scope > span")||tile.querySelector("span");
+      var valueEl=tile.querySelector(":scope > b")||tile.querySelector("b");
+      var noteEl=tile.querySelector(":scope > em")||tile.querySelector("em");
+      if(!labelEl||!valueEl)return;
+      var label=norm(labelEl.textContent);
+      if(label==="returned kills"){
+        setText(labelEl,"Selected Legend Kills");
+        if(noteEl)setText(noteEl,legend?"partial "+legend+" tracker":"partial selected-legend tracker");
+      }else if(label==="returned damage"){
+        setText(labelEl,"Selected Legend Damage");
+        if(noteEl)setText(noteEl,legend?"partial "+legend+" tracker":"partial selected-legend tracker");
+      }
+      var text=String(valueEl.textContent||"").replace(/\s+/g," ").trim();
+      setAttr(valueEl,"title",text);
+      tile.classList.remove("aiq-v125-medium-value","aiq-v125-long-value");
+      if(text.length>=13)tile.classList.add("aiq-v125-long-value");
+      else if(text.length>=9||/prestige/i.test(labelEl.textContent||""))tile.classList.add("aiq-v125-medium-value");
+    });
+    all("#profilePanel .v49919Scorebug .score-cell b,#profilePanel .v49919ProfileRank,#profilePanel .v49919ProfileRank small").forEach(function(el){setAttr(el,"title",String(el.textContent||"").replace(/\s+/g," ").trim())});
+  }
+  function patchAll(reason){
+    if(patching)return;patching=true;
+    try{patchDashboard();patchLegendCards();patchPercentiles(document);setAttr(document.documentElement,"data-apexiq-v125",reason||"patched")}catch(e){console.warn(BUILD,e)}
+    finally{patching=false}
+  }
+  function schedule(reason){
+    var token=++patchToken;
+    [35,220,900].forEach(function(ms){setTimeout(function(){if(token===patchToken||ms===900)patchAll(reason+" "+ms)},ms)});
+  }
+  function wrap(name){
+    var old=window[name];if(typeof old!=="function"||old.__aiqV125Wrapped)return;
+    var wrapped=function(){
+      var r=old.apply(this,arguments);
+      if(r&&typeof r.then==="function")return r.then(function(v){schedule(name);return v},function(e){schedule(name+" error");throw e});
+      schedule(name);return r;
+    };
+    wrapped.__aiqV125Wrapped=true;window[name]=wrapped;try{eval(name+"=window[name]")}catch(_){}
+  }
+  function boot(){
+    ["renderProfile","renderLegends","renderAll","loadAll"].forEach(wrap);
+    var oldSwitch=window.switchPanel;if(typeof oldSwitch==="function"&&!oldSwitch.__aiqV125Wrapped){var sw=function(){var r=oldSwitch.apply(this,arguments);schedule("switchPanel");return r};sw.__aiqV125Wrapped=true;window.switchPanel=sw;try{switchPanel=window.switchPanel}catch(_){}}
+    patchAll("boot");[180,700,1600].forEach(function(ms){setTimeout(function(){patchAll("settled "+ms)},ms)});
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
+})();
+</script>
+<!-- === /ApexIQ v4.9.9.125 LEGEND SCOPE + DASHBOARD LABEL TRUTH === -->
+
 </body>
 </html>
