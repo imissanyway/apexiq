@@ -10637,8 +10637,7 @@ body:not([data-aiq-v116-profile="true"]) [data-aiq-v116-snapshot-block="1"]{disp
 <!-- ApexIQ v4.9.9.121 SHIELD SAVIOR TRUTH FIX
      Exact uploaded rollback baseline. Badge engine/math/case/locker only.
      Dashboard, legend cards, ranked, Meta, Packs, Squad, themes, and layout are unchanged. -->
-</body>
-</html>
+
 
 
 <!-- === ApexIQ v4.9.9.91 Beta Request Form + Admin Requests === -->
@@ -10843,4 +10842,196 @@ body:not([data-aiq-v116-profile="true"]) [data-aiq-v116-snapshot-block="1"]{disp
 })();
 </script>
 
+<!-- === ApexIQ v4.9.9.122 FINAL BADGE AUTHORITY + SCRIPT ORDER FIX === -->
+<style id="apexiq-v499122-badge-authority-css">
+/* Hide every legacy/duplicate dashboard badge case. The single v122 case is the only visible case. */
+#profilePanel .aiq-v116-badge-case:not([data-aiq-v122-authoritative="1"]),
+#profilePanel .aiq-v49994-display-case,
+#profilePanel .v49919ProfileBadgeCase,
+#profilePanel .v49921ProfileBadgeCase,
+#profilePanel .v49923MiniCase,
+#profilePanel .v49924MiniCase,
+#profilePanel [data-aiq-badge-case]:not([data-aiq-v122-authoritative="1"]){display:none!important;}
+</style>
+<script id="apexiq-v499122-final-badge-authority-js">
+(function(){
+  "use strict";
+  if(window.__apexiqV499122Installed)return;
+  window.__apexiqV499122Installed=true;
+  var BUILD="v4.9.9.122-final-badge-authority-order-fix";
+  var baseCompute=typeof window.apexiqComputeBadgeStateV119==="function"?window.apexiqComputeBadgeStateV119:null;
+  var badgeGuide=typeof window.apexiqRenderBadgeGuideV49992==="function"?window.apexiqRenderBadgeGuideV49992:null;
+  var lastGood=null,lastIdentity="",syncToken=0;
 
+  function $(s,r){return (r||document).querySelector(s)}
+  function $all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+  function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
+  function num(v){var n=Number(String(v==null?"":v).replace(/,/g,"").replace(/[^0-9.-]/g,""));return Number.isFinite(n)?n:0}
+  function fmt(v){var n=num(v);return Number.isFinite(n)?n.toLocaleString():String(v||0)}
+  function norm(v){return String(v||"").toLowerCase().replace(/[^a-z0-9]+/g,"")}
+  function getApp(){try{return window.state||state||{}}catch(_){return {}}}
+  function fieldValue(profile,key){
+    try{if(typeof window.field==="function"){var fv=window.field(profile,key,"");if(fv!==undefined&&fv!==null&&String(fv).trim()!=="")return fv}}catch(_){}
+    var f=profile&&profile.fields&&profile.fields[key];
+    if(f&&typeof f==="object"&&f.value!==undefined)return f.value;
+    return profile&&profile[key];
+  }
+  function activeIdentity(){
+    var app=getApp(),p=app.profile||{};
+    var candidates=[fieldValue(p,"name"),p.name,p.player,p.username,p.displayName,p.global&&p.global.name,
+      $("#playerInput")&&$("#playerInput").value,$("#aiqV49989BetaUsername")&&$("#aiqV49989BetaUsername").value];
+    var name=candidates.find(function(v){return v!==undefined&&v!==null&&String(v).trim()})||"";
+    var platform=fieldValue(p,"platform")||p.platformUsed||p.platform||app.platform||($("#platformSelect")&&$("#platformSelect").value)||"auto";
+    return {name:String(name).trim(),platform:String(platform||"auto"),key:norm(name)+"|"+norm(platform)};
+  }
+  function manifest(){try{return window.APEXIQ_BADGE_MANIFEST_V498&&Array.isArray(window.APEXIQ_BADGE_MANIFEST_V498.badges)?window.APEXIQ_BADGE_MANIFEST_V498.badges:[]}catch(_){return []}}
+  function requirement(t){return String(t&&t.requires).toLowerCase()==="all_legends"?28:num(t&&t.requires)}
+  function tierFor(def,value){
+    var tiers=((def&&def.tiers)||[]).slice().sort(function(a,b){return requirement(a)-requirement(b)}),earned=null,next=null;
+    tiers.forEach(function(t){if(value>=requirement(t))earned=t;else if(!next)next=t});
+    var req=next?requirement(next):(earned?requirement(earned):requirement(tiers[0]||{}));
+    var prev=earned?requirement(earned):0;
+    var pct=next?Math.max(0,Math.min(100,Math.round(((value-prev)/Math.max(1,req-prev))*100))):(earned?100:0);
+    return {tier:earned?num(earned.tier||tiers.indexOf(earned)+1):0,label:earned?(earned.label||("Tier "+(earned.tier||tiers.indexOf(earned)+1))):"Locked",earned:earned,next:next,tiers:tiers,req:req,pct:pct,asset:(earned&&earned.asset)||(next&&(next.lockedAsset||next.asset))||((tiers[0]||{}).asset)||""};
+  }
+  function applyMetric(st,id,value,source){
+    if(!st.metrics)st.metrics={};
+    var old=st.metrics[id]||{};
+    st.metrics[id]=Object.assign({},old,{value:num(value),source:source||old.source||"ApexIQ verified state"});
+    if(st.sources)st.sources[id]=st.metrics[id];
+    var def=manifest().find(function(x){return x.id===id}),b=Array.isArray(st.badges)&&st.badges.find(function(x){return x.id===id});
+    if(def&&b){
+      var t=tierFor(def,num(value));
+      b.progress=num(value);b.value=num(value);b.tier=t.label;b.tierNum=t.tier;b.earned=t.earned;b.next=t.next;b.tiers=t.tiers;b.asset=t.asset||b.asset;b.displayReq=t.req;b.percent=t.pct;b.unlocked=t.tier>0;b.source=source||b.source;
+    }
+  }
+  function explicitShieldRestore(metric){
+    if(!metric)return false;
+    var rows=[];
+    [metric.used,metric.counted].forEach(function(a){if(Array.isArray(a))rows=rows.concat(a)});
+    var texts=rows.map(function(r){return String((r&&(r.labelRaw||r.label||r.name||r.key))||"")}).concat(String(metric.source||""));
+    return texts.some(function(t){
+      var s=String(t).toLowerCase();
+      var restore=/(shield|armor).*(restored|recharged|healed|regenerated|recovered|repaired|granted|provided)|(restored|recharged|healed|regenerated|recovered|repaired|granted|provided).*(shield|armor)/.test(s);
+      var blocked=/(wall|barrier|dome|cover|damage blocked|blocked damage|absorbed|mitigated|prevented|gun shield)/.test(s);
+      return restore&&!blocked;
+    });
+  }
+  function hasUsefulState(st){
+    if(!st||!st.metrics)return false;
+    if(num(st.registryLength)>0||num(st.legendRowsSeen)>0)return true;
+    return Object.keys(st.metrics).some(function(k){return num(st.metrics[k]&&st.metrics[k].value)>0});
+  }
+  function patchTruth(st){
+    if(!st||typeof st!=="object")return st;
+    var identity=activeIdentity();
+    st.build=BUILD;st.version="v4.9.9.122";
+
+    /* Founder totals are a verified account record. Use the active search/beta username too,
+       because some hydrated profile objects temporarily omit the name field. */
+    if(norm(identity.name)==="imissanyway"){
+      var old20=num(st.metrics&&st.metrics["20b_collection"]&&st.metrics["20b_collection"].value);
+      var old4=num(st.metrics&&st.metrics["4k_collection"]&&st.metrics["4k_collection"].value);
+      var oldHunter=num(st.metrics&&st.metrics.badge_hunter&&st.metrics.badge_hunter.value);
+      var extras=Math.max(0,oldHunter-old20-old4);
+      applyMetric(st,"20b_collection",10,"Founder verified account record · 20B total");
+      applyMetric(st,"4k_collection",15,"Founder verified account record · 4K total");
+      applyMetric(st,"badge_hunter",25+extras,"Unique verified collection totals + non-duplicate approved proof");
+      st.summary=st.summary||{};st.summary.wakeCount=10;st.summary.wrathCount=15;
+    }
+
+    /* Shield Savior never accepts Rampart wall/block/barrier damage. */
+    var shield=st.metrics&&st.metrics.shield_savior;
+    if(shield&&!explicitShieldRestore(shield))applyMetric(st,"shield_savior",0,"Needs explicit shield restored/recharged/healed tracker data");
+
+    if(Array.isArray(st.badges)){
+      st.summary=st.summary||{};
+      st.summary.unlocked=st.badges.filter(function(b){return b&&b.unlocked&&num(b.tierNum)>0}).length;
+      st.summary.maxTier=Math.max.apply(null,[0].concat(st.badges.map(function(b){return num(b&&b.tierNum)})));
+      st.summary.source="ApexIQ final shared badge state v122";
+    }
+    return st;
+  }
+  function authoritativeCompute(){
+    var identity=activeIdentity(),st=null;
+    try{st=baseCompute?baseCompute():(window.apexiqBadgeStateV119||window.apexiqBadgeState||null)}catch(e){console.warn(BUILD,"base badge compute failed",e)}
+    st=patchTruth(st);
+    if(hasUsefulState(st)){
+      lastGood=st;lastIdentity=identity.key;
+    }else if(lastGood&&lastIdentity===identity.key){
+      st=lastGood;
+    }
+    if(st){
+      window.apexiqBadgeState=st;
+      window.apexiqBadgeStateV119=st;
+      window.apexiqBadgeStateV122=st;
+      window.__apexiqLastBadgeSources=st.metrics||{};
+    }
+    return st;
+  }
+  window.apexiqComputeBadgeStateV119=authoritativeCompute;
+  window.apexiqComputeBadgeStateV122=authoritativeCompute;
+
+  function removeLegacyCases(){
+    var panel=$("#profilePanel");if(!panel)return;
+    $all(".aiq-v116-badge-case,.aiq-v49994-display-case,.v49919ProfileBadgeCase,.v49921ProfileBadgeCase,.v49923MiniCase,.v49924MiniCase,[data-aiq-badge-case]",panel).forEach(function(x){x.remove()});
+  }
+  function renderAuthoritativeCase(){
+    var panel=$("#profilePanel");if(!panel)return;
+    removeLegacyCases();
+    var app=getApp(),p=app.profile;if(!p)return;
+    var st=authoritativeCompute();if(!st||!Array.isArray(st.badges))return;
+    var earned=st.badges.filter(function(b){return b&&b.unlocked&&num(b.tierNum)>0&&b.asset});
+    if(!earned.length)return;
+    var html='<section class="aiq-v116-badge-case" data-aiq-v122-authoritative="1" data-aiq-badge-case="v122"><div class="aiq-v116-badge-case-head"><div><h3>ApexIQ badge display case</h3><p>Unlocked ApexIQ badges only. Same shared state and tier math as Badge Locker.</p></div><small>'+earned.length+' unlocked</small></div><div class="aiq-v116-mini-grid">'+earned.map(function(b){return '<span class="aiq-v116-mini-badge" title="'+esc(b.name+' · '+b.tier+' · '+fmt(b.progress))+'"><img src="'+esc(b.asset)+'" alt="'+esc(b.name)+'"><em class="aiq-v116-mini-tier">'+esc(String(b.tier||"").replace("Tier ",""))+'</em></span>'}).join('')+'</div></section>';
+    panel.insertAdjacentHTML("beforeend",html);
+  }
+  function renderAuthoritativeLocker(){
+    authoritativeCompute();
+    if(typeof badgeGuide==="function")return badgeGuide();
+    var panel=$("#badgesPanel"),st=window.apexiqBadgeStateV122;if(panel&&st)panel.innerHTML='<div class="empty"><b>Badge state loaded</b><span>'+esc(st.summary&&st.summary.unlocked||0)+' unlocked badge families.</span></div>';
+  }
+  window.renderBadgesPanel=renderAuthoritativeLocker;
+  window.apexiqRenderBadgeGuideV49992=renderAuthoritativeLocker;
+  try{renderBadgesPanel=window.renderBadgesPanel}catch(_){}
+
+  function doSync(reason){
+    authoritativeCompute();
+    renderAuthoritativeCase();
+    var panel=$("#badgesPanel");if(panel&&(!panel.closest("[hidden]")&&!panel.hidden))renderAuthoritativeLocker();
+    window.apexiqBadgeAuthorityV122={build:BUILD,reason:reason||"sync",identity:activeIdentity(),summary:window.apexiqBadgeStateV122&&window.apexiqBadgeStateV122.summary||null};
+  }
+  function scheduleSync(reason){
+    var token=++syncToken;
+    [0,180,900].forEach(function(ms){setTimeout(function(){if(token===syncToken||ms===900)doSync(reason+"+"+ms)},ms)});
+  }
+  function wrap(name){
+    var old=window[name];if(typeof old!=="function"||old.__aiqV122Wrapped)return;
+    var wrapped=function(){
+      var r=old.apply(this,arguments);
+      if(r&&typeof r.then==="function")return r.then(function(v){scheduleSync(name);return v},function(e){scheduleSync(name+" error");throw e});
+      scheduleSync(name);return r;
+    };
+    wrapped.__aiqV122Wrapped=true;window[name]=wrapped;try{eval(name+"=window[name]")}catch(_){}
+  }
+  ["renderProfile","renderAll","loadAll"].forEach(wrap);
+  var oldSwitch=window.switchPanel;
+  if(typeof oldSwitch==="function"&&!oldSwitch.__aiqV122Wrapped){
+    var switchWrapped=function(panel){var r=oldSwitch.apply(this,arguments);if(panel==="badges")setTimeout(renderAuthoritativeLocker,0);scheduleSync("switchPanel "+panel);return r};
+    switchWrapped.__aiqV122Wrapped=true;window.switchPanel=switchWrapped;try{switchPanel=window.switchPanel}catch(_){}
+  }
+  document.addEventListener("click",function(e){
+    var tab=e.target&&e.target.closest&&e.target.closest("[data-go]");
+    if(!tab)return;var go=tab.getAttribute("data-go")||"";
+    if(go==="badges")setTimeout(renderAuthoritativeLocker,0);
+    if(go==="dashboard"||go==="badges")scheduleSync("tab "+go);
+  },true);
+  function boot(){document.documentElement.dataset.apexiqBadgeAuthority="v122";scheduleSync("boot")}
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
+  window.addEventListener("load",function(){scheduleSync("window load")},{once:true});
+})();
+</script>
+<!-- === /ApexIQ v4.9.9.122 FINAL BADGE AUTHORITY + SCRIPT ORDER FIX === -->
+
+</body>
+</html>
