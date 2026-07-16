@@ -1,0 +1,14 @@
+ApexIQ v4.9.9.127
+
+Deploy index.html and the full assets folder.
+Deploy apexiq-worker-v4.9.9.127-founder-request-cache.js to Cloudflare Worker.
+Keep APEXIQ_BETA_KV and APEXIQ_ADMIN_SECRET bindings.
+Deploy admin.html/admin manifest/service worker at the same GitHub Pages root.
+
+Changes:
+- Founder Private Beta 001 asset, Badge Case, Badge Locker, and inline profile-name marker
+- one-time founder award dialog after beta welcome
+- exact clicked-pack identity binding; removes Alter-only modal bug
+- duplicate loadAll/loadProfile request coalescing and eager first-image preload
+- locked-screen access request form routes to Worker/KV and appears in iPhone admin console
+- email/mailto request path is superseded

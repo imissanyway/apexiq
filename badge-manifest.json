@@ -1,5 +1,5 @@
 {
-  "version": "4.9.9.10-source-reextract-edge-fix",
+  "version": "4.9.9.127-founder-event-pack-speed-request",
   "assetRoot": "assets/approved-badges",
   "sourceSheetRoot": "assets/approved-badge-sheets",
   "rosterSize": 28,
@@ -1532,6 +1532,30 @@
           "requires": 2000,
           "asset": "assets/approved-badges/prestige_ascendant_t4.png",
           "lockedAsset": "assets/approved-badges/prestige_ascendant_t4.png"
+        }
+      ]
+    },
+    {
+      "id": "founder_private_beta_001",
+      "name": "Founder \u2014 Private Beta 001",
+      "category": "ApexIQ Internal",
+      "description": "Permanent founding-member badge awarded to verified ApexIQ private-beta members.",
+      "sourceType": "beta_session",
+      "automatic": true,
+      "proofBased": false,
+      "confidence": "verified",
+      "metric": "founder_private_beta_001",
+      "verificationStates": [
+        "locked",
+        "verified_beta_member"
+      ],
+      "tiers": [
+        {
+          "tier": 1,
+          "label": "Founder 001",
+          "requires": 1,
+          "asset": "assets/approved-badges/founder_private_beta_001.png",
+          "lockedAsset": "assets/approved-badges/founder_private_beta_001.png"
         }
       ]
     }

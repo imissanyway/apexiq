@@ -1,7 +1,7 @@
 {
-  "version": "4.9.9.11-all-badges-system-ready",
-  "familyCount": 30,
-  "pngCount": 120,
+  "version": "4.9.9.127-founder-event-addon",
+  "familyCount": 31,
+  "pngCount": 121,
   "families": {
     "20b_collection": [
       "20b_collection_t1.png",
@@ -182,6 +182,9 @@
       "win_stacker_t2.png",
       "win_stacker_t3.png",
       "win_stacker_t4.png"
+    ],
+    "founder_private_beta_001": [
+      "founder_private_beta_001.png"
     ]
   }
 }

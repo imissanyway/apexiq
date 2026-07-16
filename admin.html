@@ -276,6 +276,7 @@
     <div class="content">
       <section id="viewOverview" class="view"></section>
       <section id="viewUsers" class="view hidden"></section>
+      <section id="viewRequests" class="view hidden"></section>
       <section id="viewCreate" class="view hidden"></section>
       <section id="viewSettings" class="view hidden"></section>
     </div>
@@ -286,6 +287,10 @@
       </button>
       <button class="nav-btn" data-view="Users">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Users</span>
+      </button>
+      
+      <button class="nav-btn" data-view="Requests">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="m4 7 8 6 8-6"/></svg><span>Requests</span>
       </button>
       <button class="nav-btn" data-view="Create">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg><span>Create</span>
@@ -319,6 +324,7 @@
       expiresAt: "",
       email: localStorage.getItem(KEYS.email) || DEFAULT_EMAIL,
       users: [],
+      requests: [],
       loading: false,
       currentView: "Overview",
       userFilter: "all",
@@ -469,7 +475,7 @@
         writeSession(data.adminToken, data.expiresAt, remember);
         $("#loginSecret").value = "";
         showApp();
-        await loadUsers(true);
+        await Promise.all([loadUsers(true), loadRequests(false)]);
       } catch (error) {
         status.textContent = error.message || "Admin login failed.";
         status.classList.add("error");
@@ -658,6 +664,7 @@
     }
 
     function renderAll() {
+      renderRequests();
       renderOverview();
       renderUsers();
       renderCreate();
@@ -881,6 +888,51 @@
       };
     }
 
+
+
+    async function loadRequests(showMessage = false) {
+      try {
+        const data = await api("/api/beta/admin/requests");
+        state.requests = Array.isArray(data.requests) ? data.requests : [];
+        renderRequests();
+        if (showMessage) toast(`${state.requests.length} access requests loaded`);
+      } catch (error) {
+        state.requests = [];
+        renderRequests(error.message || "Could not load requests.");
+      }
+    }
+
+    function renderRequests(errorText = "") {
+      const panel = $("#viewRequests"); if (!panel) return;
+      const rows = [...state.requests].sort((a,b)=>String(b.createdAt||"").localeCompare(String(a.createdAt||"")));
+      panel.innerHTML = `<div class="section-head"><h2>Access requests</h2><span>${rows.length}</span></div>
+        ${errorText ? `<div class="inline-note">${esc(errorText)}</div>` : ""}
+        <div class="user-list">${rows.length ? rows.map(r => `<article class="user-card" data-request-id="${esc(r.id)}">
+          <div class="user-top"><div class="user-title"><b>${esc(r.apexUsername||"Unknown")}</b><small>${esc(r.platform||"Auto")} · ${esc(r.device||"Unknown device")}</small></div><span class="pill ${r.status==='new'?'active':'disabled'}">${esc(r.status||'new')}</span></div>
+          <div class="meta-row"><div class="meta"><span>Name</span><b>${esc(r.name||'—')}</b></div><div class="meta"><span>Main</span><b>${esc(r.mainLegend||'—')}</b></div><div class="meta"><span>Requested</span><b>${esc(dateText(r.createdAt))}</b></div></div>
+          ${r.notes ? `<div class="inline-note">${esc(r.notes)}</div>` : ""}
+          <div class="button-row"><button class="btn green small" data-request-action="create">Create key</button><button class="btn secondary small" data-request-action="reviewed">Reviewed</button><button class="btn danger small" data-request-action="denied">Deny</button></div>
+        </article>`).join("") : `<div class="card empty"><b>No access requests</b>New locked-screen requests will appear here.</div>`}</div>`;
+    }
+
+    async function requestAction(event) {
+      const button = event.target.closest("[data-request-action]"); if (!button) return;
+      const card = button.closest("[data-request-id]"); const id = card?.dataset.requestId;
+      const req = state.requests.find(r => r.id === id); if (!req) return;
+      const action = button.dataset.requestAction;
+      try {
+        if (action === "create") {
+          await api("/api/beta/admin/create", {method:"POST",body:{assignedUsername:req.apexUsername,platform:req.platform||"Auto",role:"tester",badge:"Founding Member — Private Beta 001",maxDevices:2,notes:`Created from request ${id}`}});
+          await api("/api/beta/admin/request-update", {method:"POST",body:{id,status:"approved"}});
+          toast("Access key created; open Users to copy it.");
+          await Promise.all([loadUsers(false),loadRequests(false)]);
+          return;
+        }
+        await api("/api/beta/admin/request-update", {method:"POST",body:{id,status:action}});
+        await loadRequests(false);
+      } catch (error) { toast(error.message||"Request action failed", true); }
+    }
+
     function saveWorker() {
       const worker = cleanWorker($("#workerInput").value);
       if (!/^https:\/\//i.test(worker)) {
@@ -906,7 +958,8 @@
 
     function bindStatic() {
       $("#loginForm").addEventListener("submit", login);
-      $("#refreshButton").addEventListener("click", () => loadUsers(true));
+      $("#refreshButton").addEventListener("click", () => Promise.all([loadUsers(true),loadRequests(true)]));
+      $("#viewRequests")?.addEventListener("click", requestAction);
       $$(".nav-btn").forEach(btn => btn.addEventListener("click", () => showView(btn.dataset.view)));
     }
 
@@ -920,7 +973,7 @@
         return;
       }
       showApp();
-      await loadUsers(false);
+      await Promise.all([loadUsers(false), loadRequests(false)]);
     }
 
     boot();

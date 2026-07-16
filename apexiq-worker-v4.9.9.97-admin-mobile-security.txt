@@ -24,7 +24,7 @@
  *   {"imissanyway":{"prestigeCompleted":2,"prestigeLabel":"Prestige 2"}}
  */
 
-const VERSION = "4.9.9.97-worker-admin-mobile-security";
+const VERSION = "4.9.9.127-worker-founder-request-cache";
 
 const LEGEND_NAMES = [
   "Alter","Ash","Axle","Ballistic","Bangalore","Bloodhound","Catalyst","Caustic","Conduit","Crypto",
@@ -199,6 +199,7 @@ const APEXIQ_ADMIN_EMAIL = "coyemicthell@gmail.com";
 const BETA_CODE_PREFIX = "beta_code:";
 const BETA_ADMIN_SESSION_PREFIX = "beta_admin_session:";
 const BETA_TESTER_SESSION_PREFIX = "beta_tester_session:";
+const BETA_REQUEST_PREFIX = "beta_access_request:";
 
 async function routeBetaAccess(request, env, origin, url) {
   if (!url.pathname.startsWith("/api/beta")) return null;
@@ -217,6 +218,11 @@ async function routeBetaAccess(request, env, origin, url) {
       return json(data, origin, data.ok ? 200 : 401);
     }
 
+    if (url.pathname === "/api/beta/request-access" && request.method === "POST") {
+      const data = await betaRequestAccess(kv, body, request);
+      return jsonPrivate(data, origin, data.ok ? 200 : 400);
+    }
+
     if (url.pathname === "/api/beta/admin/login" && request.method === "POST") {
       const data = await betaAdminLogin(kv, env, body);
       return jsonPrivate(data, origin, data.ok ? 200 : 401);
@@ -232,6 +238,12 @@ async function routeBetaAccess(request, env, origin, url) {
       }
       if (url.pathname === "/api/beta/admin/users" && request.method === "GET") {
         return jsonPrivate(await betaAdminUsers(kv), origin, 200);
+      }
+      if (url.pathname === "/api/beta/admin/requests" && request.method === "GET") {
+        return jsonPrivate(await betaAdminRequests(kv), origin, 200);
+      }
+      if (url.pathname === "/api/beta/admin/request-update" && request.method === "POST") {
+        return jsonPrivate(await betaAdminRequestUpdate(kv, body, admin), origin, 200);
       }
       if (url.pathname === "/api/beta/admin/create" && request.method === "POST") {
         return jsonPrivate(await betaAdminCreate(kv, body, admin), origin, 200);
@@ -388,6 +400,47 @@ async function betaSession(kv, body) {
   const known = devices.some(d => d && (d.deviceId === deviceId || (body.deviceSignatureHash && d.deviceSignatureHash === body.deviceSignatureHash)));
   if (!known) return { ok: false, error: "This device is not linked to that beta key." };
   return { ok: true, sessionToken, expiresAt: sess.expiresAt, code: record.code, assignedUsername: record.assignedUsername, platform: record.platform || "Auto", role: record.role || "tester", badge: record.badge || "Original Beta Tester", maxDevices: record.maxDevices || 2, devicesUsed: devices.length, admin: record.role === "admin" || record.role === "founder" };
+}
+
+async function betaRequestAccess(kv, body, request) {
+  const apexUsername = cleanUsername(body.apexUsername || body.username);
+  if (!apexUsername) return { ok: false, error: "Enter your exact Apex username." };
+  if (!body.agreedNoShare) return { ok: false, error: "Confirm that you will not share the access key." };
+  const now = isoNow();
+  const id = `${Date.now().toString(36)}_${randomPart(6)}`;
+  const record = {
+    id, apexUsername, apexUsernameNorm: normUsername(apexUsername),
+    name: String(body.name || "").trim().slice(0, 100),
+    platform: String(body.platform || "Auto").trim().slice(0, 40),
+    mainLegend: String(body.mainLegend || "").trim().slice(0, 60),
+    device: String(body.device || "").trim().slice(0, 120),
+    notes: String(body.notes || "").trim().slice(0, 700),
+    status: "new", createdAt: now, updatedAt: now,
+    userAgent: String(request.headers.get("User-Agent") || "").slice(0, 220)
+  };
+  await kvPutJSON(kv, BETA_REQUEST_PREFIX + id, record);
+  return { ok: true, id, message: "Request sent to the ApexIQ Admin console." };
+}
+
+async function betaAdminRequests(kv) {
+  const requests = []; let cursor;
+  do {
+    const listed = await kv.list({ prefix: BETA_REQUEST_PREFIX, cursor, limit: 1000 });
+    cursor = listed.cursor;
+    for (const item of listed.keys || []) { const rec = await kvGetJSON(kv, item.name); if (rec) requests.push(rec); }
+  } while (cursor);
+  requests.sort((a,b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
+  return { ok: true, requests, count: requests.length };
+}
+
+async function betaAdminRequestUpdate(kv, body, admin) {
+  const id = String(body.id || "").trim();
+  if (!id) return { ok: false, error: "Missing request id." };
+  const key = BETA_REQUEST_PREFIX + id; const rec = await kvGetJSON(kv, key);
+  if (!rec) return { ok: false, error: "Access request not found." };
+  rec.status = ["new","reviewed","approved","denied"].includes(String(body.status)) ? String(body.status) : rec.status;
+  rec.updatedAt = isoNow(); rec.updatedBy = admin.email;
+  await kvPutJSON(kv, key, rec); return { ok: true, request: rec };
 }
 
 async function betaAdminLogin(kv, env, body) {

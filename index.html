@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ApexIQ — Private Beta</title>
 <link id="apexiq-v49956-favicon" rel="icon" type="image/png" href="assets/apexiq-logo.png">
-<!-- ApexIQ v4.9.9.126 meta + official board fix -->
+<!-- ApexIQ v4.9.9.127 founder + pack + speed + beta-request fix -->
 <!-- ApexIQ Predator Broadcast v4.9.9.10 Source Re-Extract + Edge Fix: artifact-cleanup-only badge asset refresh on top of the stable full badge system. -->
 <style>
 
@@ -11386,6 +11386,60 @@ body:not([data-aiq-v116-profile="true"]) [data-aiq-v116-snapshot-block="1"]{disp
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
 })();
 </script>
+
+
+<!-- === ApexIQ v4.9.9.127 Founder Badge + Pack Target + Search Acceleration + Request Routing === -->
+<style id="apexiq-v499127-founder-css">
+.aiq-v499127-founder-inline{display:inline-flex;align-items:center;justify-content:center;width:clamp(38px,5.5vw,54px);height:clamp(38px,5.5vw,54px);margin-left:9px;vertical-align:middle;flex:0 0 auto;filter:drop-shadow(0 5px 11px rgba(168,85,247,.34));}
+.aiq-v499127-founder-inline img{display:block;width:100%;height:100%;object-fit:contain;}
+.aiq-v499127-founder-case-cell{position:relative;border:1px solid rgba(245,190,66,.62)!important;background:linear-gradient(145deg,rgba(69,28,105,.42),rgba(11,22,43,.92))!important;box-shadow:inset 0 0 0 1px rgba(168,85,247,.18),0 10px 28px rgba(0,0,0,.19);}
+.aiq-v499127-founder-case-cell img{width:76px!important;height:76px!important;object-fit:contain!important;filter:drop-shadow(0 7px 13px rgba(168,85,247,.32));}
+.aiq-v499127-founder-tag{position:absolute;right:5px;bottom:5px;border-radius:999px;padding:2px 6px;background:#5b21b6;color:#fff4c7;border:1px solid rgba(250,204,21,.65);font-size:9px;font-weight:1000;letter-spacing:.04em;}
+.aiq-v499127-founder-locker{border:1px solid rgba(250,204,21,.56);border-radius:20px;padding:14px;background:linear-gradient(145deg,rgba(76,29,149,.28),rgba(6,19,38,.96));display:grid;grid-template-columns:92px 1fr;gap:13px;align-items:center;margin:12px 0;}
+.aiq-v499127-founder-locker img{width:92px;height:92px;object-fit:contain;filter:drop-shadow(0 9px 18px rgba(168,85,247,.35));}.aiq-v499127-founder-locker h3{margin:0 0 4px}.aiq-v499127-founder-locker p{margin:0;color:var(--muted);line-height:1.4}.aiq-v499127-founder-locker small{color:#facc15;font-weight:1000;text-transform:uppercase;letter-spacing:.09em}
+.aiq-v499127-award{position:fixed;inset:0;z-index:140000;display:grid;place-items:center;padding:18px;background:rgba(1,6,20,.84);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}.aiq-v499127-award[hidden]{display:none!important}.aiq-v499127-award-card{width:min(560px,100%);max-height:calc(100vh - 36px);overflow:auto;text-align:center;border:1px solid rgba(250,204,21,.58);border-radius:28px;padding:24px;background:radial-gradient(circle at 50% 8%,rgba(124,58,237,.30),transparent 42%),linear-gradient(180deg,#0a1830,#061225);box-shadow:0 40px 120px rgba(0,0,0,.65)}.aiq-v499127-award-card img{width:min(280px,70vw);height:auto;display:block;margin:2px auto 4px;filter:drop-shadow(0 18px 30px rgba(168,85,247,.38))}.aiq-v499127-award-card h2{margin:4px 0 8px;font-size:clamp(2rem,8vw,3.5rem);letter-spacing:-.055em}.aiq-v499127-award-card p{margin:0 auto 16px;color:var(--muted);line-height:1.5;max-width:44ch}.aiq-v499127-award-kicker{font-size:.75rem;font-weight:1000;letter-spacing:.14em;text-transform:uppercase;color:#facc15}.aiq-v499127-award-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}.aiq-v499127-award-actions button{min-height:48px;border:0;border-radius:15px;padding:0 18px;font:inherit;font-weight:1000;color:white;background:linear-gradient(135deg,#316df4,#d91ee8)}
+@media(max-width:620px){.aiq-v499127-founder-locker{grid-template-columns:72px 1fr}.aiq-v499127-founder-locker img{width:72px;height:72px}.aiq-v499127-founder-case-cell img{width:62px!important;height:62px!important}}
+</style>
+<script id="apexiq-v499127-founder-js">
+(function(){
+  'use strict';
+  var BUILD='v4.9.9.127-founder-pack-speed-request';
+  if(window.__apexiqV499127Booted)return;window.__apexiqV499127Booted=true;
+  var ASSET='assets/approved-badges/founder_private_beta_001.png';
+  var SESSION_KEY='apexiq:betaSession:v49989';
+  var AWARD_KEY='apexiq:founderAwardSeen:v499127';
+  var ADMIN_URL=(window.APEXIQ_ADMIN_CONSOLE_URL||'./admin.html#access-requests');
+  var loadAllFlight=new Map(),loadProfileFlight=new Map(),renderQueued=0;
+  function $(s,r){return (r||document).querySelector(s)}
+  function all(s,r){return Array.from((r||document).querySelectorAll(s))}
+  function safe(v){return String(v==null?'':v).replace(/[&<>\"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]})}
+  function norm(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'')}
+  function read(k){try{return JSON.parse(localStorage.getItem(k)||'null')}catch(_){return null}}
+  function beta(){var s=read(SESSION_KEY);if(!s||!s.ok||!s.sessionToken)return null;var exp=Date.parse(s.expiresAt||'');if(Number.isFinite(exp)&&exp<Date.now())return null;return s}
+  function eligible(){return !!beta()}
+  function key(){try{return norm($('#playerInput')?.value||state.player||'')+'|'+String($('#platformInput')?.value||state.platform||'auto').toLowerCase()}catch(_){return ''}}
+  function founderCell(){return '<button type="button" class="v49919MiniBadge is-earned aiq-v499127-founder-case-cell" title="Founder — Private Beta 001" aria-label="Founder — Private Beta 001"><img loading="eager" decoding="async" src="'+ASSET+'" alt="Founder Private Beta 001"><span class="aiq-v499127-founder-tag">001</span></button>'}
+  function patchName(){if(!eligible())return;var h=$('#profilePanel .lower-third h2,#profilePanel .fast-profile h2,#profilePanel [class*=profile] h2');if(!h||h.querySelector('.aiq-v499127-founder-inline'))return;var badge=document.createElement('span');badge.className='aiq-v499127-founder-inline';badge.title='ApexIQ Founding Member · Private Beta 001';badge.innerHTML='<img src="'+ASSET+'" alt="Founder Private Beta 001">';h.appendChild(badge)}
+  function patchCase(){if(!eligible())return;var caseRoot=$('#profilePanel .aiq-v49994-display-case,#profilePanel .v49919ProfileBadgeCase,#profilePanel .badge-case');if(!caseRoot)return;var grid=caseRoot.querySelector('.v49919MiniBadgeGrid,.aiq-v49994-badge-grid,.badge-shelf');if(!grid||grid.querySelector('.aiq-v499127-founder-case-cell'))return;grid.insertAdjacentHTML('afterbegin',founderCell());var count=caseRoot.querySelector('small');if(count&&/unlocked/i.test(count.textContent||'')){var n=parseInt(count.textContent,10);if(Number.isFinite(n))count.textContent=(n+1)+' unlocked'}}
+  function patchLocker(){if(!eligible())return;var panel=$('#badgesPanel');if(!panel||panel.querySelector('.aiq-v499127-founder-locker'))return;panel.insertAdjacentHTML('afterbegin','<article class="aiq-v499127-founder-locker"><img src="'+ASSET+'" alt="Founder Private Beta 001"><div><small>Permanent private-beta award</small><h3>Founder — Private Beta 001</h3><p>You were part of ApexIQ before public release. This founding-member badge is account-bound and never reissued.</p></div></article>')}
+  function patchAll(){patchName();patchCase();patchLocker();patchRequestButton()}
+  function queuePatch(){clearTimeout(renderQueued);renderQueued=setTimeout(patchAll,20)}
+  function showAward(){if(!eligible()||localStorage.getItem(AWARD_KEY)==='1'||$('#aiqV499127Award'))return;document.body.insertAdjacentHTML('beforeend','<div id="aiqV499127Award" class="aiq-v499127-award" role="dialog" aria-modal="true"><section class="aiq-v499127-award-card"><div class="aiq-v499127-award-kicker">Private Beta · Founding Member</div><img src="'+ASSET+'" alt="Founder Private Beta 001 badge"><h2>Founder badge awarded</h2><p>You were here before public release. Founder — Private Beta 001 has been permanently added to your ApexIQ Badge Case and profile.</p><div class="aiq-v499127-award-actions"><button type="button" id="aiqV499127AwardClose">Add to my case</button></div></section></div>');$('#aiqV499127AwardClose')?.addEventListener('click',function(){localStorage.setItem(AWARD_KEY,'1');$('#aiqV499127Award')?.remove();patchAll()})}
+  function watchWelcome(){var seenWelcome=false;new MutationObserver(function(){var welcome=$('#aiqV49989Welcome');if(welcome){seenWelcome=true;var start=$('#aiqV49989WelcomeStart');if(start&&!start.dataset.founder127){start.dataset.founder127='1';start.addEventListener('click',function(){setTimeout(showAward,180)})}}else if(seenWelcome&&!localStorage.getItem(AWARD_KEY)){setTimeout(showAward,180)}}).observe(document.documentElement,{childList:true,subtree:true});if(eligible()&&localStorage.getItem('apexiq:betaWelcomeSeen:v49990')==='1'&&!localStorage.getItem(AWARD_KEY))setTimeout(showAward,700)}
+  function exactPackFromCard(card){var packs=Array.isArray(window.PACK_DATA)?window.PACK_DATA:(typeof PACK_DATA!=='undefined'&&Array.isArray(PACK_DATA)?PACK_DATA:[]);var idx=Number(card?.dataset?.aiqPackIndex);if(Number.isInteger(idx)&&packs[idx])return packs[idx];var id=card?.dataset?.packId||card?.getAttribute('data-pack-id')||card?.dataset?.legend||'';if(id){var found=packs.find(function(p){return norm(p.id)===norm(id)||norm(p.name)===norm(id)});if(found)return found}var title=card?.querySelector('h3,[data-pack-name]')?.textContent||'';return packs.find(function(p){return norm(p.name)===norm(title)})||null}
+  function openExactPack(pack){if(!pack)return;var old=$('#aiqV499127PackModal');if(old)old.remove();var stickers=Array.isArray(pack.stickers)?pack.stickers:[];document.body.insertAdjacentHTML('beforeend','<div id="aiqV499127PackModal" class="aiq-v49999-pack-modal"><section class="aiq-v49999-pack-card"><div class="aiq-v49999-pack-head"><div><h3>'+safe(pack.name)+' pack</h3><p>'+stickers.length+' sticker assets</p></div><button type="button" data-close-pack127 class="aiq-v49999-pack-close">×</button></div><div class="aiq-v49999-sticker-grid">'+stickers.map(function(st,i){var label=st?.label||pack.name+' sticker '+(i+1);return '<article class="aiq-v49999-sticker-tile"><img loading="lazy" decoding="async" src="'+safe(st?.src||'')+'" alt="'+safe(label)+'"><span>'+safe(label)+'</span></article>'}).join('')+'</div></section></div>');document.documentElement.style.overflow='hidden'}
+  document.addEventListener('click',function(e){var close=e.target.closest&&e.target.closest('[data-close-pack127]');if(close){e.preventDefault();$('#aiqV499127PackModal')?.remove();document.documentElement.style.overflow='';return}var card=e.target.closest&&e.target.closest('#packsPanel .pack-tile,#packsPanel [data-aiq-pack-index],#packsPanel [data-pack-id]');if(!card)return;var pack=exactPackFromCard(card);if(!pack)return;e.preventDefault();e.stopPropagation();if(e.stopImmediatePropagation)e.stopImmediatePropagation();openExactPack(pack)},true);
+  function patchPackIdentity(){var packs=typeof PACK_DATA!=='undefined'&&Array.isArray(PACK_DATA)?PACK_DATA:[];all('#packsPanel .pack-tile').forEach(function(card,i){if(packs[i]){card.dataset.aiqPackIndex=String(i);card.dataset.packId=packs[i].id||packs[i].name;card.setAttribute('role','button');card.tabIndex=0}})}
+  function patchRequestButton(){var btn=$('#aiqV49989RequestBtn');if(!btn||btn.dataset.adminRoute127)return;var clone=btn.cloneNode(true);clone.dataset.adminRoute127='1';clone.textContent='Request access key';clone.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();var api=window.apexiqOpenAccessRequest;if(typeof api==='function'){api();return}location.href=ADMIN_URL});btn.replaceWith(clone)}
+  // Safe request coalescing: duplicate taps/search events share the same promise.
+  function wrapFlight(name,map){var old=window[name];if(typeof old!=='function'||old.__aiqV499127)return;var wrapped=function(){var k=key()+'|'+(arguments[0]?'fresh':'cached');if(map.has(k))return map.get(k);var p=Promise.resolve(old.apply(this,arguments));map.set(k,p);return p.finally(function(){map.delete(k);queuePatch()})};wrapped.__aiqV499127=true;window[name]=wrapped;try{eval(name+'=window[name]')}catch(_){}}
+  function preloadAssets(){var srcs=[ASSET];try{(PACK_DATA||[]).forEach(function(p){if(p?.stickers?.[0]?.src)srcs.push(p.stickers[0].src)})}catch(_){};srcs.slice(0,35).forEach(function(src){var im=new Image();im.decoding='async';im.src=src})}
+  function boot(){wrapFlight('loadAll',loadAllFlight);wrapFlight('loadProfile',loadProfileFlight);patchPackIdentity();patchAll();preloadAssets();watchWelcome();new MutationObserver(function(){patchPackIdentity();queuePatch()}).observe(document.documentElement,{childList:true,subtree:true})}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+  window.apexiqFounderV499127={asset:ASSET,showAward:showAward,patch:patchAll,build:BUILD};
+})();
+</script>
+<!-- === /ApexIQ v4.9.9.127 === -->
 
 </body>
 </html>
