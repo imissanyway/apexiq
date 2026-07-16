@@ -1,0 +1,930 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#09182b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ApexIQ Admin">
+  <meta name="format-detection" content="telephone=no">
+  <link rel="manifest" href="./admin-manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./admin-icon-192.png">
+  <title>ApexIQ Admin</title>
+  <style>
+    :root{
+      --bg:#06101d;
+      --panel:#0c1c31;
+      --panel-2:#10243d;
+      --panel-3:#142b48;
+      --line:#223c5d;
+      --text:#f8fbff;
+      --muted:#9fb0c7;
+      --muted-2:#6f829d;
+      --orange:#ff7a2f;
+      --yellow:#ffd12f;
+      --green:#31d48d;
+      --red:#ff5264;
+      --blue:#58a6ff;
+      --purple:#9f74ff;
+      --shadow:0 20px 50px rgba(0,0,0,.35);
+      --radius:22px;
+      --safe-top:env(safe-area-inset-top,0px);
+      --safe-bottom:env(safe-area-inset-bottom,0px);
+    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}
+    body{
+      background:
+        radial-gradient(circle at 18% -10%,rgba(255,122,47,.18),transparent 32%),
+        radial-gradient(circle at 90% 10%,rgba(159,116,255,.12),transparent 30%),
+        linear-gradient(180deg,#06101d 0%,#081526 100%);
+      padding-top:var(--safe-top);
+      padding-bottom:calc(84px + var(--safe-bottom));
+      overflow-x:hidden;
+    }
+    button,input,select,textarea{font:inherit}
+    button{cursor:pointer}
+    .hidden{display:none!important}
+    .app{max-width:760px;margin:0 auto;min-height:100vh}
+    .topbar{
+      position:sticky;top:0;z-index:30;
+      padding:14px 16px 12px;
+      background:linear-gradient(180deg,rgba(6,16,29,.97),rgba(6,16,29,.88));
+      backdrop-filter:blur(20px);
+      border-bottom:1px solid rgba(255,255,255,.05);
+    }
+    .brand-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;align-items:center;gap:12px;min-width:0}
+    .brand-mark{
+      width:44px;height:44px;border-radius:15px;display:grid;place-items:center;
+      background:linear-gradient(145deg,var(--orange),var(--yellow));
+      box-shadow:0 10px 30px rgba(255,122,47,.28);
+      color:#06101d;font-weight:1000;letter-spacing:-2px;font-size:18px;
+    }
+    .brand-copy{min-width:0}
+    .brand-copy b{display:block;font-size:18px;line-height:1.1}
+    .brand-copy span{display:block;color:var(--muted);font-size:12px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .icon-btn{
+      width:42px;height:42px;border:1px solid var(--line);border-radius:14px;
+      background:var(--panel);color:var(--text);display:grid;place-items:center;
+    }
+    .content{padding:14px 14px 24px}
+    .hero{
+      border:1px solid var(--line);border-radius:26px;padding:20px;
+      background:
+        linear-gradient(145deg,rgba(255,122,47,.13),rgba(255,209,47,.03) 45%,rgba(88,166,255,.06)),
+        var(--panel);
+      box-shadow:var(--shadow);overflow:hidden;position:relative;
+    }
+    .hero:after{
+      content:"";position:absolute;width:170px;height:170px;border-radius:50%;
+      background:radial-gradient(circle,rgba(255,209,47,.18),transparent 68%);
+      right:-60px;top:-75px;pointer-events:none;
+    }
+    .eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--yellow);font-weight:900}
+    h1,h2,h3,p{margin:0}
+    .hero h1{font-size:30px;line-height:1.02;margin-top:8px;letter-spacing:-.04em}
+    .hero p{color:var(--muted);line-height:1.5;margin-top:10px;font-size:14px;max-width:520px}
+    .section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:22px 2px 10px}
+    .section-head h2{font-size:19px;letter-spacing:-.02em}
+    .section-head span{color:var(--muted);font-size:12px}
+    .grid{display:grid;gap:10px}
+    .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .stat{
+      border:1px solid var(--line);background:linear-gradient(160deg,var(--panel-2),var(--panel));
+      border-radius:19px;padding:15px;min-height:112px;
+    }
+    .stat .label{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.09em;font-weight:850}
+    .stat .value{font-size:31px;font-weight:950;letter-spacing:-.04em;margin-top:10px;line-height:1}
+    .stat .sub{color:var(--muted);font-size:12px;margin-top:8px}
+    .stat.green .value{color:var(--green)}
+    .stat.red .value{color:var(--red)}
+    .stat.yellow .value{color:var(--yellow)}
+    .stat.blue .value{color:var(--blue)}
+    .card{
+      border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);padding:16px;
+      box-shadow:0 10px 30px rgba(0,0,0,.13);
+    }
+    .quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .quick{
+      min-height:92px;border:1px solid var(--line);border-radius:18px;background:var(--panel-2);
+      color:var(--text);padding:14px;text-align:left;display:flex;flex-direction:column;justify-content:space-between;
+    }
+    .quick strong{font-size:15px}
+    .quick span{font-size:12px;color:var(--muted)}
+    .quick.primary{background:linear-gradient(145deg,var(--orange),#ff9d34);border-color:transparent;color:#07111e}
+    .quick.primary span{color:rgba(7,17,30,.7)}
+    .field{display:grid;gap:7px;margin-bottom:13px}
+    .field label{font-size:12px;color:var(--muted);font-weight:750}
+    .input,select,textarea{
+      width:100%;border:1px solid var(--line);background:#08172a;color:var(--text);
+      border-radius:15px;padding:13px 14px;outline:none;min-height:48px;
+    }
+    textarea{min-height:96px;resize:vertical}
+    .input:focus,select:focus,textarea:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,122,47,.12)}
+    .form-grid{display:grid;grid-template-columns:1fr;gap:0}
+    .btn{
+      width:100%;border:0;border-radius:16px;min-height:50px;padding:12px 16px;
+      font-weight:900;background:linear-gradient(135deg,var(--orange),#ff9b32);color:#08111d;
+    }
+    .btn.secondary{background:var(--panel-3);color:var(--text);border:1px solid var(--line)}
+    .btn.danger{background:rgba(255,82,100,.12);color:#ff8f9a;border:1px solid rgba(255,82,100,.35)}
+    .btn.green{background:rgba(49,212,141,.14);color:#77efb7;border:1px solid rgba(49,212,141,.35)}
+    .btn.small{width:auto;min-height:38px;padding:8px 12px;border-radius:12px;font-size:12px}
+    .button-row{display:flex;gap:9px;flex-wrap:wrap}
+    .button-row .btn{flex:1;min-width:120px}
+    .search-wrap{position:relative}
+    .search-wrap input{padding-left:42px}
+    .search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted)}
+    .chips{display:flex;gap:8px;overflow:auto;padding:10px 0 4px;scrollbar-width:none}
+    .chips::-webkit-scrollbar{display:none}
+    .chip{
+      flex:0 0 auto;border:1px solid var(--line);background:var(--panel);color:var(--muted);
+      border-radius:999px;padding:9px 13px;font-size:12px;font-weight:850;
+    }
+    .chip.active{background:rgba(255,122,47,.15);color:#ffb47d;border-color:rgba(255,122,47,.45)}
+    .user-list{display:grid;gap:10px}
+    .user-card{
+      border:1px solid var(--line);border-radius:20px;background:linear-gradient(160deg,var(--panel-2),var(--panel));
+      padding:15px;display:grid;gap:12px;
+    }
+    .user-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+    .user-title{min-width:0}
+    .user-title b{display:block;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .user-title small{display:block;color:var(--muted);font-size:12px;margin-top:4px}
+    .pill{border-radius:999px;padding:6px 9px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+    .pill.active{color:#71efb6;background:rgba(49,212,141,.12);border:1px solid rgba(49,212,141,.3)}
+    .pill.disabled{color:#ff98a3;background:rgba(255,82,100,.12);border:1px solid rgba(255,82,100,.3)}
+    .meta-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+    .meta{
+      border:1px solid rgba(255,255,255,.06);background:rgba(4,12,23,.35);border-radius:13px;padding:9px;
+      min-width:0;
+    }
+    .meta span{display:block;color:var(--muted-2);font-size:9px;text-transform:uppercase;letter-spacing:.08em}
+    .meta b{display:block;font-size:12px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .code-row{display:flex;align-items:center;gap:8px}
+    .code{
+      flex:1;border:1px dashed rgba(255,209,47,.45);background:rgba(255,209,47,.06);
+      border-radius:13px;padding:11px 12px;font:800 13px ui-monospace,SFMono-Regular,Menlo,monospace;
+      overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#ffe27a;
+    }
+    .empty{text-align:center;color:var(--muted);padding:30px 18px}
+    .empty b{display:block;color:var(--text);font-size:18px;margin-bottom:7px}
+    .skeleton{height:140px;border-radius:20px;background:linear-gradient(90deg,var(--panel) 25%,var(--panel-2) 50%,var(--panel) 75%);background-size:200% 100%;animation:shimmer 1.2s infinite}
+    @keyframes shimmer{to{background-position:-200% 0}}
+    .bottom-nav{
+      position:fixed;left:50%;bottom:0;transform:translateX(-50%);z-index:40;width:min(760px,100%);
+      display:grid;grid-template-columns:repeat(4,1fr);padding:8px 10px calc(8px + var(--safe-bottom));
+      border-top:1px solid var(--line);background:rgba(7,17,30,.95);backdrop-filter:blur(22px);
+    }
+    .nav-btn{
+      border:0;background:transparent;color:var(--muted);display:grid;place-items:center;gap:4px;
+      min-height:54px;font-size:10px;font-weight:800;border-radius:14px;
+    }
+    .nav-btn svg{width:22px;height:22px}
+    .nav-btn.active{color:var(--orange);background:rgba(255,122,47,.08)}
+    .toast{
+      position:fixed;left:50%;bottom:calc(88px + var(--safe-bottom));transform:translate(-50%,20px);
+      max-width:min(90vw,520px);z-index:100;background:#f6f9ff;color:#07111f;padding:12px 15px;border-radius:14px;
+      font-size:13px;font-weight:800;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.22s;
+    }
+    .toast.show{opacity:1;transform:translate(-50%,0)}
+    .toast.error{background:#ff6573;color:#fff}
+    .sheet-backdrop{
+      position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.62);backdrop-filter:blur(5px);
+      display:flex;align-items:flex-end;justify-content:center;padding-top:var(--safe-top);
+    }
+    .sheet{
+      width:min(760px,100%);max-height:92vh;overflow:auto;background:#09182b;border:1px solid var(--line);
+      border-radius:28px 28px 0 0;padding:10px 16px calc(22px + var(--safe-bottom));box-shadow:0 -20px 60px rgba(0,0,0,.45);
+    }
+    .grabber{width:42px;height:5px;border-radius:99px;background:#38506e;margin:2px auto 15px}
+    .sheet-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:15px}
+    .sheet-head h2{font-size:22px}
+    .sheet-head p{color:var(--muted);font-size:12px;margin-top:4px}
+    .device{border:1px solid var(--line);background:var(--panel);border-radius:15px;padding:12px;margin-top:8px}
+    .device b{font-size:13px}
+    .device span{display:block;color:var(--muted);font-size:11px;margin-top:4px}
+    .login-wrap{min-height:calc(100vh - var(--safe-top));display:grid;place-items:center;padding:22px 16px 40px}
+    .login-card{
+      width:min(100%,460px);border:1px solid var(--line);background:linear-gradient(155deg,var(--panel-2),var(--panel));
+      border-radius:28px;padding:22px;box-shadow:var(--shadow);
+    }
+    .login-logo{
+      width:64px;height:64px;border-radius:22px;background:linear-gradient(145deg,var(--orange),var(--yellow));
+      color:#06101d;display:grid;place-items:center;font-weight:1000;font-size:24px;letter-spacing:-3px;margin-bottom:20px;
+    }
+    .login-card h1{font-size:30px;letter-spacing:-.04em}
+    .login-card>p{color:var(--muted);line-height:1.5;margin:9px 0 20px;font-size:14px}
+    .check{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12px;margin:4px 0 14px}
+    .check input{width:19px;height:19px;accent-color:var(--orange)}
+    .status-note{font-size:12px;color:var(--muted);margin-top:11px;min-height:18px}
+    .status-note.error{color:#ff8d99}
+    .install-banner{border:1px solid rgba(88,166,255,.3);background:rgba(88,166,255,.07);border-radius:17px;padding:13px;margin-top:14px;color:#b9d9ff;font-size:12px;line-height:1.45}
+    .inline-note{border:1px solid var(--line);background:rgba(255,255,255,.025);border-radius:15px;padding:12px;color:var(--muted);font-size:12px;line-height:1.45}
+    .result-card{
+      border:1px solid rgba(49,212,141,.35);background:rgba(49,212,141,.07);border-radius:19px;padding:16px;margin-top:14px;
+    }
+    .result-card .big-code{font:950 20px ui-monospace,SFMono-Regular,Menlo,monospace;color:#8ff3c5;margin:8px 0 12px;word-break:break-all}
+    .split{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media(min-width:650px){
+      .stats{grid-template-columns:repeat(4,minmax(0,1fr))}
+      .quick-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+      .form-grid{grid-template-columns:1fr 1fr;gap:0 12px}
+      .form-grid .full{grid-column:1/-1}
+    }
+  </style>
+</head>
+<body>
+  <div id="loginView" class="login-wrap">
+    <section class="login-card">
+      <div class="login-logo">AIQ</div>
+      <div class="eyebrow">Private control center</div>
+      <h1>ApexIQ Admin</h1>
+      <p>Manage private-beta users, access keys, roles, devices, and tester status from your iPhone.</p>
+      <form id="loginForm">
+        <div class="field">
+          <label for="loginEmail">Admin email</label>
+          <input class="input" id="loginEmail" type="email" autocomplete="username" value="coyemicthell@gmail.com" required>
+        </div>
+        <div class="field">
+          <label for="loginSecret">Worker admin secret</label>
+          <input class="input" id="loginSecret" type="password" autocomplete="current-password" placeholder="APEXIQ_ADMIN_SECRET" required>
+        </div>
+        <label class="check"><input id="rememberSession" type="checkbox"> Keep this 6-hour admin session on this device</label>
+        <button class="btn" id="loginButton" type="submit">Unlock Admin</button>
+        <div id="loginStatus" class="status-note"></div>
+      </form>
+      <div class="install-banner"><b>iPhone:</b> open this page in Safari, tap Share, then <b>Add to Home Screen</b>.</div>
+    </section>
+  </div>
+
+  <main id="appView" class="app hidden">
+    <header class="topbar">
+      <div class="brand-row">
+        <div class="brand">
+          <div class="brand-mark">AIQ</div>
+          <div class="brand-copy"><b>ApexIQ Admin</b><span id="connectionLabel">Connected</span></div>
+        </div>
+        <button class="icon-btn" id="refreshButton" aria-label="Refresh">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 11a8 8 0 1 0 2 5"/><path d="M20 4v7h-7"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="content">
+      <section id="viewOverview" class="view"></section>
+      <section id="viewUsers" class="view hidden"></section>
+      <section id="viewCreate" class="view hidden"></section>
+      <section id="viewSettings" class="view hidden"></section>
+    </div>
+
+    <nav class="bottom-nav">
+      <button class="nav-btn active" data-view="Overview">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg><span>Overview</span>
+      </button>
+      <button class="nav-btn" data-view="Users">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Users</span>
+      </button>
+      <button class="nav-btn" data-view="Create">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg><span>Create</span>
+      </button>
+      <button class="nav-btn" data-view="Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.12 2.12-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.04 1.56V20h-3v-.08a1.7 1.7 0 0 0-1.04-1.56 1.7 1.7 0 0 0-1.88.34l-.06.06-2.12-2.12.06-.06A1.7 1.7 0 0 0 7 15a1.7 1.7 0 0 0-1.56-1.04H5v-3h.44A1.7 1.7 0 0 0 7 9.92a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.12-2.12.06.06A1.7 1.7 0 0 0 10.66 6.3 1.7 1.7 0 0 0 11.7 4.74V4h3v.74a1.7 1.7 0 0 0 1.04 1.56 1.7 1.7 0 0 0 1.88-.34l.06-.06 2.12 2.12-.06.06a1.7 1.7 0 0 0-.34 1.88A1.7 1.7 0 0 0 20.96 11H21v3h-.04A1.7 1.7 0 0 0 19.4 15z"/></svg><span>Settings</span>
+      </button>
+    </nav>
+  </main>
+
+  <div id="sheetHost"></div>
+  <div id="toast" class="toast"></div>
+
+  <script>
+  (() => {
+    "use strict";
+
+    const DEFAULT_WORKER = "https://cool-wildflower-1646.pwr97pnmkn.workers.dev";
+    const DEFAULT_EMAIL = "coyemicthell@gmail.com";
+    const KEYS = {
+      worker: "apexiq_admin_worker_v1",
+      token: "apexiq_admin_token_v1",
+      expires: "apexiq_admin_expires_v1",
+      email: "apexiq_admin_email_v1",
+      remember: "apexiq_admin_remember_v1"
+    };
+
+    const state = {
+      worker: localStorage.getItem(KEYS.worker) || DEFAULT_WORKER,
+      token: "",
+      expiresAt: "",
+      email: localStorage.getItem(KEYS.email) || DEFAULT_EMAIL,
+      users: [],
+      loading: false,
+      currentView: "Overview",
+      userFilter: "all",
+      userSearch: ""
+    };
+
+    const $ = (sel, root = document) => root.querySelector(sel);
+    const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+
+    function esc(value) {
+      return String(value ?? "").replace(/[&<>"']/g, ch => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+      }[ch]));
+    }
+
+    function dateText(value) {
+      if (!value) return "Never";
+      const d = new Date(value);
+      if (Number.isNaN(d.getTime())) return "Unknown";
+      const diff = Date.now() - d.getTime();
+      const minutes = Math.floor(diff / 60000);
+      if (minutes < 1) return "Just now";
+      if (minutes < 60) return `${minutes}m ago`;
+      const hours = Math.floor(minutes / 60);
+      if (hours < 24) return `${hours}h ago`;
+      const days = Math.floor(hours / 24);
+      if (days < 14) return `${days}d ago`;
+      return d.toLocaleDateString([], {month:"short",day:"numeric",year:d.getFullYear() !== new Date().getFullYear() ? "numeric" : undefined});
+    }
+
+    function vibrate() {
+      try { navigator.vibrate?.(12); } catch (_) {}
+    }
+
+    let toastTimer;
+    function toast(message, error = false) {
+      const el = $("#toast");
+      el.textContent = message;
+      el.classList.toggle("error", error);
+      el.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove("show"), 2600);
+      vibrate();
+    }
+
+    function cleanWorker(value) {
+      return String(value || "").trim().replace(/\/+$/, "");
+    }
+
+    function sessionStore() {
+      return localStorage.getItem(KEYS.remember) === "1" ? localStorage : sessionStorage;
+    }
+
+    function readSession() {
+      const stores = [sessionStorage, localStorage];
+      for (const store of stores) {
+        const token = store.getItem(KEYS.token) || "";
+        const expiresAt = store.getItem(KEYS.expires) || "";
+        if (token && (!expiresAt || Date.parse(expiresAt) > Date.now())) {
+          state.token = token;
+          state.expiresAt = expiresAt;
+          return true;
+        }
+      }
+      clearSession();
+      return false;
+    }
+
+    function writeSession(token, expiresAt, remember) {
+      clearSession();
+      const store = remember ? localStorage : sessionStorage;
+      store.setItem(KEYS.token, token);
+      store.setItem(KEYS.expires, expiresAt || "");
+      localStorage.setItem(KEYS.remember, remember ? "1" : "0");
+      state.token = token;
+      state.expiresAt = expiresAt || "";
+    }
+
+    function clearSession() {
+      [sessionStorage, localStorage].forEach(store => {
+        store.removeItem(KEYS.token);
+        store.removeItem(KEYS.expires);
+      });
+      state.token = "";
+      state.expiresAt = "";
+    }
+
+    async function api(path, options = {}) {
+      const url = `${cleanWorker(state.worker)}${path}`;
+      const headers = {
+        "Accept":"application/json",
+        "Cache-Control":"no-cache",
+        ...(options.body ? {"Content-Type":"application/json"} : {}),
+        ...(options.auth !== false && state.token ? {"Authorization":`Bearer ${state.token}`} : {})
+      };
+      const response = await fetch(url, {
+        method: options.method || "GET",
+        headers,
+        body: options.body ? JSON.stringify(options.body) : undefined,
+        cache:"no-store"
+      });
+      const text = await response.text();
+      let data;
+      try { data = JSON.parse(text); }
+      catch (_) { throw new Error(`Worker returned ${response.status} instead of JSON.`); }
+      if (!response.ok || data.ok === false) {
+        if (response.status === 401 && options.auth !== false) {
+          clearSession();
+          showLogin();
+        }
+        throw new Error(data.error || data.message || `Request failed (${response.status}).`);
+      }
+      return data;
+    }
+
+    function showLogin() {
+      $("#appView").classList.add("hidden");
+      $("#loginView").classList.remove("hidden");
+      $("#loginEmail").value = state.email || DEFAULT_EMAIL;
+      $("#loginSecret").value = "";
+    }
+
+    function showApp() {
+      $("#loginView").classList.add("hidden");
+      $("#appView").classList.remove("hidden");
+      $("#connectionLabel").textContent = state.email || "Admin connected";
+      renderAll();
+    }
+
+    async function login(event) {
+      event.preventDefault();
+      const email = $("#loginEmail").value.trim();
+      const secret = $("#loginSecret").value;
+      const remember = $("#rememberSession").checked;
+      const status = $("#loginStatus");
+      const button = $("#loginButton");
+      status.textContent = "Verifying with Worker…";
+      status.classList.remove("error");
+      button.disabled = true;
+      try {
+        state.email = email;
+        localStorage.setItem(KEYS.email, email);
+        const data = await api("/api/beta/admin/login", {
+          method:"POST",
+          auth:false,
+          body:{email, secret}
+        });
+        writeSession(data.adminToken, data.expiresAt, remember);
+        $("#loginSecret").value = "";
+        showApp();
+        await loadUsers(true);
+      } catch (error) {
+        status.textContent = error.message || "Admin login failed.";
+        status.classList.add("error");
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    async function loadUsers(showMessage = false) {
+      if (state.loading) return;
+      state.loading = true;
+      renderLoading();
+      try {
+        const data = await api("/api/beta/admin/users");
+        state.users = Array.isArray(data.users) ? data.users : [];
+        renderAll();
+        if (showMessage) toast(`${state.users.length} beta records loaded`);
+      } catch (error) {
+        toast(error.message, true);
+        renderAll();
+      } finally {
+        state.loading = false;
+      }
+    }
+
+    function stats() {
+      const active = state.users.filter(u => u.status === "active").length;
+      const disabled = state.users.filter(u => u.status !== "active").length;
+      const devices = state.users.reduce((sum,u) => sum + (Array.isArray(u.devices) ? u.devices.length : 0), 0);
+      const elevated = state.users.filter(u => ["admin","founder"].includes(String(u.role).toLowerCase())).length;
+      return {total:state.users.length, active, disabled, devices, elevated};
+    }
+
+    function renderLoading() {
+      const current = $(`#view${state.currentView}`);
+      if (current) current.innerHTML = `<div class="grid"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>`;
+    }
+
+    function recentUsers() {
+      return [...state.users].sort((a,b) => {
+        const ad = Date.parse(a.lastLoginAt || a.updatedAt || a.createdAt || 0);
+        const bd = Date.parse(b.lastLoginAt || b.updatedAt || b.createdAt || 0);
+        return bd - ad;
+      }).slice(0,4);
+    }
+
+    function userCard(u) {
+      const devices = Array.isArray(u.devices) ? u.devices.length : 0;
+      return `
+        <article class="user-card" data-code="${esc(u.code)}">
+          <div class="user-top">
+            <div class="user-title">
+              <b>${esc(u.assignedUsername || "Unassigned code")}</b>
+              <small>${esc(u.platform || "Auto")} · ${esc(u.badge || "Original Beta Tester")}</small>
+            </div>
+            <span class="pill ${u.status === "active" ? "active" : "disabled"}">${esc(u.status || "disabled")}</span>
+          </div>
+          <div class="meta-row">
+            <div class="meta"><span>Role</span><b>${esc(u.role || "tester")}</b></div>
+            <div class="meta"><span>Devices</span><b>${devices}/${esc(u.maxDevices || 2)}</b></div>
+            <div class="meta"><span>Last login</span><b>${esc(dateText(u.lastLoginAt))}</b></div>
+          </div>
+          <div class="code-row">
+            <div class="code">${esc(u.code || "")}</div>
+            <button class="btn secondary small" data-copy-code="${esc(u.code || "")}">Copy</button>
+            <button class="btn secondary small" data-edit-code="${esc(u.code || "")}">Manage</button>
+          </div>
+        </article>`;
+    }
+
+    function renderOverview() {
+      const s = stats();
+      $("#viewOverview").innerHTML = `
+        <section class="hero">
+          <div class="eyebrow">Live beta control</div>
+          <h1>Your private beta, from your iPhone.</h1>
+          <p>Create access keys, manage tester accounts, reset device locks, and revoke access without opening the desktop site.</p>
+        </section>
+
+        <div class="section-head"><h2>Beta status</h2><span>${state.users.length ? "Live Worker data" : "No records loaded"}</span></div>
+        <div class="grid stats">
+          <article class="stat blue"><div class="label">Total users</div><div class="value">${s.total}</div><div class="sub">all beta records</div></article>
+          <article class="stat green"><div class="label">Active</div><div class="value">${s.active}</div><div class="sub">keys enabled</div></article>
+          <article class="stat red"><div class="label">Disabled</div><div class="value">${s.disabled}</div><div class="sub">access revoked</div></article>
+          <article class="stat yellow"><div class="label">Devices</div><div class="value">${s.devices}</div><div class="sub">currently linked</div></article>
+        </div>
+
+        <div class="section-head"><h2>Quick actions</h2></div>
+        <div class="grid quick-grid">
+          <button class="quick primary" data-go="Create"><strong>Generate key</strong><span>Add a tester</span></button>
+          <button class="quick" data-go="Users"><strong>Manage users</strong><span>Edit or revoke</span></button>
+          <button class="quick" id="overviewRefresh"><strong>Refresh records</strong><span>Reload Worker data</span></button>
+          <button class="quick" data-go="Settings"><strong>Admin settings</strong><span>Worker and session</span></button>
+        </div>
+
+        <div class="section-head"><h2>Recent activity</h2><span>${recentUsers().length} shown</span></div>
+        <div class="user-list">
+          ${recentUsers().length ? recentUsers().map(userCard).join("") : `<div class="card empty"><b>No users yet</b>Create your first private-beta key.</div>`}
+        </div>`;
+    }
+
+    function filteredUsers() {
+      const q = state.userSearch.toLowerCase().trim();
+      return state.users.filter(u => {
+        const filterOk = state.userFilter === "all" ||
+          (state.userFilter === "active" && u.status === "active") ||
+          (state.userFilter === "disabled" && u.status !== "active") ||
+          (state.userFilter === "staff" && ["admin","founder"].includes(String(u.role).toLowerCase()));
+        if (!filterOk) return false;
+        if (!q) return true;
+        return [
+          u.assignedUsername,u.code,u.platform,u.badge,u.role,u.notes
+        ].some(v => String(v || "").toLowerCase().includes(q));
+      }).sort((a,b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
+    }
+
+    function renderUsers() {
+      const list = filteredUsers();
+      $("#viewUsers").innerHTML = `
+        <div class="section-head"><h2>Beta users</h2><span>${list.length}/${state.users.length}</span></div>
+        <div class="search-wrap">
+          <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+          <input id="userSearch" class="input" type="search" placeholder="Search username, code, role…" value="${esc(state.userSearch)}">
+        </div>
+        <div class="chips">
+          ${["all","active","disabled","staff"].map(f => `<button class="chip ${state.userFilter === f ? "active" : ""}" data-filter="${f}">${f[0].toUpperCase()+f.slice(1)}</button>`).join("")}
+        </div>
+        <div class="user-list">
+          ${list.length ? list.map(userCard).join("") : `<div class="card empty"><b>No matching users</b>Try another search or filter.</div>`}
+        </div>`;
+    }
+
+    function renderCreate() {
+      $("#viewCreate").innerHTML = `
+        <div class="section-head"><h2>Create beta access</h2><span>Worker-backed</span></div>
+        <section class="card">
+          <form id="createForm" class="form-grid">
+            <div class="field"><label>Apex username</label><input class="input" name="assignedUsername" placeholder="Exact Apex username" required></div>
+            <div class="field"><label>Platform</label><select name="platform"><option>PC</option><option>PlayStation</option><option>Xbox</option><option>Switch</option><option>Auto</option></select></div>
+            <div class="field"><label>Role</label><select name="role"><option value="tester">Tester</option><option value="admin">Admin</option><option value="founder">Founder</option></select></div>
+            <div class="field"><label>Badge label</label><select name="badge"><option>Original Beta Tester</option><option>Founding Tester</option><option>Admin Tester</option></select></div>
+            <div class="field"><label>Maximum devices</label><input class="input" name="maxDevices" type="number" min="1" max="10" value="2"></div>
+            <div class="field"><label>Custom code <span style="font-weight:500">(optional)</span></label><input class="input" name="code" placeholder="Auto-generated when empty"></div>
+            <div class="field full"><label>Notes</label><textarea name="notes" placeholder="Optional internal notes"></textarea></div>
+            <div class="full"><button class="btn" type="submit">Generate Access Key</button></div>
+          </form>
+          <div id="createResult"></div>
+        </section>
+
+        <div class="section-head"><h2>Bulk unassigned codes</h2><span>Disabled until assigned</span></div>
+        <section class="card">
+          <div class="inline-note">Creates disabled codes you can assign later. This is useful before opening another tester wave.</div>
+          <div class="split" style="margin-top:13px">
+            <div class="field" style="margin:0"><label>Quantity</label><select id="bulkCount"><option>1</option><option>5</option><option>10</option><option>25</option></select></div>
+            <div style="display:flex;align-items:end"><button id="bulkButton" class="btn secondary">Generate</button></div>
+          </div>
+          <div id="bulkResult"></div>
+        </section>`;
+    }
+
+    function renderSettings() {
+      $("#viewSettings").innerHTML = `
+        <div class="section-head"><h2>Admin settings</h2></div>
+        <section class="card">
+          <div class="field"><label>Worker URL</label><input id="workerInput" class="input" value="${esc(state.worker)}"></div>
+          <button id="saveWorker" class="btn secondary">Save Worker URL</button>
+          <div class="inline-note" style="margin-top:12px">Admin secrets are never saved. The temporary admin token expires after six hours.</div>
+        </section>
+
+        <div class="section-head"><h2>Session</h2></div>
+        <section class="card">
+          <div class="meta-row">
+            <div class="meta"><span>Admin</span><b>${esc(state.email)}</b></div>
+            <div class="meta"><span>Expires</span><b>${state.expiresAt ? esc(dateText(state.expiresAt)) : "Unknown"}</b></div>
+            <div class="meta"><span>Storage</span><b>${localStorage.getItem(KEYS.remember) === "1" ? "This device" : "This session"}</b></div>
+          </div>
+          <div class="button-row" style="margin-top:14px">
+            <button id="logoutButton" class="btn danger">Log out</button>
+          </div>
+        </section>
+
+        <div class="section-head"><h2>Install on iPhone</h2></div>
+        <section class="card">
+          <p style="color:var(--muted);line-height:1.55;font-size:14px">Open this page in Safari, tap the Share button, choose <b style="color:var(--text)">Add to Home Screen</b>, then launch ApexIQ Admin like a normal app.</p>
+        </section>`;
+    }
+
+    function renderAll() {
+      renderOverview();
+      renderUsers();
+      renderCreate();
+      renderSettings();
+      bindDynamic();
+      showView(state.currentView, false);
+    }
+
+    function showView(name, update = true) {
+      state.currentView = name;
+      $$(".view").forEach(v => v.classList.add("hidden"));
+      $(`#view${name}`)?.classList.remove("hidden");
+      $$(".nav-btn").forEach(b => b.classList.toggle("active", b.dataset.view === name));
+      if (update) window.scrollTo({top:0,behavior:"smooth"});
+    }
+
+    function bindDynamic() {
+      $$("[data-go]").forEach(btn => btn.onclick = () => showView(btn.dataset.go));
+      $$("[data-copy-code]").forEach(btn => btn.onclick = async () => {
+        try { await navigator.clipboard.writeText(btn.dataset.copyCode); toast("Access key copied"); }
+        catch (_) { toast("Could not copy the key", true); }
+      });
+      $$("[data-edit-code]").forEach(btn => btn.onclick = () => openUserSheet(btn.dataset.editCode));
+      $$("#viewUsers [data-filter]").forEach(btn => btn.onclick = () => {
+        state.userFilter = btn.dataset.filter;
+        renderUsers();
+        bindDynamic();
+      });
+      const search = $("#userSearch");
+      if (search) search.oninput = () => {
+        state.userSearch = search.value;
+        renderUsers();
+        bindDynamic();
+        $("#userSearch")?.focus();
+      };
+      $("#overviewRefresh")?.addEventListener("click", () => loadUsers(true));
+      $("#createForm")?.addEventListener("submit", createUser);
+      $("#bulkButton")?.addEventListener("click", bulkCreate);
+      $("#saveWorker")?.addEventListener("click", saveWorker);
+      $("#logoutButton")?.addEventListener("click", logout);
+    }
+
+    async function createUser(event) {
+      event.preventDefault();
+      const form = new FormData(event.currentTarget);
+      const body = Object.fromEntries(form.entries());
+      body.maxDevices = Number(body.maxDevices || 2);
+      const button = event.currentTarget.querySelector('button[type="submit"]');
+      button.disabled = true;
+      button.textContent = "Generating…";
+      try {
+        const data = await api("/api/beta/admin/create", {method:"POST",body});
+        $("#createResult").innerHTML = `
+          <div class="result-card">
+            <div class="eyebrow">Access created</div>
+            <div class="big-code">${esc(data.code)}</div>
+            <button class="btn green" id="copyNewCode">Copy access key</button>
+          </div>`;
+        $("#copyNewCode").onclick = async () => {
+          await navigator.clipboard.writeText(data.code);
+          toast("Access key copied");
+        };
+        event.currentTarget.reset();
+        event.currentTarget.querySelector('[name="maxDevices"]').value = "2";
+        await loadUsers(false);
+        toast("Beta user created");
+      } catch (error) {
+        toast(error.message, true);
+      } finally {
+        button.disabled = false;
+        button.textContent = "Generate Access Key";
+      }
+    }
+
+    async function bulkCreate() {
+      const count = Number($("#bulkCount").value || 1);
+      const button = $("#bulkButton");
+      const result = $("#bulkResult");
+      button.disabled = true;
+      const codes = [];
+      try {
+        for (let i = 0; i < count; i++) {
+          button.textContent = `Generating ${i+1}/${count}…`;
+          const data = await api("/api/beta/admin/create", {
+            method:"POST",
+            body:{assignedUsername:"",platform:"Auto",status:"disabled",role:"tester",badge:"Original Beta Tester",maxDevices:2,notes:"Bulk unassigned code"}
+          });
+          codes.push(data.code);
+        }
+        result.innerHTML = `
+          <div class="result-card">
+            <div class="eyebrow">${codes.length} codes created</div>
+            <div class="big-code" style="font-size:14px;line-height:1.7">${codes.map(esc).join("<br>")}</div>
+            <button class="btn green" id="copyBulk">Copy all codes</button>
+          </div>`;
+        $("#copyBulk").onclick = async () => {
+          await navigator.clipboard.writeText(codes.join("\n"));
+          toast("All codes copied");
+        };
+        await loadUsers(false);
+      } catch (error) {
+        toast(error.message, true);
+      } finally {
+        button.disabled = false;
+        button.textContent = "Generate";
+      }
+    }
+
+    function openUserSheet(code) {
+      const u = state.users.find(user => user.code === code);
+      if (!u) return;
+      const devices = Array.isArray(u.devices) ? u.devices : [];
+      $("#sheetHost").innerHTML = `
+        <div class="sheet-backdrop" id="userBackdrop">
+          <section class="sheet">
+            <div class="grabber"></div>
+            <div class="sheet-head">
+              <div><h2>${esc(u.assignedUsername || "Unassigned code")}</h2><p>${esc(u.code)}</p></div>
+              <button class="icon-btn" id="closeSheet" aria-label="Close">✕</button>
+            </div>
+            <form id="editUserForm">
+              <div class="form-grid">
+                <div class="field"><label>Apex username</label><input class="input" name="assignedUsername" value="${esc(u.assignedUsername || "")}"></div>
+                <div class="field"><label>Platform</label><select name="platform">${["PC","PlayStation","Xbox","Switch","Auto"].map(p => `<option ${u.platform === p ? "selected" : ""}>${p}</option>`).join("")}</select></div>
+                <div class="field"><label>Role</label><select name="role">${["tester","admin","founder"].map(r => `<option ${u.role === r ? "selected" : ""}>${r}</option>`).join("")}</select></div>
+                <div class="field"><label>Badge</label><select name="badge">${["Original Beta Tester","Founding Tester","Admin Tester"].map(b => `<option ${u.badge === b ? "selected" : ""}>${b}</option>`).join("")}</select></div>
+                <div class="field"><label>Maximum devices</label><input class="input" name="maxDevices" type="number" min="1" max="10" value="${esc(u.maxDevices || 2)}"></div>
+                <div class="field"><label>Status</label><select name="status"><option value="active" ${u.status === "active" ? "selected" : ""}>active</option><option value="disabled" ${u.status !== "active" ? "selected" : ""}>disabled</option></select></div>
+                <div class="field full"><label>Notes</label><textarea name="notes">${esc(u.notes || "")}</textarea></div>
+              </div>
+              <button class="btn" type="submit">Save changes</button>
+            </form>
+
+            <div class="section-head"><h2>Linked devices</h2><span>${devices.length}/${esc(u.maxDevices || 2)}</span></div>
+            ${devices.length ? devices.map((d,i) => `
+              <div class="device">
+                <b>${esc(d.label || `Device ${i+1}`)}</b>
+                <span>First seen: ${esc(dateText(d.firstSeenAt))}</span>
+                <span>Last seen: ${esc(dateText(d.lastSeenAt))}</span>
+              </div>`).join("") : `<div class="inline-note">No devices linked yet.</div>`}
+
+            <div class="button-row" style="margin-top:15px">
+              <button class="btn secondary" id="resetDevices">Reset devices</button>
+              <button class="btn ${u.status === "active" ? "danger" : "green"}" id="toggleUser">${u.status === "active" ? "Disable access" : "Enable access"}</button>
+            </div>
+            <button class="btn danger" id="deleteUser" style="margin-top:10px">Delete access record</button>
+          </section>
+        </div>`;
+
+      const close = () => $("#sheetHost").innerHTML = "";
+      $("#closeSheet").onclick = close;
+      $("#userBackdrop").onclick = event => { if (event.target.id === "userBackdrop") close(); };
+      $("#editUserForm").onsubmit = async event => {
+        event.preventDefault();
+        const body = Object.fromEntries(new FormData(event.currentTarget).entries());
+        body.code = u.code;
+        body.maxDevices = Number(body.maxDevices || 2);
+        try {
+          await api("/api/beta/admin/update", {method:"POST",body});
+          close();
+          await loadUsers(false);
+          toast("User updated");
+        } catch (error) { toast(error.message, true); }
+      };
+      $("#resetDevices").onclick = () => confirmAction(
+        "Reset linked devices?",
+        "This user will need to sign in again on their devices.",
+        "Reset devices",
+        async () => {
+          await api("/api/beta/admin/reset-devices", {method:"POST",body:{code:u.code}});
+          close();
+          await loadUsers(false);
+          toast("Device locks reset");
+        }
+      );
+      $("#toggleUser").onclick = async () => {
+        try {
+          await api("/api/beta/admin/update", {method:"POST",body:{code:u.code,status:u.status === "active" ? "disabled" : "active"}});
+          close();
+          await loadUsers(false);
+          toast(u.status === "active" ? "Access disabled" : "Access enabled");
+        } catch (error) { toast(error.message, true); }
+      };
+      $("#deleteUser").onclick = () => confirmAction(
+        "Delete this beta record?",
+        `${u.assignedUsername || u.code} will permanently lose this access key.`,
+        "Delete permanently",
+        async () => {
+          await api("/api/beta/admin/delete", {method:"POST",body:{code:u.code}});
+          close();
+          await loadUsers(false);
+          toast("Access record deleted");
+        },
+        true
+      );
+    }
+
+    function confirmAction(title, message, buttonText, action, dangerous = false) {
+      const prior = $("#sheetHost").innerHTML;
+      $("#sheetHost").innerHTML = `
+        <div class="sheet-backdrop" id="confirmBackdrop">
+          <section class="sheet" style="max-width:520px">
+            <div class="grabber"></div>
+            <div class="sheet-head"><div><h2>${esc(title)}</h2><p>${esc(message)}</p></div></div>
+            <div class="button-row">
+              <button class="btn secondary" id="cancelConfirm">Cancel</button>
+              <button class="btn ${dangerous ? "danger" : ""}" id="runConfirm">${esc(buttonText)}</button>
+            </div>
+          </section>
+        </div>`;
+      $("#cancelConfirm").onclick = () => $("#sheetHost").innerHTML = prior;
+      $("#confirmBackdrop").onclick = e => { if (e.target.id === "confirmBackdrop") $("#sheetHost").innerHTML = prior; };
+      $("#runConfirm").onclick = async () => {
+        const button = $("#runConfirm");
+        button.disabled = true;
+        try { await action(); }
+        catch (error) {
+          $("#sheetHost").innerHTML = prior;
+          toast(error.message, true);
+        }
+      };
+    }
+
+    function saveWorker() {
+      const worker = cleanWorker($("#workerInput").value);
+      if (!/^https:\/\//i.test(worker)) {
+        toast("Worker URL must start with https://", true);
+        return;
+      }
+      state.worker = worker;
+      localStorage.setItem(KEYS.worker, worker);
+      toast("Worker URL saved");
+      loadUsers(false);
+    }
+
+    async function logout() {
+      try {
+        if (state.token) await api("/api/beta/admin/logout", {method:"POST",body:{}}).catch(() => {});
+      } finally {
+        clearSession();
+        state.users = [];
+        showLogin();
+        toast("Logged out");
+      }
+    }
+
+    function bindStatic() {
+      $("#loginForm").addEventListener("submit", login);
+      $("#refreshButton").addEventListener("click", () => loadUsers(true));
+      $$(".nav-btn").forEach(btn => btn.addEventListener("click", () => showView(btn.dataset.view)));
+    }
+
+    async function boot() {
+      bindStatic();
+      if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+        navigator.serviceWorker.register("./admin-sw.js").catch(() => {});
+      }
+      if (!readSession()) {
+        showLogin();
+        return;
+      }
+      showApp();
+      await loadUsers(false);
+    }
+
+    boot();
+  })();
+  </script>
+</body>
+</html>
