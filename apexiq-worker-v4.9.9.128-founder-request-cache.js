@@ -24,7 +24,7 @@
  *   {"imissanyway":{"prestigeCompleted":2,"prestigeLabel":"Prestige 2"}}
  */
 
-const VERSION = "4.9.9.127-worker-founder-request-cache";
+const VERSION = "4.9.9.128-worker-founder-request-cache";
 
 const LEGEND_NAMES = [
   "Alter","Ash","Axle","Ballistic","Bangalore","Bloodhound","Catalyst","Caustic","Conduit","Crypto",

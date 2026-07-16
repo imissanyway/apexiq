@@ -1,0 +1,19 @@
+ApexIQ v4.9.9.128 minimal patch
+
+This patch intentionally excludes:
+- backups/
+- the full assets/ folder
+- unchanged files
+
+Apply:
+1. Extract this ZIP.
+2. Copy its contents into the root of your local ApexIQ repository.
+3. Choose Replace when Windows asks.
+4. Delete the old root Worker:
+   apexiq-worker-v4.9.9.127-founder-request-cache.js
+5. In GitHub Desktop, review Changes, commit, and Push origin.
+6. Deploy the new Worker separately in Cloudflare:
+   apexiq-worker-v4.9.9.128-founder-request-cache.js
+
+The only asset being added is:
+assets/approved-badges/founder_private_beta_001.png

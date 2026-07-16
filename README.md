@@ -1,21 +1,19 @@
-﻿# ApexIQ
+# ApexIQ
 
 Mobile-first Apex Legends profile hub.
 
 ## Production entry points
 
-- index.html â€” main ApexIQ web application
-- dmin.html â€” mobile admin console
-- $ProductionWorker â€” current Cloudflare Worker
-- ssets/ â€” approved badges, stickers, logos, and application assets
-- adge-manifest.json â€” active badge manifest
+- `index.html` — main private-beta application
+- `app.html` — compatibility redirect to the main application
+- `admin.html` — iPhone/mobile admin console
+- `admin-sw.js` — admin PWA service worker
+- `apexiq-worker-v4.9.9.128-founder-request-cache.js` — current Cloudflare Worker
+- `assets/` — approved badges, stickers, logos, and application assets
+- `badge-manifest.json` — active badge manifest
 
 ## Deployment
 
-GitHub Pages serves index.html from the repository root.
-
-Deploy the current Worker separately in Cloudflare Workers:
-
-$ProductionWorker
-
-Historical builds and retired Workers are stored under ackups/repo-archive/.
+1. Publish the repository root through GitHub Pages.
+2. Deploy `apexiq-worker-v4.9.9.128-founder-request-cache.js` separately in Cloudflare Workers.
+3. Fully close and reopen the installed admin app once after deploying v4.9.9.128.
