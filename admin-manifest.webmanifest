@@ -1,8 +1,8 @@
 {
   "name": "ApexIQ Admin",
   "short_name": "AIQ Admin",
-  "description": "Mobile ApexIQ private-beta access manager.",
-  "start_url": "./admin.html",
+  "description": "Mobile ApexIQ private-beta access manager \u00b7 v4.9.9.128.",
+  "start_url": "./admin.html?v=128",
   "scope": "./",
   "display": "standalone",
   "background_color": "#06101d",

@@ -1,7 +1,8 @@
-const CACHE_NAME = "apexiq-admin-shell-v1";
+const CACHE_NAME = "apexiq-admin-shell-v128";
+const ADMIN_HTML = "./admin.html?v=128";
 const SHELL = [
-  "./admin.html",
-  "./admin-manifest.webmanifest",
+  ADMIN_HTML,
+  "./admin-manifest.webmanifest?v=128",
   "./admin-icon-192.png",
   "./admin-icon-512.png"
 ];
@@ -13,23 +14,43 @@ self.addEventListener("install", event => {
 
 self.addEventListener("activate", event => {
   event.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))))
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))))
+      .then(() => self.clients.claim())
   );
-  self.clients.claim();
+});
+
+self.addEventListener("message", event => {
+  if (event.data === "SKIP_WAITING") self.skipWaiting();
 });
 
 self.addEventListener("fetch", event => {
-  const url = new URL(event.request.url);
+  const request = event.request;
+  const url = new URL(request.url);
   if (url.origin !== self.location.origin || url.pathname.includes("/api/")) return;
-  if (event.request.mode === "navigate") {
+
+  if (request.mode === "navigate" || url.pathname.endsWith("/admin.html")) {
     event.respondWith(
-      fetch(event.request).then(response => {
-        const copy = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put("./admin.html", copy));
-        return response;
-      }).catch(() => caches.match("./admin.html"))
+      fetch(request, { cache: "no-store" })
+        .then(response => {
+          if (response && response.ok) {
+            caches.open(CACHE_NAME).then(cache => cache.put(ADMIN_HTML, response.clone()));
+          }
+          return response;
+        })
+        .catch(() => caches.match(ADMIN_HTML))
     );
     return;
   }
-  event.respondWith(caches.match(event.request).then(hit => hit || fetch(event.request)));
+
+  event.respondWith(
+    caches.match(request).then(hit =>
+      hit || fetch(request).then(response => {
+        if (response && response.ok) {
+          caches.open(CACHE_NAME).then(cache => cache.put(request, response.clone()));
+        }
+        return response;
+      })
+    )
+  );
 });
