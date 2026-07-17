@@ -1,22 +1,16 @@
-# ApexIQ
+# ApexIQ Request Security v4.9.9.134
 
-Mobile-first Apex Legends profile hub.
+This patch hardens the public beta-request funnel without changing profile,
+badge, sticker, ranked, or automatic-key-delivery behavior.
 
-## Current production files
-
-- `index.html`
-- `admin.html`
-- `admin-sw.js`
-- `apexiq-worker-v4.9.9.131-auto-key-delivery-recovery.js`
-
-## v4.9.9.131 automatic key delivery
-
-1. A user submits the public beta-request form.
-2. The browser stores a high-entropy private claim token.
-3. The user receives a separate recovery code.
-4. Admin taps **Accept & deliver key**.
-5. The Worker generates exactly one beta key and attaches it to the request.
-6. The requesting browser checks every 20 seconds and automatically signs in when approved.
-7. A different browser can be linked with the request ID and recovery code.
-
-The access key remains governed by the existing Apex username and two-device restrictions.
+Security layers:
+- Cloudflare Turnstile with mandatory server-side Siteverify validation
+- Hostname and action binding
+- KV-backed request rate limiting
+- Persistent random browser request ID, hashed server-side
+- Hashed IP and username identifiers; no raw IP storage
+- Admin Block & delete action
+- 180-day source blocks
+- 30-day sanitized audit retention after deletion
+- Security status and unblock controls in the iPhone admin app
+- Existing request push notifications preserved

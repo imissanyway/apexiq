@@ -1,0 +1,57 @@
+ApexIQ v4.9.9.134 request-security patch
+
+Replace in GitHub:
+- index.html
+- admin.html
+- admin-sw.js
+- admin-manifest.webmanifest
+
+Delete the old Worker file:
+- apexiq-worker-v4.9.9.133-admin-request-push-notifications.js
+
+Add and deploy:
+- apexiq-worker-v4.9.9.134-turnstile-rate-limit-block-audit.js
+
+ONE-TIME CLOUDFLARE TURNSTILE SETUP
+1. Cloudflare Dashboard → Turnstile → Add widget.
+2. Widget name: ApexIQ Beta Request
+3. Widget mode: Managed
+4. Allowed hostname: imissanyway.github.io
+5. Copy the Site Key and Secret Key.
+
+WORKER VARIABLES / SECRETS
+Add under Worker → Settings → Variables and Secrets:
+- APEXIQ_TURNSTILE_SITE_KEY        normal variable
+- APEXIQ_TURNSTILE_SECRET_KEY      encrypted secret
+- APEXIQ_TURNSTILE_HOSTNAME        normal variable: imissanyway.github.io
+- APEXIQ_SECURITY_PEPPER            encrypted secret, random 32+ characters
+
+Keep the existing variables and bindings:
+- APEXIQ_BETA_KV
+- APEXIQ_ADMIN_SECRET
+- VAPID variables from v133
+
+IMPORTANT DEPLOY ORDER
+1. Create the Turnstile widget.
+2. Add the four Worker values above.
+3. Deploy the v134 Worker.
+4. Push the four GitHub files.
+5. Test the request form in a private browser.
+6. In Admin → Settings, verify Request Security says ACTIVE.
+
+PROTECTIONS
+- Mandatory server-side Turnstile validation.
+- Turnstile hostname and action validation.
+- 4 requests/hour per hashed IP.
+- 3 requests/6 hours per hashed browser/device.
+- 2 requests/day per hashed Apex username.
+- Raw IP addresses are never stored.
+- Block & delete blocks available username/IP/device identifiers for 180 days.
+- Deleted/blocked requests are retained as sanitized audit records for 30 days.
+- Existing push notifications fire only after the request passes security.
+
+OPTIONAL CLOUDFLARE EDGE RULE
+For additional defense, create a Cloudflare rate-limiting rule for the Worker:
+Path equals /api/beta/request-access
+Suggested threshold: 5 requests per 10 minutes per IP
+Action: Block for 1 hour

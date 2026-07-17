@@ -1,8 +1,8 @@
-const CACHE_NAME = "apexiq-admin-shell-v131";
-const ADMIN_HTML = "./admin.html?v=131";
+const CACHE_NAME = "apexiq-admin-shell-v134";
+const ADMIN_HTML = "./admin.html?v=134";
 const SHELL = [
   ADMIN_HTML,
-  "./admin-manifest.webmanifest?v=131",
+  "./admin-manifest.webmanifest?v=134",
   "./admin-icon-192.png",
   "./admin-icon-512.png"
 ];
@@ -53,4 +53,46 @@ self.addEventListener("fetch", event => {
       })
     )
   );
+});
+
+
+self.addEventListener("push", event => {
+  const title = "New ApexIQ beta request";
+  const options = {
+    body: "A new access request is waiting in ApexIQ Admin.",
+    icon: "./admin-icon-192.png",
+    badge: "./admin-icon-192.png",
+    tag: "apexiq-beta-request",
+    renotify: true,
+    data: { url: "./admin.html?v=134#access-requests" }
+  };
+  event.waitUntil((async () => {
+    try {
+      if (self.navigator && typeof self.navigator.setAppBadge === "function") {
+        await self.navigator.setAppBadge(1);
+      }
+    } catch (_) {}
+    await self.registration.showNotification(title, options);
+  })());
+});
+
+self.addEventListener("notificationclick", event => {
+  event.notification.close();
+  const target = new URL(
+    event.notification && event.notification.data && event.notification.data.url
+      ? event.notification.data.url
+      : "./admin.html?v=134#access-requests",
+    self.location.origin + self.location.pathname
+  ).href;
+
+  event.waitUntil((async () => {
+    const windows = await clients.matchAll({ type: "window", includeUncontrolled: true });
+    for (const client of windows) {
+      if ("focus" in client) {
+        if ("navigate" in client) await client.navigate(target);
+        return client.focus();
+      }
+    }
+    if (clients.openWindow) return clients.openWindow(target);
+  })());
 });

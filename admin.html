@@ -184,6 +184,13 @@
     }
     .nav-btn svg{width:22px;height:22px}
     .nav-btn.active{color:var(--orange);background:rgba(255,122,47,.08)}
+    .nav-btn{position:relative}
+    .nav-badge{position:absolute;top:4px;right:calc(50% - 25px);min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#ef4444;color:#fff;font:900 10px/18px system-ui;text-align:center;box-shadow:0 0 0 2px var(--surface)}
+    .nav-badge.hidden{display:none}
+    .notification-state{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .notification-dot{width:10px;height:10px;border-radius:50%;background:#64748b;box-shadow:0 0 0 5px rgba(100,116,139,.12)}
+    .notification-dot.on{background:#22c55e;box-shadow:0 0 0 5px rgba(34,197,94,.14)}
+    .notification-dot.warn{background:#f59e0b;box-shadow:0 0 0 5px rgba(245,158,11,.14)}
     .toast{
       position:fixed;left:50%;bottom:calc(88px + var(--safe-bottom));transform:translate(-50%,20px);
       max-width:min(90vw,520px);z-index:100;background:#f6f9ff;color:#07111f;padding:12px 15px;border-radius:14px;
@@ -290,7 +297,7 @@
       </button>
       
       <button class="nav-btn" data-view="Requests">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="m4 7 8 6 8-6"/></svg><span>Requests</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="m4 7 8 6 8-6"/></svg><span>Requests</span><span id="requestNavBadge" class="nav-badge hidden">0</span>
       </button>
       <button class="nav-btn" data-view="Create">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg><span>Create</span>
@@ -315,7 +322,8 @@
       token: "apexiq_admin_token_v1",
       expires: "apexiq_admin_expires_v1",
       email: "apexiq_admin_email_v1",
-      remember: "apexiq_admin_remember_v1"
+      remember: "apexiq_admin_remember_v1",
+      requestSeenAt: "apexiq_admin_request_seen_at_v133"
     };
 
     const state = {
@@ -328,7 +336,14 @@
       loading: false,
       currentView: "Overview",
       userFilter: "all",
-      userSearch: ""
+      userSearch: "",
+      unreadRequests: 0,
+      requestPollTimer: 0,
+      pushConfigured: false,
+      pushSubscribed: false,
+      pushSubscriptionCount: 0,
+      securityStatus: null,
+      blocks: []
     };
 
     const $ = (sel, root = document) => root.querySelector(sel);
@@ -372,6 +387,170 @@
 
     function cleanWorker(value) {
       return String(value || "").trim().replace(/\/+$/, "");
+    }
+
+    function urlBase64ToUint8Array(value) {
+      const padding = "=".repeat((4 - value.length % 4) % 4);
+      const base64 = (value + padding).replace(/-/g, "+").replace(/_/g, "/");
+      const raw = atob(base64);
+      return Uint8Array.from(raw, ch => ch.charCodeAt(0));
+    }
+
+    function newestRequestTime() {
+      return state.requests.reduce((latest, request) => {
+        const value = Date.parse(request.createdAt || "") || 0;
+        return Math.max(latest, value);
+      }, 0);
+    }
+
+    function updateRequestBadge() {
+      const badge = $("#requestNavBadge");
+      if (badge) {
+        badge.textContent = String(Math.min(99, state.unreadRequests));
+        badge.classList.toggle("hidden", state.unreadRequests <= 0);
+      }
+      try {
+        if (state.unreadRequests > 0 && navigator.setAppBadge) navigator.setAppBadge(state.unreadRequests);
+        else if (navigator.clearAppBadge) navigator.clearAppBadge();
+      } catch (_) {}
+    }
+
+    function recalculateUnreadRequests(initialize = false) {
+      const stored = Number(localStorage.getItem(KEYS.requestSeenAt) || 0);
+      const newest = newestRequestTime();
+      if (!stored && initialize) {
+        if (newest) localStorage.setItem(KEYS.requestSeenAt, String(newest));
+        state.unreadRequests = 0;
+      } else {
+        state.unreadRequests = state.requests.filter(request => {
+          const created = Date.parse(request.createdAt || "") || 0;
+          return created > stored;
+        }).length;
+      }
+      updateRequestBadge();
+    }
+
+    function markRequestsSeen() {
+      const newest = newestRequestTime() || Date.now();
+      localStorage.setItem(KEYS.requestSeenAt, String(newest));
+      state.unreadRequests = 0;
+      updateRequestBadge();
+    }
+
+    function scheduleRequestPolling(delay = 30000) {
+      clearTimeout(state.requestPollTimer);
+      if (!state.token) return;
+      state.requestPollTimer = setTimeout(async () => {
+        try { await loadRequests(false, true); } catch (_) {}
+        scheduleRequestPolling(30000);
+      }, delay);
+    }
+
+    async function serviceWorkerRegistration() {
+      if (!("serviceWorker" in navigator)) throw new Error("Service workers are not supported on this device.");
+      return navigator.serviceWorker.ready;
+    }
+
+    async function currentPushSubscription() {
+      const registration = await serviceWorkerRegistration();
+      return registration.pushManager ? registration.pushManager.getSubscription() : null;
+    }
+
+    async function refreshPushState(showError = false) {
+      const statusText = $("#notificationStatusText");
+      try {
+        const data = await api("/api/beta/admin/push-status");
+        state.pushConfigured = !!data.configured;
+        state.pushSubscriptionCount = Number(data.subscriptions || 0);
+        const subscription = await currentPushSubscription().catch(() => null);
+        state.pushSubscribed = !!subscription;
+        if (statusText) {
+          statusText.textContent = !state.pushConfigured
+            ? "Worker VAPID keys are not configured."
+            : state.pushSubscribed
+              ? `Notifications enabled on this device · ${state.pushSubscriptionCount} subscribed device(s)`
+              : `Notifications available · ${state.pushSubscriptionCount} subscribed device(s)`;
+        }
+        const dot = $("#notificationDot");
+        if (dot) dot.className = `notification-dot ${state.pushSubscribed ? "on" : state.pushConfigured ? "warn" : ""}`;
+        $("#enableNotifications")?.classList.toggle("hidden", state.pushSubscribed);
+        $("#disableNotifications")?.classList.toggle("hidden", !state.pushSubscribed);
+        $("#testNotifications")?.toggleAttribute("disabled", !state.pushConfigured || state.pushSubscriptionCount < 1);
+      } catch (error) {
+        if (statusText) statusText.textContent = error.message || "Could not read notification status.";
+        if (showError) toast(error.message || "Notification status failed", true);
+      }
+    }
+
+    async function enableRequestNotifications() {
+      const button = $("#enableNotifications");
+      if (button) button.disabled = true;
+      try {
+        if (!window.isSecureContext) throw new Error("Notifications require HTTPS.");
+        if (!("Notification" in window) || !("PushManager" in window)) {
+          throw new Error("On iPhone, add ApexIQ Admin to the Home Screen and open the installed app first.");
+        }
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") throw new Error("Notification permission was not granted.");
+
+        const keyData = await api("/api/beta/push-public-key", { auth:false });
+        const registration = await serviceWorkerRegistration();
+        let subscription = await registration.pushManager.getSubscription();
+        if (!subscription) {
+          subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(keyData.publicKey)
+          });
+        }
+        await api("/api/beta/admin/push-subscribe", {
+          method:"POST",
+          body:{
+            subscription: subscription.toJSON(),
+            label: `${navigator.platform || "Device"} · ApexIQ Admin`
+          }
+        });
+        toast("Request notifications enabled");
+        await refreshPushState(false);
+      } catch (error) {
+        toast(error.message || "Could not enable notifications", true);
+      } finally {
+        if (button) button.disabled = false;
+      }
+    }
+
+    async function disableRequestNotifications() {
+      const button = $("#disableNotifications");
+      if (button) button.disabled = true;
+      try {
+        const subscription = await currentPushSubscription();
+        if (subscription) {
+          await api("/api/beta/admin/push-unsubscribe", {
+            method:"POST",
+            body:{endpoint:subscription.endpoint}
+          }).catch(() => {});
+          await subscription.unsubscribe();
+        }
+        toast("Request notifications disabled");
+        await refreshPushState(false);
+      } catch (error) {
+        toast(error.message || "Could not disable notifications", true);
+      } finally {
+        if (button) button.disabled = false;
+      }
+    }
+
+    async function testRequestNotification() {
+      const button = $("#testNotifications");
+      if (button) button.disabled = true;
+      try {
+        const data = await api("/api/beta/admin/push-test", {method:"POST",body:{}});
+        if (!data.delivered) throw new Error(data.errors && data.errors[0] || "No subscribed device accepted the test.");
+        toast(`Test notification sent to ${data.delivered} device(s)`);
+      } catch (error) {
+        toast(error.message || "Test notification failed", true);
+      } finally {
+        if (button) button.disabled = false;
+      }
     }
 
     function sessionStore() {
@@ -446,7 +625,7 @@
         body:{code,enabled:!!enabled}
       });
       if (!data.record || data.record.founderBadge !== !!enabled) {
-        throw new Error("Founder setting was not confirmed. Deploy the v4.9.9.131 Worker, then try again.");
+        throw new Error("Founder setting was not confirmed. Deploy the v4.9.9.134 Worker, then try again.");
       }
 
       const index = state.users.findIndex(user => user.code === code);
@@ -457,6 +636,36 @@
       if (showToast) toast(enabled ? "Founder badge enabled" : "Founder badge disabled");
       setTimeout(() => loadUsers(false).catch(() => {}), 1800);
       return data.record;
+    }
+
+    async function loadRequestSecurity(showError = false) {
+      try {
+        const [status, blocks] = await Promise.all([
+          api("/api/beta/admin/security-status"),
+          api("/api/beta/admin/blocks")
+        ]);
+        state.securityStatus = status;
+        state.blocks = Array.isArray(blocks.blocks) ? blocks.blocks : [];
+        renderSettings();
+        bindDynamic();
+      } catch (error) {
+        if (showError) toast(error.message || "Could not load request security", true);
+      }
+    }
+
+    async function unblockRequestSource(key) {
+      if (!key) return;
+      if (!window.confirm("Remove this request block? The source will be able to submit again.")) return;
+      try {
+        await api("/api/beta/admin/unblock", {method:"POST",body:{key}});
+        state.blocks = state.blocks.filter(block => block.key !== key);
+        renderSettings();
+        bindDynamic();
+        showView("Settings", false);
+        toast("Request source unblocked");
+      } catch (error) {
+        toast(error.message || "Could not remove block", true);
+      }
     }
 
     function showLogin() {
@@ -679,6 +888,37 @@
           </div>
         </section>
 
+        <div class="section-head"><h2>Request security</h2></div>
+        <section class="card">
+          <div class="meta-row">
+            <div class="meta"><span>Protection</span><b>${state.securityStatus?.configured ? "ACTIVE" : "NOT CONFIGURED"}</b></div>
+            <div class="meta"><span>Turnstile</span><b>${state.securityStatus?.turnstileSecretSet && state.securityStatus?.turnstileSiteKeySet ? "Ready" : "Missing keys"}</b></div>
+            <div class="meta"><span>Active blocks</span><b>${state.securityStatus?.blockCount ?? state.blocks.length}</b></div>
+            <div class="meta"><span>Audit records</span><b>${state.securityStatus?.auditCount ?? "—"}</b></div>
+            <div class="meta"><span>Audit retention</span><b>${state.securityStatus?.auditRetentionDays ?? 30} days</b></div>
+            <div class="meta"><span>Block retention</span><b>${state.securityStatus?.blockRetentionDays ?? 180} days</b></div>
+          </div>
+          <div class="inline-note" style="margin-top:12px">New requests require server-verified Turnstile, are rate-limited by hashed IP/browser/username identifiers, and never store the raw IP address.</div>
+          <div class="button-row" style="margin-top:14px"><button id="refreshSecurity" class="btn secondary">Refresh security</button></div>
+        </section>
+
+        <div class="section-head"><h2>Blocked request sources</h2><span>${state.blocks.length}</span></div>
+        <section class="card">
+          ${state.blocks.length ? state.blocks.map(block => `<div class="device"><b>${esc(block.kind||"source")} · ${esc(block.display||"Blocked source")}</b><span>${esc(block.reason||"")}</span><span>Expires: ${esc(dateText(block.expiresAt))}</span><button class="btn secondary small" data-unblock-key="${esc(block.key)}">Unblock</button></div>`).join("") : `<div class="inline-note">No blocked request sources.</div>`}
+        </section>
+
+        <div class="section-head"><h2>Request notifications</h2></div>
+        <section class="card">
+          <p style="color:var(--muted);line-height:1.55;font-size:14px">Receive a phone notification when somebody submits a new beta access request.</p>
+          <div class="notification-state"><span id="notificationDot" class="notification-dot"></span><b id="notificationStatusText">Checking notification status…</b></div>
+          <div class="button-row" style="margin-top:14px">
+            <button id="enableNotifications" class="btn green">Enable notifications</button>
+            <button id="testNotifications" class="btn secondary">Send test</button>
+            <button id="disableNotifications" class="btn danger hidden">Disable</button>
+          </div>
+          <div class="inline-note" style="margin-top:12px">On iPhone, notifications work from the ApexIQ Admin app added to your Home Screen. Permission is requested only after you tap Enable notifications.</div>
+        </section>
+
         <div class="section-head"><h2>Install on iPhone</h2></div>
         <section class="card">
           <p style="color:var(--muted);line-height:1.55;font-size:14px">Open this page in Safari, tap the Share button, choose <b style="color:var(--text)">Add to Home Screen</b>, then launch ApexIQ Admin like a normal app.</p>
@@ -700,6 +940,11 @@
       $$(".view").forEach(v => v.classList.add("hidden"));
       $(`#view${name}`)?.classList.remove("hidden");
       $$(".nav-btn").forEach(b => b.classList.toggle("active", b.dataset.view === name));
+      if (name === "Requests") markRequestsSeen();
+      if (name === "Settings") setTimeout(() => {
+        refreshPushState(false);
+        loadRequestSecurity(false);
+      }, 0);
       if (update) window.scrollTo({top:0,behavior:"smooth"});
     }
 
@@ -737,6 +982,11 @@
       $("#createForm")?.addEventListener("submit", createUser);
       $("#bulkButton")?.addEventListener("click", bulkCreate);
       $("#saveWorker")?.addEventListener("click", saveWorker);
+      $("#refreshSecurity")?.addEventListener("click", () => loadRequestSecurity(true));
+      $$("[data-unblock-key]").forEach(button => button.addEventListener("click", () => unblockRequestSource(button.dataset.unblockKey)));
+      $("#enableNotifications")?.addEventListener("click", enableRequestNotifications);
+      $("#disableNotifications")?.addEventListener("click", disableRequestNotifications);
+      $("#testNotifications")?.addEventListener("click", testRequestNotification);
       $("#logoutButton")?.addEventListener("click", logout);
     }
 
@@ -927,15 +1177,26 @@
 
 
 
-    async function loadRequests(showMessage = false) {
+    async function loadRequests(showMessage = false, polling = false) {
       try {
+        const hadBaseline = !!localStorage.getItem(KEYS.requestSeenAt);
+        const beforeIds = new Set(state.requests.map(request => request.id));
         const data = await api("/api/beta/admin/requests");
         state.requests = Array.isArray(data.requests) ? data.requests : [];
+        recalculateUnreadRequests(!hadBaseline);
         renderRequests();
+        if (polling) {
+          const newRows = state.requests.filter(request => !beforeIds.has(request.id));
+          if (newRows.length) {
+            toast(`${newRows.length} new beta access request${newRows.length === 1 ? "" : "s"}`);
+          }
+        }
         if (showMessage) toast(`${state.requests.length} access requests loaded`);
       } catch (error) {
-        state.requests = [];
-        renderRequests(error.message || "Could not load requests.");
+        if (!polling) {
+          state.requests = [];
+          renderRequests(error.message || "Could not load requests.");
+        }
       }
     }
 
@@ -946,10 +1207,10 @@
         ${errorText ? `<div class="inline-note">${esc(errorText)}</div>` : ""}
         <div class="user-list">${rows.length ? rows.map(r => `<article class="user-card" data-request-id="${esc(r.id)}">
           <div class="user-top"><div class="user-title"><b>${esc(r.apexUsername||"Unknown")}</b><small>${esc(r.platform||"Auto")} · ${esc(r.device||"Unknown device")}</small></div><span class="pill ${r.status==='new'?'active':'disabled'}">${esc(r.status||'new')}</span></div>
-          <div class="meta-row"><div class="meta"><span>Name</span><b>${esc(r.name||'—')}</b></div><div class="meta"><span>Main</span><b>${esc(r.mainLegend||'—')}</b></div><div class="meta"><span>Requested</span><b>${esc(dateText(r.createdAt))}</b></div><div class="meta"><span>Delivered</span><b>${r.firstDeliveredAt ? esc(dateText(r.firstDeliveredAt)) : "Not yet"}</b></div></div>
+          <div class="meta-row"><div class="meta"><span>Name</span><b>${esc(r.name||'—')}</b></div><div class="meta"><span>Main</span><b>${esc(r.mainLegend||'—')}</b></div><div class="meta"><span>Requested</span><b>${esc(dateText(r.createdAt))}</b></div><div class="meta"><span>Delivered</span><b>${r.firstDeliveredAt ? esc(dateText(r.firstDeliveredAt)) : "Not yet"}</b></div><div class="meta"><span>Security</span><b>${r.security?.turnstileVerified ? "Turnstile verified" : "Legacy request"}</b></div><div class="meta"><span>Country</span><b>${esc(r.security?.country||'—')}</b></div></div>
           ${r.approvedCode ? `<div class="code-row"><div class="code">${esc(r.approvedCode)}</div><button class="btn secondary small" data-request-action="copy-key">Copy key</button></div>` : ""}
           ${r.notes ? `<div class="inline-note">${esc(r.notes)}</div>` : ""}
-          <div class="button-row">${r.status==="approved"&&r.approvedCode ? `<button class="btn secondary small" data-request-action="approve">Reconfirm delivery</button>` : `<button class="btn green small" data-request-action="approve">Accept & deliver key</button>`}<button class="btn secondary small" data-request-action="reviewed">Reviewed</button><button class="btn danger small" data-request-action="denied">Deny</button><button class="btn danger small" data-request-action="delete">Delete</button></div>
+          <div class="button-row">${r.status==="approved"&&r.approvedCode ? `<button class="btn secondary small" data-request-action="approve">Reconfirm delivery</button>` : `<button class="btn green small" data-request-action="approve">Accept & deliver key</button>`}<button class="btn secondary small" data-request-action="reviewed">Reviewed</button><button class="btn danger small" data-request-action="denied">Deny</button><button class="btn danger small" data-request-action="block">Block & delete</button><button class="btn danger small" data-request-action="delete">Delete</button></div>
         </article>`).join("") : `<div class="card empty"><b>No access requests</b>New locked-screen requests will appear here.</div>`}</div>`;
     }
 
@@ -965,6 +1226,20 @@
           state.requests = state.requests.filter(item => item.id !== id);
           renderRequests();
           toast("Access request deleted");
+          return;
+        }
+        if (action === "block") {
+          const reason = window.prompt(
+            `Block future requests linked to ${req.apexUsername || "this request"} and delete it?\n\nReason:`,
+            "Suspicious or abusive beta request"
+          );
+          if (reason === null) return;
+          if (!window.confirm("This blocks the username and any available hashed IP/browser identifiers for 180 days. Continue?")) return;
+          const data = await api("/api/beta/admin/request-block", {method:"POST",body:{id,reason}});
+          state.requests = state.requests.filter(item => item.id !== id);
+          renderRequests();
+          toast(`Blocked ${data.blockCount || 1} request source(s)`);
+          loadRequestSecurity(false);
           return;
         }
         if (action === "copy-key") {
@@ -1005,8 +1280,12 @@
       try {
         if (state.token) await api("/api/beta/admin/logout", {method:"POST",body:{}}).catch(() => {});
       } finally {
+        clearTimeout(state.requestPollTimer);
         clearSession();
         state.users = [];
+        state.requests = [];
+        state.unreadRequests = 0;
+        updateRequestBadge();
         showLogin();
         toast("Logged out");
       }
@@ -1022,7 +1301,7 @@
     async function boot() {
       bindStatic();
       if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-        navigator.serviceWorker.register("./admin-sw.js?v=131",{updateViaCache:"none"}).then(async reg => {
+        navigator.serviceWorker.register("./admin-sw.js?v=134",{updateViaCache:"none"}).then(async reg => {
           await reg.update();
           if (reg.waiting) reg.waiting.postMessage("SKIP_WAITING");
         }).catch(() => {});
@@ -1032,7 +1311,9 @@
         return;
       }
       showApp();
-      await Promise.all([loadUsers(false), loadRequests(false)]);
+      await Promise.all([loadUsers(false), loadRequests(false), loadRequestSecurity(false)]);
+      scheduleRequestPolling(30000);
+      refreshPushState(false).catch(() => {});
     }
 
     boot();
@@ -1042,8 +1323,8 @@
 (function(){
   if(!("serviceWorker" in navigator)||!location.protocol.startsWith("http"))return;
   navigator.serviceWorker.addEventListener("controllerchange",function(){
-    if(!sessionStorage.getItem("apexiq:admin:v131:reloaded")){
-      sessionStorage.setItem("apexiq:admin:v131:reloaded","1");
+    if(!sessionStorage.getItem("apexiq:admin:v134:reloaded")){
+      sessionStorage.setItem("apexiq:admin:v134:reloaded","1");
       location.reload();
     }
   });

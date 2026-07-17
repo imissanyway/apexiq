@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ApexIQ — Private Beta</title>
 <link id="apexiq-v49956-favicon" rel="icon" type="image/png" href="assets/apexiq-logo.png">
-<!-- ApexIQ v4.9.9.132 founder entitlement control + request-form repair -->
+<!-- ApexIQ v4.9.9.134 founder entitlement control + request-form repair -->
 <!-- ApexIQ Predator Broadcast v4.9.9.10 Source Re-Extract + Edge Fix: artifact-cleanup-only badge asset refresh on top of the stable full badge system. -->
 <style>
 
@@ -3861,6 +3861,7 @@ html[data-v497="polish-performance-ui-freeze"] #searchForm{
 }
 </style>
 
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 </head>
 <body>
 <div class="app">
@@ -6857,7 +6858,7 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
     try{
       await resolveRoot();
 
-      // v4.9.9.132: start full hydration immediately. The fast route can paint
+      // v4.9.9.134: start full hydration immediately. The fast route can paint
       // while Browser Rendering and tracker work continue in parallel.
       const fullFlight=workerJSON("/api/player",{player,platform,refresh:fresh?"1":"",rankedFallback:"0"},FULL_MS)
         .then(value=>({ok:true,value}),error=>({ok:false,error}));
@@ -10686,16 +10687,24 @@ body:not([data-aiq-v116-profile="true"]) [data-aiq-v116-snapshot-block="1"]{disp
 .aiq-v131-request-state.pending{color:#fde68a}.aiq-v131-request-state.approved{color:#86efac}.aiq-v131-request-state.denied{color:#fca5a5}
 .aiq-v131-recovery{margin-top:14px;padding-top:14px;border-top:1px solid var(--line,#334155);}
 @media(max-width:560px){.aiq-v131-request-summary .row{grid-template-columns:1fr;gap:3px}}
+
+.aiq-v134-security-box{display:grid;gap:8px;margin:14px 0;padding:12px;border:1px solid var(--line,#334155);border-radius:16px;background:color-mix(in srgb,var(--surface-2,#111827) 92%,#22c55e 8%)}
+.aiq-v134-security-box small{color:var(--muted,#94a3b8);line-height:1.4}
+.aiq-v134-turnstile{min-height:65px;display:flex;align-items:center;justify-content:flex-start;overflow:hidden}
+.aiq-v134-security-ok{color:#86efac!important}.aiq-v134-security-error{color:#fca5a5!important}
+.aiq-v134-honeypot{position:absolute!important;left:-10000px!important;width:1px!important;height:1px!important;overflow:hidden!important}
 </style>
 <script id="apexiq-v131-beta-request-delivery-js">
 (function(){
   "use strict";
-  const BUILD="v4.9.9.132-auto-key-delivery-recovery";
+  const BUILD="v4.9.9.134-turnstile-rate-limit-block-audit";
   const ADMIN_SESSION_KEY="apexiq:adminSession:v49989";
   const CLAIM_KEY="apexiq:betaRequestClaim:v131";
   const SESSION_KEY="apexiq:betaSession:v49989";
   const POLL_MS=20000;
+  const REQUEST_DEVICE_KEY="apexiq:betaRequestDevice:v134";
   let pollTimer=0,statusBusy=false,autoLoginKey="";
+  let securityConfig=null,turnstileWidgetId=null,turnstileToken="";
 
   function $(s,r){return (r||document).querySelector(s)}
   function safe(v){return String(v==null?"":v).replace(/[&<>\"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
@@ -10711,6 +10720,55 @@ body:not([data-aiq-v116-profile="true"]) [data-aiq-v116-snapshot-block="1"]{disp
   function schedulePoll(delay=POLL_MS){clearPoll();const c=claim();if(!c||!c.requestId||!c.claimToken||["approved","denied"].includes(c.status))return;pollTimer=setTimeout(()=>checkStatus(false),delay)}
   function sessionFresh(){const s=readJSON(SESSION_KEY,null);if(!s||!s.sessionToken)return false;const exp=Date.parse(s.expiresAt||"");return !Number.isFinite(exp)||exp>Date.now()}
 
+  function randomDeviceId(){
+    if(crypto.randomUUID)return "rqdev_"+crypto.randomUUID().replace(/-/g,"");
+    const bytes=new Uint8Array(24);crypto.getRandomValues(bytes);
+    return "rqdev_"+Array.from(bytes,b=>b.toString(16).padStart(2,"0")).join("");
+  }
+  function requestDeviceId(){
+    let value=localStorage.getItem(REQUEST_DEVICE_KEY)||"";
+    if(!/^[A-Za-z0-9_-]{16,120}$/.test(value)){value=randomDeviceId();localStorage.setItem(REQUEST_DEVICE_KEY,value)}
+    return value;
+  }
+  async function waitForTurnstile(){
+    for(let i=0;i<100;i++){if(window.turnstile&&typeof window.turnstile.render==="function")return window.turnstile;await new Promise(resolve=>setTimeout(resolve,50))}
+    throw new Error("The security check did not load. Check your connection and try again.");
+  }
+  async function loadSecurityConfig(){
+    if(securityConfig&&securityConfig.configured)return securityConfig;
+    securityConfig=await get("/api/beta/security-config");
+    if(!securityConfig.configured||!securityConfig.turnstileSiteKey)throw new Error("ApexIQ request security is not configured yet.");
+    return securityConfig;
+  }
+  function resetTurnstile(){
+    turnstileToken="";
+    try{if(turnstileWidgetId!==null&&window.turnstile)window.turnstile.reset(turnstileWidgetId)}catch(_){}
+    const button=$("#aiqV49991ReqSubmit");if(button)button.disabled=true;
+  }
+  async function mountTurnstile(){
+    const container=$("#aiqV134Turnstile"),label=$("#aiqV134SecurityLabel"),button=$("#aiqV49991ReqSubmit");
+    if(!container)return;
+    if(button)button.disabled=true;
+    turnstileToken="";
+    try{
+      const config=await loadSecurityConfig(),api=await waitForTurnstile();
+      if(turnstileWidgetId!==null){try{api.remove(turnstileWidgetId)}catch(_){}}
+      turnstileWidgetId=api.render(container,{
+        sitekey:config.turnstileSiteKey,
+        action:config.turnstileAction||"beta_request",
+        theme:"auto",
+        size:"flexible",
+        callback:function(token){turnstileToken=token;if(button)button.disabled=false;if(label){label.textContent="Security check complete.";label.className="aiq-v134-security-ok"}},
+        "expired-callback":function(){turnstileToken="";if(button)button.disabled=true;if(label){label.textContent="Security check expired. Complete it again.";label.className="aiq-v134-security-error"}},
+        "error-callback":function(){turnstileToken="";if(button)button.disabled=true;if(label){label.textContent="Security check failed to load. Try again.";label.className="aiq-v134-security-error"}}
+      });
+      if(label)label.textContent="Complete the security check before submitting.";
+    }catch(error){
+      if(label){label.textContent=error.message||"Security check unavailable.";label.className="aiq-v134-security-error"}
+      setModalStatus(error.message||"Security check unavailable.",true);
+    }
+  }
+
   function modalShell(){return '<div id="aiqV49991RequestModal" class="aiq-v49989-modal" role="dialog" aria-modal="true"><section class="aiq-v49989-card"><div class="aiq-v49989-kicker"><span>ApexIQ private beta</span><span>Secure key delivery</span></div><div id="aiqV131RequestBody"></div></section></div>'}
   function ensureModal(){let modal=$("#aiqV49991RequestModal");if(!modal){document.body.insertAdjacentHTML("beforeend",modalShell());modal=$("#aiqV49991RequestModal")}return modal}
   function actions(buttons){return '<div class="aiq-v49950-beta-actions">'+buttons+'</div>'}
@@ -10718,8 +10776,9 @@ body:not([data-aiq-v116-profile="true"]) [data-aiq-v116-snapshot-block="1"]{disp
 
   function renderNewRequest(){
     const modal=ensureModal(),body=$("#aiqV131RequestBody",modal);
-    body.innerHTML='<h2>Request an access key</h2><p>Submit once. This browser securely checks the request and automatically unlocks ApexIQ after you approve it.</p><div class="aiq-v49991-form-grid"><label>Your name<input id="aiqV49991ReqName" placeholder="Your name"></label><label>Apex username<input id="aiqV49991ReqUsername" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Exact Apex username"></label><label>Platform<select id="aiqV49991ReqPlatform"><option>PC</option><option>PlayStation</option><option>Xbox</option><option>Switch</option><option>Not sure</option></select></label><label>Main legend<input id="aiqV49991ReqLegend" placeholder="Example: Wraith, Octane, Valkyrie"></label><label>Device you will test on<input id="aiqV49991ReqDevice" placeholder="iPhone, Android, PC Chrome, etc."></label></div><div class="aiq-v49991-form-grid full"><label>Notes<textarea id="aiqV49991ReqNotes" placeholder="Anything Coye should know?"></textarea></label></div><label class="aiq-v49989-check"><input id="aiqV49991ReqAgree" type="checkbox"> I agree not to share the access key. I understand it is assigned to my Apex username and works on up to 2 devices.</label>'+actions('<button id="aiqV49991ReqSubmit" type="button" class="aiq-v49950-btn">Send request</button><button id="aiqV131RecoverOpen" type="button" class="aiq-v49950-btn ghost">Recover a request</button><button id="aiqV49991ReqClose" type="button" class="aiq-v49950-btn ghost">Cancel</button>')+'<div id="aiqV49991ReqStatus" class="aiq-v49989-status"></div>';
-    $("#aiqV49991ReqClose",modal).onclick=()=>modal.remove();
+    turnstileToken="";
+    body.innerHTML='<h2>Request an access key</h2><p>Submit once. This browser securely checks the request and automatically unlocks ApexIQ after approval.</p><div class="aiq-v49991-form-grid"><label>Your name<input id="aiqV49991ReqName" maxlength="100" placeholder="Your name"></label><label>Apex username<input id="aiqV49991ReqUsername" maxlength="80" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Exact Apex username"></label><label>Platform<select id="aiqV49991ReqPlatform"><option>PC</option><option>PlayStation</option><option>Xbox</option><option>Switch</option><option>Not sure</option></select></label><label>Main legend<input id="aiqV49991ReqLegend" maxlength="60" placeholder="Example: Wraith, Octane, Valkyrie"></label><label>Device you will test on<input id="aiqV49991ReqDevice" maxlength="120" placeholder="iPhone, Android, PC Chrome, etc."></label></div><div class="aiq-v49991-form-grid full"><label>Notes<textarea id="aiqV49991ReqNotes" maxlength="700" placeholder="Anything Coye should know?"></textarea></label></div><label class="aiq-v134-honeypot" aria-hidden="true">Website<input id="aiqV134Website" tabindex="-1" autocomplete="off"></label><label class="aiq-v49989-check"><input id="aiqV49991ReqAgree" type="checkbox"> I agree not to share the access key. I understand it is assigned to my Apex username and works on up to 2 devices.</label><div class="aiq-v134-security-box"><div id="aiqV134Turnstile" class="aiq-v134-turnstile"></div><small id="aiqV134SecurityLabel">Loading security check…</small></div>'+actions('<button id="aiqV49991ReqSubmit" type="button" class="aiq-v49950-btn" disabled>Send request</button><button id="aiqV131RecoverOpen" type="button" class="aiq-v49950-btn ghost">Recover a request</button><button id="aiqV49991ReqClose" type="button" class="aiq-v49950-btn ghost">Cancel</button>')+'<div id="aiqV49991ReqStatus" class="aiq-v49989-status"></div>';
+    $("#aiqV49991ReqClose",modal).onclick=()=>{try{if(turnstileWidgetId!==null&&window.turnstile)window.turnstile.remove(turnstileWidgetId)}catch(_){}turnstileWidgetId=null;modal.remove()};
     $("#aiqV49991ReqSubmit",modal).onclick=submitRequest;
     $("#aiqV131RecoverOpen",modal).onclick=renderRecovery;
     const requestUsername=$("#aiqV49991ReqUsername",modal);
@@ -10729,6 +10788,8 @@ body:not([data-aiq-v116-profile="true"]) [data-aiq-v116-snapshot-block="1"]{disp
       requestUsername.setAttribute("autocapitalize","none");
       requestUsername.setAttribute("spellcheck","false");
     }
+    requestDeviceId();
+    mountTurnstile();
     setTimeout(()=>requestUsername?.focus(),40);
   }
 
@@ -10758,14 +10819,33 @@ body:not([data-aiq-v116-profile="true"]) [data-aiq-v116-snapshot-block="1"]{disp
   function openRequestForm(){claim()?.requestId?renderTracker():renderNewRequest()}
 
   async function submitRequest(){
-    const button=$("#aiqV49991ReqSubmit"),body={name:$("#aiqV49991ReqName")?.value?.trim()||"",apexUsername:$("#aiqV49991ReqUsername")?.value?.trim()||"",platform:$("#aiqV49991ReqPlatform")?.value||"Auto",mainLegend:$("#aiqV49991ReqLegend")?.value?.trim()||"",device:$("#aiqV49991ReqDevice")?.value?.trim()||"",notes:$("#aiqV49991ReqNotes")?.value?.trim()||"",agreedNoShare:!!$("#aiqV49991ReqAgree")?.checked};
-    if(button)button.disabled=true;setModalStatus("Sending secure request…",false);
+    const button=$("#aiqV49991ReqSubmit");
+    const honeypot=$("#aiqV134Website")?.value?.trim()||"";
+    if(honeypot){setModalStatus("Request could not be submitted.",true);return}
+    if(!turnstileToken){setModalStatus("Complete the security check first.",true);return}
+    const body={
+      name:$("#aiqV49991ReqName")?.value?.trim()||"",
+      apexUsername:$("#aiqV49991ReqUsername")?.value?.trim()||"",
+      platform:$("#aiqV49991ReqPlatform")?.value||"Auto",
+      mainLegend:$("#aiqV49991ReqLegend")?.value?.trim()||"",
+      device:$("#aiqV49991ReqDevice")?.value?.trim()||"",
+      notes:$("#aiqV49991ReqNotes")?.value?.trim()||"",
+      agreedNoShare:!!$("#aiqV49991ReqAgree")?.checked,
+      turnstileToken,
+      requestDeviceId:requestDeviceId()
+    };
+    if(button)button.disabled=true;setModalStatus("Verifying and sending secure request…",false);
     try{
       const data=await post("/api/beta/request-access",body);
       saveClaim({requestId:data.requestId||data.id,claimToken:data.claimToken,recoveryCode:data.recoveryCode,apexUsername:data.apexUsername||body.apexUsername,platform:data.platform||body.platform,status:data.status||"new",message:data.message,createdAt:data.createdAt});
+      try{if(turnstileWidgetId!==null&&window.turnstile)window.turnstile.remove(turnstileWidgetId)}catch(_){}
+      turnstileWidgetId=null;turnstileToken="";
       renderTracker(data);
       schedulePoll(POLL_MS);
-    }catch(e){setModalStatus(e.message||"Could not send request right now.",true);if(button)button.disabled=false}
+    }catch(e){
+      setModalStatus(e.message||"Could not send request right now.",true);
+      resetTurnstile();
+    }
   }
 
   async function recoverRequest(){
@@ -11548,7 +11628,7 @@ body:not([data-aiq-v116-profile="true"]) [data-aiq-v116-snapshot-block="1"]{disp
 </script>
 
 
-<!-- === ApexIQ v4.9.9.132 Founder Persistence + Request/LFG Delete === -->
+<!-- === ApexIQ v4.9.9.134 Founder Persistence + Request/LFG Delete === -->
 <style id="apexiq-v499127-founder-css">
 .aiq-v499127-founder-inline{display:inline-flex;align-items:center;justify-content:center;width:clamp(30px,3.4vw,42px);height:clamp(30px,3.4vw,42px);margin-left:9px;vertical-align:middle;flex:0 0 auto;filter:drop-shadow(0 5px 11px rgba(168,85,247,.34));}
 .aiq-v499127-founder-inline img{display:block;width:100%;height:100%;object-fit:contain;}
@@ -11563,7 +11643,7 @@ body:not([data-aiq-v116-profile="true"]) [data-aiq-v116-snapshot-block="1"]{disp
 <script id="apexiq-v499129-founder-js">
 (function(){
   if(window.__apexiqV499130Booted)return;window.__apexiqV499130Booted=true;
-  var BUILD='v4.9.9.132-founder-persistence-request-lfg-delete';
+  var BUILD='v4.9.9.134-founder-persistence-request-lfg-delete';
   var ASSET='assets/approved-badges/founder_private_beta_001.png';
   var SESSION_KEY='apexiq:betaSession:v49989';
   var AWARD_KEY='apexiq:founderAwardSeen:v499129';
@@ -11694,15 +11774,15 @@ body:not([data-aiq-v116-profile="true"]) [data-aiq-v116-snapshot-block="1"]{disp
   window.apexiqFounderV499130={asset:ASSET,refresh:function(){founderCache.clear();scheduleFounderCheck(true)},build:BUILD};
 })();
 </script>
-<!-- === /ApexIQ v4.9.9.132 === -->
+<!-- === /ApexIQ v4.9.9.134 === -->
 
 <script id="apexiq-v499129-build-marker">
 (function(){
   function mark(){
-    document.documentElement.dataset.apexiqBuild="v4.9.9.132";
+    document.documentElement.dataset.apexiqBuild="v4.9.9.134";
     var panel=document.getElementById("settingsPanel");
     if(panel&&!document.getElementById("aiqV499129Build")){
-      panel.insertAdjacentHTML("afterbegin",'<div id="aiqV499129Build" class="notice"><b>ApexIQ v4.9.9.132</b><p>Approved beta requests securely deliver their key to the requesting browser. Access-request usernames always start blank.</p></div>');
+      panel.insertAdjacentHTML("afterbegin",'<div id="aiqV499129Build" class="notice"><b>ApexIQ v4.9.9.134</b><p>Beta requests require Turnstile, rate limits, hashed source checks, and admin block controls.</p></div>');
     }
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();
