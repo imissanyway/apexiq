@@ -2,18 +2,19 @@
 
 Mobile-first Apex Legends profile hub.
 
-## Production entry points
+## Current production files
 
-- `index.html` — main private-beta application
-- `app.html` — compatibility redirect
-- `admin.html` — mobile admin console
-- `admin-sw.js` — admin PWA service worker
-- `apexiq-worker-v4.9.9.129-founder-control-request-form.js` — current Cloudflare Worker
-- `assets/` — application assets
+- `index.html`
+- `admin.html`
+- `admin-sw.js`
+- `apexiq-worker-v4.9.9.130-founder-persistence-request-lfg-delete.js`
 
-## v4.9.9.129
+## v4.9.9.130
 
-- Founder badges are assigned per beta user from the admin panel.
-- Founder badge display-case size matches other badge icons.
-- Searching an unapproved profile removes the Founder badge.
-- Request access opens the public request form and sends it to Admin → Requests.
+- Founder On/Off uses a dedicated authenticated Worker endpoint.
+- Admin verifies the saved Founder value immediately.
+- Founder lookup no longer permanently caches a false result.
+- A logged-in founder can see their own badge without waiting for KV propagation.
+- Old access requests can be permanently deleted.
+- Local LFG posts have individual Delete buttons.
+- Deleting the last LFG post no longer allows the old storage key to restore it.

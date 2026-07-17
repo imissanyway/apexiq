@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ApexIQ — Private Beta</title>
 <link id="apexiq-v49956-favicon" rel="icon" type="image/png" href="assets/apexiq-logo.png">
-<!-- ApexIQ v4.9.9.129 founder entitlement control + request-form repair -->
+<!-- ApexIQ v4.9.9.130 founder entitlement control + request-form repair -->
 <!-- ApexIQ Predator Broadcast v4.9.9.10 Source Re-Extract + Edge Fix: artifact-cleanup-only badge asset refresh on top of the stable full badge system. -->
 <style>
 
@@ -6857,7 +6857,7 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
     try{
       await resolveRoot();
 
-      // v4.9.9.129: start full hydration immediately. The fast route can paint
+      // v4.9.9.130: start full hydration immediately. The fast route can paint
       // while Browser Rendering and tracker work continue in parallel.
       const fullFlight=workerJSON("/api/player",{player,platform,refresh:fresh?"1":"",rankedFallback:"0"},FULL_MS)
         .then(value=>({ok:true,value}),error=>({ok:false,error}));
@@ -6972,6 +6972,7 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
   .aiq-v49944-post b{color:var(--text)}
   .aiq-v49944-post small{color:var(--muted)}
   .aiq-v49944-post-body{color:var(--text);overflow-wrap:anywhere;line-height:1.45}
+  .aiq-v499130-lfg-delete{border:1px solid color-mix(in srgb,#ef4444 55%,var(--line));background:color-mix(in srgb,#ef4444 12%,var(--surface));color:#fecaca;border-radius:10px;padding:5px 9px;font:inherit;font-size:.75rem;font-weight:900;cursor:pointer}
   .aiq-v49944-tags{display:flex;flex-wrap:wrap;gap:7px}
   .aiq-v49944-tag{font-size:.73rem;font-weight:900;color:var(--text);background:color-mix(in srgb,var(--brand) 16%,var(--surface-2));border:1px solid color-mix(in srgb,var(--brand) 32%,var(--line));border-radius:999px;padding:5px 9px}
   .aiq-v49944-sticker{display:inline-flex;vertical-align:middle;align-items:center;justify-content:center;max-width:54px;max-height:54px;margin:0 3px}.aiq-v49944-sticker img{width:46px;height:46px;object-fit:contain;vertical-align:middle}
@@ -7076,6 +7077,13 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
     const posts=loadPosts();
     if(!posts.length){feed.innerHTML='<article class="aiq-v49944-post"><b>No LFG posts yet</b><p>Write the first post. Posts save locally for now until the Worker/forum backend is connected.</p></article>';return;}
     feed.innerHTML=posts.map(p=>`<article class="aiq-v49944-post"><header><div><b>${safe(p.title||"LFG Post")}</b><small> by ${safe(p.author||"ApexIQ user")}</small></div><small>${safe(p.time||"")}</small></header><div class="aiq-v49944-tags"><span class="aiq-v49944-tag">${safe(p.platform||"Auto")}</span><span class="aiq-v49944-tag">${safe(p.mode||"BR")}</span><span class="aiq-v49944-tag">${safe(p.vibe||"Chill")}</span></div><div class="aiq-v49944-post-body">${stripDangerous(p.body||"")}</div></article>`).join("");
+  }
+  function deletePost(id){
+    if(!id)return;
+    if(!window.confirm("Delete this LFG post from this device?"))return;
+    const posts=loadPosts().filter(function(post){return String(post.id||"")!==String(id)});
+    savePosts(posts);
+    renderFeed();
   }
   function createPost(){
     const comp=byId("aiqLfgComposer");
@@ -7226,6 +7234,7 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
   }
   function savePosts(posts){
     localStorage.setItem(POST_KEY,JSON.stringify(posts.slice(0,MAX_POSTS)));
+    try{localStorage.removeItem(OLD_KEY)}catch(_){}
   }
   function nodeToStoredHTML(node){
     if(!node)return "";
@@ -7275,7 +7284,7 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
     const feed=byId("aiqV49944Feed");if(!feed)return;
     const posts=loadPosts();
     if(!posts.length){feed.innerHTML='<article class="aiq-v49944-post"><b>No LFG posts yet</b><p>Write the first post. Posts save locally for now until the Worker/forum backend is connected.</p></article>';return;}
-    feed.innerHTML=posts.map(function(p){return `<article class="aiq-v49944-post"><header><div><b>${safe(p.title||"LFG Post")}</b><small> by ${safe(p.author||"ApexIQ user")}</small></div><small>${safe(p.time||"")}</small></header><div class="aiq-v49944-tags"><span class="aiq-v49944-tag">${safe(p.platform||"Auto")}</span><span class="aiq-v49944-tag">${safe(p.mode||"BR")}</span><span class="aiq-v49944-tag">${safe(p.vibe||"Chill")}</span></div><div class="aiq-v49944-post-body">${hydrateStoredHTML(p.body||"")}</div></article>`}).join("");
+    feed.innerHTML=posts.map(function(p){return `<article class="aiq-v49944-post" data-lfg-post-id="${safe(p.id||"")}"><header><div><b>${safe(p.title||"LFG Post")}</b><small> by ${safe(p.author||"ApexIQ user")}</small></div><div style="display:flex;align-items:center;gap:8px"><small>${safe(p.time||"")}</small><button type="button" class="aiq-v499130-lfg-delete" data-lfg-delete="${safe(p.id||"")}">Delete</button></div></header><div class="aiq-v49944-tags"><span class="aiq-v49944-tag">${safe(p.platform||"Auto")}</span><span class="aiq-v49944-tag">${safe(p.mode||"BR")}</span><span class="aiq-v49944-tag">${safe(p.vibe||"Chill")}</span></div><div class="aiq-v49944-post-body">${hydrateStoredHTML(p.body||"")}</div></article>`}).join("");
   }
   function createPost(){
     const comp=byId("aiqLfgComposer");
@@ -7307,6 +7316,8 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
   }
   function bind(){
     document.addEventListener("click",function(e){
+      const del=e.target&&e.target.closest&&e.target.closest("[data-lfg-delete]");
+      if(del){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();deletePost(del.dataset.lfgDelete);return}
       const btn=e.target&&e.target.closest&&e.target.closest("#aiqV49944PostBtn");
       if(!btn)return;
       e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();createPost();
@@ -11397,7 +11408,7 @@ body:not([data-aiq-v116-profile="true"]) [data-aiq-v116-snapshot-block="1"]{disp
 </script>
 
 
-<!-- === ApexIQ v4.9.9.129 Founder Entitlement + Exact Pack + Request Form === -->
+<!-- === ApexIQ v4.9.9.130 Founder Persistence + Request/LFG Delete === -->
 <style id="apexiq-v499127-founder-css">
 .aiq-v499127-founder-inline{display:inline-flex;align-items:center;justify-content:center;width:clamp(30px,3.4vw,42px);height:clamp(30px,3.4vw,42px);margin-left:9px;vertical-align:middle;flex:0 0 auto;filter:drop-shadow(0 5px 11px rgba(168,85,247,.34));}
 .aiq-v499127-founder-inline img{display:block;width:100%;height:100%;object-fit:contain;}
@@ -11411,8 +11422,8 @@ body:not([data-aiq-v116-profile="true"]) [data-aiq-v116-snapshot-block="1"]{disp
 </style>
 <script id="apexiq-v499129-founder-js">
 (function(){
-  if(window.__apexiqV499129Booted)return;window.__apexiqV499129Booted=true;
-  var BUILD='v4.9.9.129-founder-entitlement-request-form';
+  if(window.__apexiqV499130Booted)return;window.__apexiqV499130Booted=true;
+  var BUILD='v4.9.9.130-founder-persistence-request-lfg-delete';
   var ASSET='assets/approved-badges/founder_private_beta_001.png';
   var SESSION_KEY='apexiq:betaSession:v49989';
   var AWARD_KEY='apexiq:founderAwardSeen:v499129';
@@ -11427,7 +11438,9 @@ body:not([data-aiq-v116-profile="true"]) [data-aiq-v116-snapshot-block="1"]{disp
   function beta(){var s=read(SESSION_KEY);if(!s||!s.ok||!s.sessionToken)return null;var exp=Date.parse(s.expiresAt||'');if(Number.isFinite(exp)&&exp<Date.now())return null;return s}
   function ownFounder(){var s=beta();return !!(s&&(s.founderBadge===true||String(s.role||'').toLowerCase()==='founder'||/(?:^|\b)(?:founder|founding)(?:\b|$)/i.test(String(s.badge||''))))}
   function root(){try{if(typeof apiRoot==='function')return apiRoot().replace(/\/$/,'')}catch(_){ }try{if(typeof state==='object'&&state.proxy)return String(state.proxy).replace(/\/$/,'')}catch(_){ }try{if(typeof DEFAULT_WORKER==='string')return DEFAULT_WORKER.replace(/\/$/,'')}catch(_){ }return (window.APEXIQ_WORKER_URL||localStorage.getItem('apexiqApiProxy')||'https://cool-wildflower-1646.pwr97pnmkn.workers.dev').replace(/\/$/,'')}
-  function profileIdentity(){try{if(typeof state!=='object'||!state.profile)return null;var name=String(state.player||state.profile.name||state.profile.global?.name||'').trim();var platform=String(state.platform||state.profile.platform||state.profile.global?.platform||'Auto').trim();return name?{name:name,platform:platform}:null}catch(_){return null}}
+  function platformNorm(v){var p=String(v||'auto').trim().toLowerCase();if(['ps4','ps5','psn','playstation'].includes(p))return'playstation';if(['x1','xbox','xbl','seriesx','series x','series s'].includes(p))return'xbox';if(['pc','origin','steam','ea'].includes(p))return'pc';if(['switch','nintendo'].includes(p))return'switch';return p||'auto'}
+  function profileIdentity(){try{if(typeof state!=='object'||!state.profile)return null;var p=state.profile||{};var name=String(state.player||p.name||p.global?.name||p.playerName||p.fields?.name?.value||$('#playerInput')?.value||'').trim();var platform=String(state.platform||p.platform||p.global?.platform||$('#platformInput')?.value||'Auto').trim();return name?{name:name,platform:platform}:null}catch(_){return null}}
+  function sessionFounderFor(identity){var s=beta();if(!s||!ownFounder())return false;var sameName=norm(s.assignedUsername||s.username||'')===norm(identity.name);var sp=platformNorm(s.platform||'auto'),ip=platformNorm(identity.platform||'auto');return sameName&&(sp==='auto'||ip==='auto'||sp===ip)}
   function searchKey(){try{return norm($('#playerInput')?.value||state.player||'')+'|'+String($('#platformInput')?.value||state.platform||'auto').toLowerCase()}catch(_){return ''}}
 
   function founderCell(){return '<span class="aiq-v116-mini-badge aiq-v499127-founder-case-cell" title="Founder — Private Beta 001" aria-label="Founder — Private Beta 001"><img loading="eager" decoding="async" src="'+ASSET+'" alt="Founder Private Beta 001"><em class="aiq-v116-mini-tier">001</em></span>'}
@@ -11469,26 +11482,31 @@ body:not([data-aiq-v116-profile="true"]) [data-aiq-v116-snapshot-block="1"]{disp
     patchName();patchCase();patchLocker();
   }
 
-  async function lookupFounder(identity){
-    var key=norm(identity.name)+'|'+String(identity.platform||'auto').toLowerCase();
-    if(founderCache.has(key))return founderCache.get(key);
+  async function lookupFounder(identity,force){
+    if(sessionFounderFor(identity))return true;
+    var key=norm(identity.name)+'|'+platformNorm(identity.platform);
+    var cached=founderCache.get(key);
+    if(!force&&cached&&cached.expiresAt>Date.now())return cached.value;
     var url=root()+'/api/beta/founder-status?username='+encodeURIComponent(identity.name)+'&platform='+encodeURIComponent(identity.platform||'Auto')+'&_='+Date.now();
     try{
-      var res=await fetch(url,{cache:'no-store',headers:{Accept:'application/json'}});
+      var res=await fetch(url,{cache:'no-store',headers:{Accept:'application/json','Cache-Control':'no-cache'}});
       var data=await res.json();
       var approved=!!(res.ok&&data&&data.ok!==false&&data.founder===true);
-      founderCache.set(key,approved);
+      founderCache.set(key,{value:approved,expiresAt:Date.now()+(approved?30000:1500)});
       return approved;
-    }catch(_){founderCache.set(key,false);return false}
+    }catch(_){
+      founderCache.delete(key);
+      return false;
+    }
   }
-  function scheduleFounderCheck(){
+  function scheduleFounderCheck(force){
     clearTimeout(founderTimer);
     founderTimer=setTimeout(async function(){
       var identity=profileIdentity();
       if(!identity){currentFounderKey='';founderApproved=false;removeFounder();return}
-      var nextKey=norm(identity.name)+'|'+String(identity.platform||'auto').toLowerCase();
+      var nextKey=norm(identity.name)+'|'+platformNorm(identity.platform);
       if(nextKey!==currentFounderKey){currentFounderKey=nextKey;founderApproved=false;removeFounder()}
-      founderApproved=await lookupFounder(identity);
+      founderApproved=await lookupFounder(identity,!!force);
       if(nextKey!==currentFounderKey)return;
       applyFounder();
     },80);
@@ -11529,22 +11547,22 @@ body:not([data-aiq-v116-profile="true"]) [data-aiq-v116-snapshot-block="1"]{disp
   }
 
   function queuePatch(){clearTimeout(renderQueued);renderQueued=setTimeout(function(){patchRequestButton();scheduleFounderCheck()},20)}
-  function wrapFlight(name,map){var old=window[name];if(typeof old!=='function'||old.__aiqV499129)return;var wrapped=function(){var k=searchKey()+'|'+(arguments[0]?'fresh':'cached');if(map.has(k))return map.get(k);var p=Promise.resolve(old.apply(this,arguments));map.set(k,p);return p.finally(function(){map.delete(k);queuePatch()})};wrapped.__aiqV499129=true;window[name]=wrapped;try{eval(name+'=window[name]')}catch(_){}}
+  function wrapFlight(name,map){var old=window[name];if(typeof old!=='function'||old.__aiqV499129)return;var wrapped=function(){var k=searchKey()+'|'+(arguments[0]?'fresh':'cached');if(map.has(k))return map.get(k);var p=Promise.resolve(old.apply(this,arguments));map.set(k,p);return p.finally(function(){map.delete(k);founderCache.clear();scheduleFounderCheck(true);queuePatch()})};wrapped.__aiqV499129=true;window[name]=wrapped;try{eval(name+'=window[name]')}catch(_){}}
   function preloadAssets(){var srcs=[ASSET];try{(PACK_DATA||[]).forEach(function(p){if(p?.stickers?.[0]?.src)srcs.push(p.stickers[0].src)})}catch(_){};srcs.slice(0,35).forEach(function(src){var im=new Image();im.decoding='async';im.src=src})}
   function boot(){wrapFlight('loadAll',loadAllFlight);wrapFlight('loadProfile',loadProfileFlight);patchPackIdentity();patchRequestButton();scheduleFounderCheck();preloadAssets();watchWelcome();new MutationObserver(function(){patchPackIdentity();queuePatch()}).observe(document.documentElement,{childList:true,subtree:true})}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-  window.apexiqFounderV499129={asset:ASSET,refresh:function(){founderCache.clear();scheduleFounderCheck()},build:BUILD};
+  window.apexiqFounderV499130={asset:ASSET,refresh:function(){founderCache.clear();scheduleFounderCheck(true)},build:BUILD};
 })();
 </script>
-<!-- === /ApexIQ v4.9.9.129 === -->
+<!-- === /ApexIQ v4.9.9.130 === -->
 
 <script id="apexiq-v499129-build-marker">
 (function(){
   function mark(){
-    document.documentElement.dataset.apexiqBuild="v4.9.9.129";
+    document.documentElement.dataset.apexiqBuild="v4.9.9.130";
     var panel=document.getElementById("settingsPanel");
     if(panel&&!document.getElementById("aiqV499129Build")){
-      panel.insertAdjacentHTML("afterbegin",'<div id="aiqV499129Build" class="notice"><b>ApexIQ v4.9.9.129</b><p>Founder badges are admin-assigned, case sizing is corrected, and beta requests open the public request form.</p></div>');
+      panel.insertAdjacentHTML("afterbegin",'<div id="aiqV499129Build" class="notice"><b>ApexIQ v4.9.9.130</b><p>Founder badges are admin-assigned, case sizing is corrected, and beta requests open the public request form.</p></div>');
     }
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();

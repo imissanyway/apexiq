@@ -440,6 +440,25 @@
       return data;
     }
 
+    async function setFounderBadge(code, enabled, showToast = true) {
+      const data = await api("/api/beta/admin/set-founder", {
+        method:"POST",
+        body:{code,enabled:!!enabled}
+      });
+      if (!data.record || data.record.founderBadge !== !!enabled) {
+        throw new Error("Founder setting was not confirmed. Deploy the v4.9.9.130 Worker, then try again.");
+      }
+
+      const index = state.users.findIndex(user => user.code === code);
+      if (index >= 0) state.users[index] = {...state.users[index], ...data.record};
+      renderAll();
+      showView(state.currentView, false);
+
+      if (showToast) toast(enabled ? "Founder badge enabled" : "Founder badge disabled");
+      setTimeout(() => loadUsers(false).catch(() => {}), 1800);
+      return data.record;
+    }
+
     function showLogin() {
       $("#appView").classList.add("hidden");
       $("#loginView").classList.remove("hidden");
@@ -541,6 +560,7 @@
           </div>
           <div class="code-row">
             <div class="code">${esc(u.code || "")}</div>
+            <button class="btn ${u.founderBadge ? "danger" : "green"} small" data-founder-code="${esc(u.code || "")}" data-founder-enabled="${u.founderBadge ? "1" : "0"}">${u.founderBadge ? "Founder: ON" : "Founder: OFF"}</button>
             <button class="btn secondary small" data-copy-code="${esc(u.code || "")}">Copy</button>
             <button class="btn secondary small" data-edit-code="${esc(u.code || "")}">Manage</button>
           </div>
@@ -685,6 +705,17 @@
 
     function bindDynamic() {
       $$("[data-go]").forEach(btn => btn.onclick = () => showView(btn.dataset.go));
+      $$("[data-founder-code]").forEach(btn => btn.onclick = async () => {
+        const code = btn.dataset.founderCode;
+        const currentlyEnabled = btn.dataset.founderEnabled === "1";
+        btn.disabled = true;
+        try {
+          await setFounderBadge(code, !currentlyEnabled, true);
+        } catch (error) {
+          toast(error.message || "Founder update failed", true);
+          btn.disabled = false;
+        }
+      });
       $$("[data-copy-code]").forEach(btn => btn.onclick = async () => {
         try { await navigator.clipboard.writeText(btn.dataset.copyCode); toast("Access key copied"); }
         catch (_) { toast("Could not copy the key", true); }
@@ -826,11 +857,12 @@
         const body = Object.fromEntries(new FormData(event.currentTarget).entries());
         body.code = u.code;
         body.maxDevices = Number(body.maxDevices || 2);
-        body.founderBadge = body.founderBadge === "true";
+        const desiredFounder = body.founderBadge === "true";
+        delete body.founderBadge;
         try {
           await api("/api/beta/admin/update", {method:"POST",body});
+          await setFounderBadge(u.code, desiredFounder, false);
           close();
-          await loadUsers(false);
           toast("User updated");
         } catch (error) { toast(error.message, true); }
       };
@@ -916,7 +948,7 @@
           <div class="user-top"><div class="user-title"><b>${esc(r.apexUsername||"Unknown")}</b><small>${esc(r.platform||"Auto")} · ${esc(r.device||"Unknown device")}</small></div><span class="pill ${r.status==='new'?'active':'disabled'}">${esc(r.status||'new')}</span></div>
           <div class="meta-row"><div class="meta"><span>Name</span><b>${esc(r.name||'—')}</b></div><div class="meta"><span>Main</span><b>${esc(r.mainLegend||'—')}</b></div><div class="meta"><span>Requested</span><b>${esc(dateText(r.createdAt))}</b></div></div>
           ${r.notes ? `<div class="inline-note">${esc(r.notes)}</div>` : ""}
-          <div class="button-row"><button class="btn green small" data-request-action="create">Create key</button><button class="btn secondary small" data-request-action="reviewed">Reviewed</button><button class="btn danger small" data-request-action="denied">Deny</button></div>
+          <div class="button-row"><button class="btn green small" data-request-action="create">Create key</button><button class="btn secondary small" data-request-action="reviewed">Reviewed</button><button class="btn danger small" data-request-action="denied">Deny</button><button class="btn danger small" data-request-action="delete">Delete</button></div>
         </article>`).join("") : `<div class="card empty"><b>No access requests</b>New locked-screen requests will appear here.</div>`}</div>`;
     }
 
@@ -926,6 +958,14 @@
       const req = state.requests.find(r => r.id === id); if (!req) return;
       const action = button.dataset.requestAction;
       try {
+        if (action === "delete") {
+          if (!window.confirm(`Delete the access request from ${req.apexUsername || "this user"}? This cannot be undone.`)) return;
+          await api("/api/beta/admin/request-delete", {method:"POST",body:{id}});
+          state.requests = state.requests.filter(item => item.id !== id);
+          renderRequests();
+          toast("Access request deleted");
+          return;
+        }
         if (action === "create") {
           await api("/api/beta/admin/create", {method:"POST",body:{assignedUsername:req.apexUsername,platform:req.platform||"Auto",role:"tester",badge:"Original Beta Tester",founderBadge:false,maxDevices:2,notes:`Created from request ${id}`}});
           await api("/api/beta/admin/request-update", {method:"POST",body:{id,status:"approved"}});
@@ -971,7 +1011,7 @@
     async function boot() {
       bindStatic();
       if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-        navigator.serviceWorker.register("./admin-sw.js?v=129",{updateViaCache:"none"}).then(async reg => {
+        navigator.serviceWorker.register("./admin-sw.js?v=130",{updateViaCache:"none"}).then(async reg => {
           await reg.update();
           if (reg.waiting) reg.waiting.postMessage("SKIP_WAITING");
         }).catch(() => {});
@@ -991,8 +1031,8 @@
 (function(){
   if(!("serviceWorker" in navigator)||!location.protocol.startsWith("http"))return;
   navigator.serviceWorker.addEventListener("controllerchange",function(){
-    if(!sessionStorage.getItem("apexiq:admin:v129:reloaded")){
-      sessionStorage.setItem("apexiq:admin:v129:reloaded","1");
+    if(!sessionStorage.getItem("apexiq:admin:v130:reloaded")){
+      sessionStorage.setItem("apexiq:admin:v130:reloaded","1");
       location.reload();
     }
   });

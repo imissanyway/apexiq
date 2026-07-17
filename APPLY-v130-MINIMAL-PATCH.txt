@@ -1,0 +1,18 @@
+ApexIQ v4.9.9.130 minimal patch
+
+Replace in the GitHub repository:
+- index.html
+- admin.html
+- admin-sw.js
+- admin-manifest.webmanifest
+- README.md
+
+Delete the old Worker file:
+- apexiq-worker-v4.9.9.129-founder-control-request-form.js
+
+Add and deploy this Worker in Cloudflare:
+- apexiq-worker-v4.9.9.130-founder-persistence-request-lfg-delete.js
+
+IMPORTANT:
+The Founder toggle cannot persist unless the v4.9.9.130 Worker is deployed.
+The v130 admin app verifies the returned Founder value and shows an error when an older Worker is still active.
