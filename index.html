@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ApexIQ — Private Beta</title>
 <link id="apexiq-v49956-favicon" rel="icon" type="image/png" href="assets/apexiq-logo.png">
-<!-- ApexIQ v4.9.9.131 founder entitlement control + request-form repair -->
+<!-- ApexIQ v4.9.9.132 founder entitlement control + request-form repair -->
 <!-- ApexIQ Predator Broadcast v4.9.9.10 Source Re-Extract + Edge Fix: artifact-cleanup-only badge asset refresh on top of the stable full badge system. -->
 <style>
 
@@ -6857,7 +6857,7 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
     try{
       await resolveRoot();
 
-      // v4.9.9.131: start full hydration immediately. The fast route can paint
+      // v4.9.9.132: start full hydration immediately. The fast route can paint
       // while Browser Rendering and tracker work continue in parallel.
       const fullFlight=workerJSON("/api/player",{player,platform,refresh:fresh?"1":"",rankedFallback:"0"},FULL_MS)
         .then(value=>({ok:true,value}),error=>({ok:false,error}));
@@ -10690,7 +10690,7 @@ body:not([data-aiq-v116-profile="true"]) [data-aiq-v116-snapshot-block="1"]{disp
 <script id="apexiq-v131-beta-request-delivery-js">
 (function(){
   "use strict";
-  const BUILD="v4.9.9.131-auto-key-delivery-recovery";
+  const BUILD="v4.9.9.132-auto-key-delivery-recovery";
   const ADMIN_SESSION_KEY="apexiq:adminSession:v49989";
   const CLAIM_KEY="apexiq:betaRequestClaim:v131";
   const SESSION_KEY="apexiq:betaSession:v49989";
@@ -10718,13 +10718,18 @@ body:not([data-aiq-v116-profile="true"]) [data-aiq-v116-snapshot-block="1"]{disp
 
   function renderNewRequest(){
     const modal=ensureModal(),body=$("#aiqV131RequestBody",modal);
-    body.innerHTML='<h2>Request an access key</h2><p>Submit once. This browser securely checks the request and automatically unlocks ApexIQ after you approve it.</p><div class="aiq-v49991-form-grid"><label>Your name<input id="aiqV49991ReqName" placeholder="Your name"></label><label>Apex username<input id="aiqV49991ReqUsername" placeholder="Exact Apex username"></label><label>Platform<select id="aiqV49991ReqPlatform"><option>PC</option><option>PlayStation</option><option>Xbox</option><option>Switch</option><option>Not sure</option></select></label><label>Main legend<input id="aiqV49991ReqLegend" placeholder="Example: Wraith, Octane, Valkyrie"></label><label>Device you will test on<input id="aiqV49991ReqDevice" placeholder="iPhone, Android, PC Chrome, etc."></label></div><div class="aiq-v49991-form-grid full"><label>Notes<textarea id="aiqV49991ReqNotes" placeholder="Anything Coye should know?"></textarea></label></div><label class="aiq-v49989-check"><input id="aiqV49991ReqAgree" type="checkbox"> I agree not to share the access key. I understand it is assigned to my Apex username and works on up to 2 devices.</label>'+actions('<button id="aiqV49991ReqSubmit" type="button" class="aiq-v49950-btn">Send request</button><button id="aiqV131RecoverOpen" type="button" class="aiq-v49950-btn ghost">Recover a request</button><button id="aiqV49991ReqClose" type="button" class="aiq-v49950-btn ghost">Cancel</button>')+'<div id="aiqV49991ReqStatus" class="aiq-v49989-status"></div>';
+    body.innerHTML='<h2>Request an access key</h2><p>Submit once. This browser securely checks the request and automatically unlocks ApexIQ after you approve it.</p><div class="aiq-v49991-form-grid"><label>Your name<input id="aiqV49991ReqName" placeholder="Your name"></label><label>Apex username<input id="aiqV49991ReqUsername" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Exact Apex username"></label><label>Platform<select id="aiqV49991ReqPlatform"><option>PC</option><option>PlayStation</option><option>Xbox</option><option>Switch</option><option>Not sure</option></select></label><label>Main legend<input id="aiqV49991ReqLegend" placeholder="Example: Wraith, Octane, Valkyrie"></label><label>Device you will test on<input id="aiqV49991ReqDevice" placeholder="iPhone, Android, PC Chrome, etc."></label></div><div class="aiq-v49991-form-grid full"><label>Notes<textarea id="aiqV49991ReqNotes" placeholder="Anything Coye should know?"></textarea></label></div><label class="aiq-v49989-check"><input id="aiqV49991ReqAgree" type="checkbox"> I agree not to share the access key. I understand it is assigned to my Apex username and works on up to 2 devices.</label>'+actions('<button id="aiqV49991ReqSubmit" type="button" class="aiq-v49950-btn">Send request</button><button id="aiqV131RecoverOpen" type="button" class="aiq-v49950-btn ghost">Recover a request</button><button id="aiqV49991ReqClose" type="button" class="aiq-v49950-btn ghost">Cancel</button>')+'<div id="aiqV49991ReqStatus" class="aiq-v49989-status"></div>';
     $("#aiqV49991ReqClose",modal).onclick=()=>modal.remove();
     $("#aiqV49991ReqSubmit",modal).onclick=submitRequest;
     $("#aiqV131RecoverOpen",modal).onclick=renderRecovery;
-    const pre=$("#aiqV49989BetaUsername")?.value?.trim()||$("#playerInput")?.value?.trim()||"";
-    if(pre)$("#aiqV49991ReqUsername",modal).value=pre;
-    setTimeout(()=>$("#aiqV49991ReqUsername",modal)?.focus(),40);
+    const requestUsername=$("#aiqV49991ReqUsername",modal);
+    if(requestUsername){
+      requestUsername.value="";
+      requestUsername.setAttribute("autocomplete","off");
+      requestUsername.setAttribute("autocapitalize","none");
+      requestUsername.setAttribute("spellcheck","false");
+    }
+    setTimeout(()=>requestUsername?.focus(),40);
   }
 
   function renderTracker(data){
@@ -11543,7 +11548,7 @@ body:not([data-aiq-v116-profile="true"]) [data-aiq-v116-snapshot-block="1"]{disp
 </script>
 
 
-<!-- === ApexIQ v4.9.9.131 Founder Persistence + Request/LFG Delete === -->
+<!-- === ApexIQ v4.9.9.132 Founder Persistence + Request/LFG Delete === -->
 <style id="apexiq-v499127-founder-css">
 .aiq-v499127-founder-inline{display:inline-flex;align-items:center;justify-content:center;width:clamp(30px,3.4vw,42px);height:clamp(30px,3.4vw,42px);margin-left:9px;vertical-align:middle;flex:0 0 auto;filter:drop-shadow(0 5px 11px rgba(168,85,247,.34));}
 .aiq-v499127-founder-inline img{display:block;width:100%;height:100%;object-fit:contain;}
@@ -11558,7 +11563,7 @@ body:not([data-aiq-v116-profile="true"]) [data-aiq-v116-snapshot-block="1"]{disp
 <script id="apexiq-v499129-founder-js">
 (function(){
   if(window.__apexiqV499130Booted)return;window.__apexiqV499130Booted=true;
-  var BUILD='v4.9.9.131-founder-persistence-request-lfg-delete';
+  var BUILD='v4.9.9.132-founder-persistence-request-lfg-delete';
   var ASSET='assets/approved-badges/founder_private_beta_001.png';
   var SESSION_KEY='apexiq:betaSession:v49989';
   var AWARD_KEY='apexiq:founderAwardSeen:v499129';
@@ -11689,15 +11694,15 @@ body:not([data-aiq-v116-profile="true"]) [data-aiq-v116-snapshot-block="1"]{disp
   window.apexiqFounderV499130={asset:ASSET,refresh:function(){founderCache.clear();scheduleFounderCheck(true)},build:BUILD};
 })();
 </script>
-<!-- === /ApexIQ v4.9.9.131 === -->
+<!-- === /ApexIQ v4.9.9.132 === -->
 
 <script id="apexiq-v499129-build-marker">
 (function(){
   function mark(){
-    document.documentElement.dataset.apexiqBuild="v4.9.9.131";
+    document.documentElement.dataset.apexiqBuild="v4.9.9.132";
     var panel=document.getElementById("settingsPanel");
     if(panel&&!document.getElementById("aiqV499129Build")){
-      panel.insertAdjacentHTML("afterbegin",'<div id="aiqV499129Build" class="notice"><b>ApexIQ v4.9.9.131</b><p>Approved beta requests securely deliver their key to the requesting browser, with recovery-code support.</p></div>');
+      panel.insertAdjacentHTML("afterbegin",'<div id="aiqV499129Build" class="notice"><b>ApexIQ v4.9.9.132</b><p>Approved beta requests securely deliver their key to the requesting browser. Access-request usernames always start blank.</p></div>');
     }
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();
