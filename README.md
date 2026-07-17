@@ -5,15 +5,15 @@ Mobile-first Apex Legends profile hub.
 ## Production entry points
 
 - `index.html` — main private-beta application
-- `app.html` — compatibility redirect to the main application
-- `admin.html` — iPhone/mobile admin console
+- `app.html` — compatibility redirect
+- `admin.html` — mobile admin console
 - `admin-sw.js` — admin PWA service worker
-- `apexiq-worker-v4.9.9.128-founder-request-cache.js` — current Cloudflare Worker
-- `assets/` — approved badges, stickers, logos, and application assets
-- `badge-manifest.json` — active badge manifest
+- `apexiq-worker-v4.9.9.129-founder-control-request-form.js` — current Cloudflare Worker
+- `assets/` — application assets
 
-## Deployment
+## v4.9.9.129
 
-1. Publish the repository root through GitHub Pages.
-2. Deploy `apexiq-worker-v4.9.9.128-founder-request-cache.js` separately in Cloudflare Workers.
-3. Fully close and reopen the installed admin app once after deploying v4.9.9.128.
+- Founder badges are assigned per beta user from the admin panel.
+- Founder badge display-case size matches other badge icons.
+- Searching an unapproved profile removes the Founder badge.
+- Request access opens the public request form and sends it to Admin → Requests.

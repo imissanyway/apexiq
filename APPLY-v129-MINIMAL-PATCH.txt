@@ -1,0 +1,20 @@
+ApexIQ v4.9.9.129 minimal patch
+
+Copy these files into the local repository and replace existing versions:
+- index.html
+- admin.html
+- admin-sw.js
+- admin-manifest.webmanifest
+- README.md
+
+Delete the old Worker from the repository root:
+- apexiq-worker-v4.9.9.128-founder-request-cache.js
+
+Add and deploy:
+- apexiq-worker-v4.9.9.129-founder-control-request-form.js
+
+After deploying the Worker:
+1. Open ApexIQ Admin.
+2. Open Users → Manage.
+3. Set Founder profile badge to On only for approved users.
+4. Regular access requests create normal testers with Founder profile badge Off.

@@ -535,6 +535,7 @@
           </div>
           <div class="meta-row">
             <div class="meta"><span>Role</span><b>${esc(u.role || "tester")}</b></div>
+            <div class="meta"><span>Founder badge</span><b>${u.founderBadge ? "ON" : "OFF"}</b></div>
             <div class="meta"><span>Devices</span><b>${devices}/${esc(u.maxDevices || 2)}</b></div>
             <div class="meta"><span>Last login</span><b>${esc(dateText(u.lastLoginAt))}</b></div>
           </div>
@@ -617,6 +618,7 @@
             <div class="field"><label>Platform</label><select name="platform"><option>PC</option><option>PlayStation</option><option>Xbox</option><option>Switch</option><option>Auto</option></select></div>
             <div class="field"><label>Role</label><select name="role"><option value="tester">Tester</option><option value="admin">Admin</option><option value="founder">Founder</option></select></div>
             <div class="field"><label>Badge label</label><select name="badge"><option>Original Beta Tester</option><option>Founding Tester</option><option>Admin Tester</option></select></div>
+            <div class="field"><label>Founder profile badge</label><select name="founderBadge"><option value="false" selected>Off</option><option value="true">On</option></select></div>
             <div class="field"><label>Maximum devices</label><input class="input" name="maxDevices" type="number" min="1" max="10" value="2"></div>
             <div class="field"><label>Custom code <span style="font-weight:500">(optional)</span></label><input class="input" name="code" placeholder="Auto-generated when empty"></div>
             <div class="field full"><label>Notes</label><textarea name="notes" placeholder="Optional internal notes"></textarea></div>
@@ -712,6 +714,7 @@
       const form = new FormData(event.currentTarget);
       const body = Object.fromEntries(form.entries());
       body.maxDevices = Number(body.maxDevices || 2);
+      body.founderBadge = body.founderBadge === "true";
       const button = event.currentTarget.querySelector('button[type="submit"]');
       button.disabled = true;
       button.textContent = "Generating…";
@@ -750,7 +753,7 @@
           button.textContent = `Generating ${i+1}/${count}…`;
           const data = await api("/api/beta/admin/create", {
             method:"POST",
-            body:{assignedUsername:"",platform:"Auto",status:"disabled",role:"tester",badge:"Original Beta Tester",maxDevices:2,notes:"Bulk unassigned code"}
+            body:{assignedUsername:"",platform:"Auto",status:"disabled",role:"tester",badge:"Original Beta Tester",founderBadge:false,maxDevices:2,notes:"Bulk unassigned code"}
           });
           codes.push(data.code);
         }
@@ -791,6 +794,7 @@
                 <div class="field"><label>Platform</label><select name="platform">${["PC","PlayStation","Xbox","Switch","Auto"].map(p => `<option ${u.platform === p ? "selected" : ""}>${p}</option>`).join("")}</select></div>
                 <div class="field"><label>Role</label><select name="role">${["tester","admin","founder"].map(r => `<option ${u.role === r ? "selected" : ""}>${r}</option>`).join("")}</select></div>
                 <div class="field"><label>Badge</label><select name="badge">${["Original Beta Tester","Founding Tester","Admin Tester"].map(b => `<option ${u.badge === b ? "selected" : ""}>${b}</option>`).join("")}</select></div>
+                <div class="field"><label>Founder profile badge</label><select name="founderBadge"><option value="false" ${u.founderBadge ? "" : "selected"}>Off</option><option value="true" ${u.founderBadge ? "selected" : ""}>On</option></select></div>
                 <div class="field"><label>Maximum devices</label><input class="input" name="maxDevices" type="number" min="1" max="10" value="${esc(u.maxDevices || 2)}"></div>
                 <div class="field"><label>Status</label><select name="status"><option value="active" ${u.status === "active" ? "selected" : ""}>active</option><option value="disabled" ${u.status !== "active" ? "selected" : ""}>disabled</option></select></div>
                 <div class="field full"><label>Notes</label><textarea name="notes">${esc(u.notes || "")}</textarea></div>
@@ -822,6 +826,7 @@
         const body = Object.fromEntries(new FormData(event.currentTarget).entries());
         body.code = u.code;
         body.maxDevices = Number(body.maxDevices || 2);
+        body.founderBadge = body.founderBadge === "true";
         try {
           await api("/api/beta/admin/update", {method:"POST",body});
           close();
@@ -922,7 +927,7 @@
       const action = button.dataset.requestAction;
       try {
         if (action === "create") {
-          await api("/api/beta/admin/create", {method:"POST",body:{assignedUsername:req.apexUsername,platform:req.platform||"Auto",role:"tester",badge:"Founding Member — Private Beta 001",maxDevices:2,notes:`Created from request ${id}`}});
+          await api("/api/beta/admin/create", {method:"POST",body:{assignedUsername:req.apexUsername,platform:req.platform||"Auto",role:"tester",badge:"Original Beta Tester",founderBadge:false,maxDevices:2,notes:`Created from request ${id}`}});
           await api("/api/beta/admin/request-update", {method:"POST",body:{id,status:"approved"}});
           toast("Access key created; open Users to copy it.");
           await Promise.all([loadUsers(false),loadRequests(false)]);
@@ -966,7 +971,7 @@
     async function boot() {
       bindStatic();
       if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-        navigator.serviceWorker.register("./admin-sw.js?v=128",{updateViaCache:"none"}).then(async reg => {
+        navigator.serviceWorker.register("./admin-sw.js?v=129",{updateViaCache:"none"}).then(async reg => {
           await reg.update();
           if (reg.waiting) reg.waiting.postMessage("SKIP_WAITING");
         }).catch(() => {});
@@ -986,8 +991,8 @@
 (function(){
   if(!("serviceWorker" in navigator)||!location.protocol.startsWith("http"))return;
   navigator.serviceWorker.addEventListener("controllerchange",function(){
-    if(!sessionStorage.getItem("apexiq:admin:v128:reloaded")){
-      sessionStorage.setItem("apexiq:admin:v128:reloaded","1");
+    if(!sessionStorage.getItem("apexiq:admin:v129:reloaded")){
+      sessionStorage.setItem("apexiq:admin:v129:reloaded","1");
       location.reload();
     }
   });
