@@ -446,7 +446,7 @@
         body:{code,enabled:!!enabled}
       });
       if (!data.record || data.record.founderBadge !== !!enabled) {
-        throw new Error("Founder setting was not confirmed. Deploy the v4.9.9.130 Worker, then try again.");
+        throw new Error("Founder setting was not confirmed. Deploy the v4.9.9.131 Worker, then try again.");
       }
 
       const index = state.users.findIndex(user => user.code === code);
@@ -946,9 +946,10 @@
         ${errorText ? `<div class="inline-note">${esc(errorText)}</div>` : ""}
         <div class="user-list">${rows.length ? rows.map(r => `<article class="user-card" data-request-id="${esc(r.id)}">
           <div class="user-top"><div class="user-title"><b>${esc(r.apexUsername||"Unknown")}</b><small>${esc(r.platform||"Auto")} · ${esc(r.device||"Unknown device")}</small></div><span class="pill ${r.status==='new'?'active':'disabled'}">${esc(r.status||'new')}</span></div>
-          <div class="meta-row"><div class="meta"><span>Name</span><b>${esc(r.name||'—')}</b></div><div class="meta"><span>Main</span><b>${esc(r.mainLegend||'—')}</b></div><div class="meta"><span>Requested</span><b>${esc(dateText(r.createdAt))}</b></div></div>
+          <div class="meta-row"><div class="meta"><span>Name</span><b>${esc(r.name||'—')}</b></div><div class="meta"><span>Main</span><b>${esc(r.mainLegend||'—')}</b></div><div class="meta"><span>Requested</span><b>${esc(dateText(r.createdAt))}</b></div><div class="meta"><span>Delivered</span><b>${r.firstDeliveredAt ? esc(dateText(r.firstDeliveredAt)) : "Not yet"}</b></div></div>
+          ${r.approvedCode ? `<div class="code-row"><div class="code">${esc(r.approvedCode)}</div><button class="btn secondary small" data-request-action="copy-key">Copy key</button></div>` : ""}
           ${r.notes ? `<div class="inline-note">${esc(r.notes)}</div>` : ""}
-          <div class="button-row"><button class="btn green small" data-request-action="create">Create key</button><button class="btn secondary small" data-request-action="reviewed">Reviewed</button><button class="btn danger small" data-request-action="denied">Deny</button><button class="btn danger small" data-request-action="delete">Delete</button></div>
+          <div class="button-row">${r.status==="approved"&&r.approvedCode ? `<button class="btn secondary small" data-request-action="approve">Reconfirm delivery</button>` : `<button class="btn green small" data-request-action="approve">Accept & deliver key</button>`}<button class="btn secondary small" data-request-action="reviewed">Reviewed</button><button class="btn danger small" data-request-action="denied">Deny</button><button class="btn danger small" data-request-action="delete">Delete</button></div>
         </article>`).join("") : `<div class="card empty"><b>No access requests</b>New locked-screen requests will appear here.</div>`}</div>`;
     }
 
@@ -966,11 +967,21 @@
           toast("Access request deleted");
           return;
         }
-        if (action === "create") {
-          await api("/api/beta/admin/create", {method:"POST",body:{assignedUsername:req.apexUsername,platform:req.platform||"Auto",role:"tester",badge:"Original Beta Tester",founderBadge:false,maxDevices:2,notes:`Created from request ${id}`}});
-          await api("/api/beta/admin/request-update", {method:"POST",body:{id,status:"approved"}});
-          toast("Access key created; open Users to copy it.");
-          await Promise.all([loadUsers(false),loadRequests(false)]);
+        if (action === "copy-key") {
+          if (!req.approvedCode) throw new Error("No key has been generated for this request.");
+          await navigator.clipboard.writeText(req.approvedCode);
+          toast("Access key copied");
+          return;
+        }
+        if (action === "approve") {
+          button.disabled = true;
+          const data = await api("/api/beta/admin/request-approve", {method:"POST",body:{id,role:"tester",badge:"Original Beta Tester",founderBadge:false,maxDevices:2}});
+          const position = state.requests.findIndex(item => item.id === id);
+          if (position >= 0) state.requests[position] = data.request;
+          renderRequests();
+          try { await navigator.clipboard.writeText(data.code); } catch (_) {}
+          toast("Accepted. The user's browser will receive the key automatically.");
+          await loadUsers(false);
           return;
         }
         await api("/api/beta/admin/request-update", {method:"POST",body:{id,status:action}});
@@ -1011,7 +1022,7 @@
     async function boot() {
       bindStatic();
       if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-        navigator.serviceWorker.register("./admin-sw.js?v=130",{updateViaCache:"none"}).then(async reg => {
+        navigator.serviceWorker.register("./admin-sw.js?v=131",{updateViaCache:"none"}).then(async reg => {
           await reg.update();
           if (reg.waiting) reg.waiting.postMessage("SKIP_WAITING");
         }).catch(() => {});
@@ -1031,8 +1042,8 @@
 (function(){
   if(!("serviceWorker" in navigator)||!location.protocol.startsWith("http"))return;
   navigator.serviceWorker.addEventListener("controllerchange",function(){
-    if(!sessionStorage.getItem("apexiq:admin:v130:reloaded")){
-      sessionStorage.setItem("apexiq:admin:v130:reloaded","1");
+    if(!sessionStorage.getItem("apexiq:admin:v131:reloaded")){
+      sessionStorage.setItem("apexiq:admin:v131:reloaded","1");
       location.reload();
     }
   });

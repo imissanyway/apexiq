@@ -1,8 +1,8 @@
-const CACHE_NAME = "apexiq-admin-shell-v130";
-const ADMIN_HTML = "./admin.html?v=130";
+const CACHE_NAME = "apexiq-admin-shell-v131";
+const ADMIN_HTML = "./admin.html?v=131";
 const SHELL = [
   ADMIN_HTML,
-  "./admin-manifest.webmanifest?v=130",
+  "./admin-manifest.webmanifest?v=131",
   "./admin-icon-192.png",
   "./admin-icon-512.png"
 ];

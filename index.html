@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ApexIQ — Private Beta</title>
 <link id="apexiq-v49956-favicon" rel="icon" type="image/png" href="assets/apexiq-logo.png">
-<!-- ApexIQ v4.9.9.130 founder entitlement control + request-form repair -->
+<!-- ApexIQ v4.9.9.131 founder entitlement control + request-form repair -->
 <!-- ApexIQ Predator Broadcast v4.9.9.10 Source Re-Extract + Edge Fix: artifact-cleanup-only badge asset refresh on top of the stable full badge system. -->
 <style>
 
@@ -6857,7 +6857,7 @@ html[data-v49919="stats-stable"] #searchButtonV49917{
     try{
       await resolveRoot();
 
-      // v4.9.9.130: start full hydration immediately. The fast route can paint
+      // v4.9.9.131: start full hydration immediately. The fast route can paint
       // while Browser Rendering and tracker work continue in parallel.
       const fullFlight=workerJSON("/api/player",{player,platform,refresh:fresh?"1":"",rankedFallback:"0"},FULL_MS)
         .then(value=>({ok:true,value}),error=>({ok:false,error}));
@@ -10168,7 +10168,7 @@ html[data-aiq-v49958-panel="squad"] #aiqV49944DockToggle{
     try{
       const dev=await devicePayload();
       const data=await post("/api/beta/verify",Object.assign({username,code},dev));
-      unlock({sessionToken:data.sessionToken,expiresAt:data.expiresAt,code:data.code,assignedUsername:data.assignedUsername||username,username,platform:data.platform||"",role:data.role||"Tester",badge:data.badge||"Original Beta Tester",admin:!!data.admin,devicesUsed:data.devicesUsed,maxDevices:data.maxDevices});
+      unlock({sessionToken:data.sessionToken,expiresAt:data.expiresAt,code:data.code,assignedUsername:data.assignedUsername||username,username,platform:data.platform||"",role:data.role||"Tester",badge:data.badge||"Original Beta Tester",founderBadge:!!data.founderBadge,admin:!!data.admin,devicesUsed:data.devicesUsed,maxDevices:data.maxDevices});
       setStatus("aiqV49989BetaError","",false);
       showWelcome(false);
     }catch(e){
@@ -10676,32 +10676,167 @@ body:not([data-aiq-v116-profile="true"]) [data-aiq-v116-snapshot-block="1"]{disp
 .aiq-v49991-request-actions{display:flex;gap:7px;flex-wrap:wrap;}
 .aiq-v49991-request-actions button{min-height:32px;border-radius:10px;padding:0 9px;font-size:.78rem;}
 @media(max-width:720px){.aiq-v49991-form-grid{grid-template-columns:1fr}}
+
+.aiq-v131-request-summary{display:grid;gap:11px;margin:14px 0;padding:14px;border:1px solid color-mix(in srgb,var(--brand,#7c3aed) 40%,var(--line,#334155));border-radius:18px;background:color-mix(in srgb,var(--brand,#7c3aed) 10%,var(--surface-2,#111827));}
+.aiq-v131-request-summary .row{display:grid;grid-template-columns:120px 1fr;gap:10px;align-items:start;}
+.aiq-v131-request-summary span{color:var(--muted,#94a3b8);font-size:.78rem;font-weight:900;text-transform:uppercase;letter-spacing:.06em;}
+.aiq-v131-request-summary b,.aiq-v131-request-summary code{color:var(--text,#f8fafc);overflow-wrap:anywhere;}
+.aiq-v131-request-summary code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:1000;}
+.aiq-v131-request-state{border-radius:14px;padding:11px 12px;background:var(--surface-2,#111827);border:1px solid var(--line,#334155);font-weight:900;line-height:1.4;}
+.aiq-v131-request-state.pending{color:#fde68a}.aiq-v131-request-state.approved{color:#86efac}.aiq-v131-request-state.denied{color:#fca5a5}
+.aiq-v131-recovery{margin-top:14px;padding-top:14px;border-top:1px solid var(--line,#334155);}
+@media(max-width:560px){.aiq-v131-request-summary .row{grid-template-columns:1fr;gap:3px}}
 </style>
-<script id="apexiq-v49991-beta-request-js">
+<script id="apexiq-v131-beta-request-delivery-js">
 (function(){
   "use strict";
-  const BUILD="v4.9.9.91-beta-request-form-admin-requests";
+  const BUILD="v4.9.9.131-auto-key-delivery-recovery";
   const ADMIN_SESSION_KEY="apexiq:adminSession:v49989";
+  const CLAIM_KEY="apexiq:betaRequestClaim:v131";
+  const SESSION_KEY="apexiq:betaSession:v49989";
+  const POLL_MS=20000;
+  let pollTimer=0,statusBusy=false,autoLoginKey="";
+
   function $(s,r){return (r||document).querySelector(s)}
-  function safe(v){return String(v??"").replace(/[&<>\"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
+  function safe(v){return String(v==null?"":v).replace(/[&<>\"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
   function readJSON(k,fb){try{const v=localStorage.getItem(k);return v?JSON.parse(v):fb}catch(_){return fb}}
+  function writeJSON(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(_){return false}}
   function root(){try{if(typeof apiRoot==="function")return apiRoot().replace(/\/$/,"")}catch(_){ }try{if(typeof state==="object"&&state.proxy)return String(state.proxy).replace(/\/$/,"")}catch(_){ }try{if(typeof DEFAULT_WORKER==="string")return DEFAULT_WORKER.replace(/\/$/,"")}catch(_){ }return (window.APEXIQ_WORKER_URL||localStorage.getItem("apexiqApiProxy")||"https://cool-wildflower-1646.pwr97pnmkn.workers.dev").replace(/\/$/,"")}
   async function post(path,body,token){const headers={"Content-Type":"application/json","Accept":"application/json"};if(token)headers.Authorization="Bearer "+token;const res=await fetch(root()+path,{method:"POST",headers,cache:"no-store",body:JSON.stringify(body||{})});const text=await res.text();let data={};try{data=JSON.parse(text)}catch(_){data={ok:false,error:"ApexIQ Live API returned non-JSON."}}if(!res.ok||data.ok===false||data.error)throw new Error(data.error||("HTTP "+res.status));return data}
   async function get(path,token){const headers={"Accept":"application/json"};if(token)headers.Authorization="Bearer "+token;const res=await fetch(root()+path,{headers,cache:"no-store"});const text=await res.text();let data={};try{data=JSON.parse(text)}catch(_){data={ok:false,error:"ApexIQ Live API returned non-JSON."}}if(!res.ok||data.ok===false||data.error)throw new Error(data.error||("HTTP "+res.status));return data}
   function adminToken(){const s=readJSON(ADMIN_SESSION_KEY,null);if(!s||!s.token)return "";if(Date.parse(s.expiresAt||"")<Date.now())return "";return s.token}
-  function requestModalHTML(){return '<div id="aiqV49991RequestModal" class="aiq-v49989-modal" role="dialog" aria-modal="true"><section class="aiq-v49989-card"><div class="aiq-v49989-kicker"><span>ApexIQ private beta</span><span>Request access</span></div><h2>Request an access key</h2><p>Submit this inside ApexIQ. The request is sent directly to Coye’s iPhone admin console for review.</p><div class="aiq-v49991-form-grid"><label>Your name<input id="aiqV49991ReqName" placeholder="Your name"></label><label>Apex username<input id="aiqV49991ReqUsername" placeholder="Exact Apex username"></label><label>Platform<select id="aiqV49991ReqPlatform"><option>PC</option><option>PlayStation</option><option>Xbox</option><option>Switch</option><option>Not sure</option></select></label><label>Main legend<input id="aiqV49991ReqLegend" placeholder="Example: Wraith, Octane, Valkyrie"></label><label>Device you will test on<input id="aiqV49991ReqDevice" placeholder="iPhone, Android, PC Chrome, etc."></label></div><div class="aiq-v49991-form-grid full"><label>Notes<textarea id="aiqV49991ReqNotes" placeholder="Anything Coye should know?"></textarea></label></div><label class="aiq-v49989-check"><input id="aiqV49991ReqAgree" type="checkbox"> I agree not to share the access key. I understand it is locked to my Apex username and up to 2 devices.</label><div class="aiq-v49950-beta-actions"><button id="aiqV49991ReqSubmit" type="button" class="aiq-v49950-btn">Send request</button><button id="aiqV49991ReqClose" type="button" class="aiq-v49950-btn ghost">Cancel</button></div><div id="aiqV49991ReqStatus" class="aiq-v49989-status"></div></section></div>'}
-  function openRequestForm(){let modal=$("#aiqV49991RequestModal");if(!modal){document.body.insertAdjacentHTML("beforeend",requestModalHTML());modal=$("#aiqV49991RequestModal");$("#aiqV49991ReqClose")?.addEventListener("click",()=>modal.remove());$("#aiqV49991ReqSubmit")?.addEventListener("click",submitRequest);const pre=$("#aiqV49989BetaUsername")?.value?.trim()||$("#playerInput")?.value?.trim()||"";if(pre)$("#aiqV49991ReqUsername").value=pre;}$("#aiqV49991ReqStatus").textContent="";$("#aiqV49991ReqStatus").classList.remove("err");$("#aiqV49991ReqUsername")?.focus()}
-  async function submitRequest(){const status=$("#aiqV49991ReqStatus");const body={name:$("#aiqV49991ReqName")?.value?.trim()||"",apexUsername:$("#aiqV49991ReqUsername")?.value?.trim()||"",platform:$("#aiqV49991ReqPlatform")?.value||"Auto",mainLegend:$("#aiqV49991ReqLegend")?.value?.trim()||"",device:$("#aiqV49991ReqDevice")?.value?.trim()||"",notes:$("#aiqV49991ReqNotes")?.value?.trim()||"",agreedNoShare:!!$("#aiqV49991ReqAgree")?.checked};if(status){status.textContent="Sending request…";status.classList.remove("err")}try{const data=await post("/api/beta/request-access",body);if(status)status.textContent=data.message||"Request sent. Coye can review it in the admin panel.";setTimeout(()=>$("#aiqV49991RequestModal")?.remove(),1300)}catch(e){if(status){status.textContent=e.message||"Could not send request right now.";status.classList.add("err")}}}
-  function patchRequestButton(){const btn=$("#aiqV49989RequestBtn");if(!btn||btn.dataset.v49991)return;const clone=btn.cloneNode(true);clone.dataset.v49991="1";clone.textContent="Request access key";clone.addEventListener("click",function(e){e.preventDefault();e.stopPropagation();openRequestForm();});btn.replaceWith(clone)}
-  function requestCardHTML(){return '<article id="aiqV49991RequestsCard" class="aiq-v49989-admin-card" style="grid-column:1/-1"><div class="aiq-v49989-admin-head" style="margin:0"><div><h3>Access Requests</h3><p class="aiq-v49989-mini">Requests submitted from the beta gate. Review them and create a key directly from the iPhone admin console.</p></div><button id="aiqV49991RefreshRequests" type="button" class="aiq-v49950-btn ghost">Refresh requests</button></div><div id="aiqV49991RequestsStatus" class="aiq-v49989-status"></div><div id="aiqV49991RequestsList" class="aiq-v49991-request-list"></div></article>'}
-  function patchAdminRequests(){const grid=$("#aiqV49989AdminBody .aiq-v49989-admin-grid");if(!grid||$("#aiqV49991RequestsCard"))return;grid.insertAdjacentHTML("beforeend",requestCardHTML());$("#aiqV49991RefreshRequests")?.addEventListener("click",loadRequests);loadRequests();}
-  async function loadRequests(){const token=adminToken();const status=$("#aiqV49991RequestsStatus");const list=$("#aiqV49991RequestsList");if(!token||!list)return;if(status){status.textContent="Loading requests…";status.classList.remove("err")}try{const data=await get("/api/beta/admin/requests",token);const reqs=data.requests||[];if(status)status.textContent=reqs.length+" request(s) loaded.";renderRequests(reqs)}catch(e){if(status){status.textContent=e.message||"Could not load requests.";status.classList.add("err")}}}
-  function renderRequests(reqs){const list=$("#aiqV49991RequestsList");if(!list)return;if(!reqs.length){list.innerHTML='<p class="aiq-v49989-mini">No access requests yet.</p>';return}list.innerHTML=reqs.map(r=>'<div class="aiq-v49991-request-row" data-id="'+safe(r.id)+'" data-username="'+safe(r.apexUsername)+'" data-platform="'+safe(r.platform)+'" data-email="'+safe(r.email)+'" data-legend="'+safe(r.mainLegend)+'" data-device="'+safe(r.device)+'"><div><b>'+safe(r.apexUsername||"No username")+'</b> <small>'+safe(r.status||"new")+' · '+safe(r.platform||"Auto")+' · '+safe(r.createdAt||"")+'</small></div><small>Name: '+safe(r.name||"—")+' · Main: '+safe(r.mainLegend||"—")+' · Device: '+safe(r.device||"—")+'</small><small>'+safe(r.notes||"")+'</small><div class="aiq-v49991-request-actions"><button class="aiq-v49950-btn ghost" data-req-act="copy">Copy info</button><button class="aiq-v49950-btn ghost" data-req-act="create">Create code</button><button class="aiq-v49950-btn ghost" data-req-act="reviewed">Mark reviewed</button><button class="aiq-v49950-btn ghost" data-req-act="denied">Deny</button></div></div>').join("");list.onclick=requestAction}
-  async function requestAction(e){const btn=e.target.closest("button[data-req-act]");if(!btn)return;const row=btn.closest("[data-id]");const token=adminToken();if(!row||!token)return;const id=row.dataset.id;const act=btn.dataset.reqAct;const username=row.dataset.username||"";const platform=row.dataset.platform||"Auto";const legend=row.dataset.legend||"";const device=row.dataset.device||"";try{if(act==="copy"){await navigator.clipboard.writeText(["ApexIQ beta request", "Apex username: "+username, "Platform: "+platform, "Main legend: "+legend, "Device: "+device].join("\n"));return}if(act==="create"){const data=await post("/api/beta/admin/create",{assignedUsername:username,platform,role:"tester",badge:"Original Beta Tester",maxDevices:2,notes:"Request "+id+" | Main: "+legend+" | Device: "+device},token);await post("/api/beta/admin/request-update",{id,status:"approved"},token);alert("Generated code for "+username+":\n"+data.code+"\n\nThe key is also available in the Users tab.");try{await navigator.clipboard.writeText(data.code)}catch(_){ }if(window.location.search.includes("admin=1"))loadRequests();return}if(act==="reviewed"||act==="denied"){await post("/api/beta/admin/request-update",{id,status:act},token);loadRequests();return}}catch(err){alert(err.message||"Request action failed.")}}
-  function start(){patchRequestButton();patchAdminRequests();}
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});else start();
-  new MutationObserver(function(){patchRequestButton();patchAdminRequests();}).observe(document.documentElement,{childList:true,subtree:true});
+  function claim(){return readJSON(CLAIM_KEY,null)}
+  function saveClaim(value){writeJSON(CLAIM_KEY,Object.assign({},claim()||{},value||{}, {savedAt:Date.now()}));patchRequestButton()}
+  function clearPoll(){clearTimeout(pollTimer);pollTimer=0}
+  function schedulePoll(delay=POLL_MS){clearPoll();const c=claim();if(!c||!c.requestId||!c.claimToken||["approved","denied"].includes(c.status))return;pollTimer=setTimeout(()=>checkStatus(false),delay)}
+  function sessionFresh(){const s=readJSON(SESSION_KEY,null);if(!s||!s.sessionToken)return false;const exp=Date.parse(s.expiresAt||"");return !Number.isFinite(exp)||exp>Date.now()}
+
+  function modalShell(){return '<div id="aiqV49991RequestModal" class="aiq-v49989-modal" role="dialog" aria-modal="true"><section class="aiq-v49989-card"><div class="aiq-v49989-kicker"><span>ApexIQ private beta</span><span>Secure key delivery</span></div><div id="aiqV131RequestBody"></div></section></div>'}
+  function ensureModal(){let modal=$("#aiqV49991RequestModal");if(!modal){document.body.insertAdjacentHTML("beforeend",modalShell());modal=$("#aiqV49991RequestModal")}return modal}
+  function actions(buttons){return '<div class="aiq-v49950-beta-actions">'+buttons+'</div>'}
+  function statusClass(status){return status==="approved"?"approved":status==="denied"?"denied":"pending"}
+
+  function renderNewRequest(){
+    const modal=ensureModal(),body=$("#aiqV131RequestBody",modal);
+    body.innerHTML='<h2>Request an access key</h2><p>Submit once. This browser securely checks the request and automatically unlocks ApexIQ after you approve it.</p><div class="aiq-v49991-form-grid"><label>Your name<input id="aiqV49991ReqName" placeholder="Your name"></label><label>Apex username<input id="aiqV49991ReqUsername" placeholder="Exact Apex username"></label><label>Platform<select id="aiqV49991ReqPlatform"><option>PC</option><option>PlayStation</option><option>Xbox</option><option>Switch</option><option>Not sure</option></select></label><label>Main legend<input id="aiqV49991ReqLegend" placeholder="Example: Wraith, Octane, Valkyrie"></label><label>Device you will test on<input id="aiqV49991ReqDevice" placeholder="iPhone, Android, PC Chrome, etc."></label></div><div class="aiq-v49991-form-grid full"><label>Notes<textarea id="aiqV49991ReqNotes" placeholder="Anything Coye should know?"></textarea></label></div><label class="aiq-v49989-check"><input id="aiqV49991ReqAgree" type="checkbox"> I agree not to share the access key. I understand it is assigned to my Apex username and works on up to 2 devices.</label>'+actions('<button id="aiqV49991ReqSubmit" type="button" class="aiq-v49950-btn">Send request</button><button id="aiqV131RecoverOpen" type="button" class="aiq-v49950-btn ghost">Recover a request</button><button id="aiqV49991ReqClose" type="button" class="aiq-v49950-btn ghost">Cancel</button>')+'<div id="aiqV49991ReqStatus" class="aiq-v49989-status"></div>';
+    $("#aiqV49991ReqClose",modal).onclick=()=>modal.remove();
+    $("#aiqV49991ReqSubmit",modal).onclick=submitRequest;
+    $("#aiqV131RecoverOpen",modal).onclick=renderRecovery;
+    const pre=$("#aiqV49989BetaUsername")?.value?.trim()||$("#playerInput")?.value?.trim()||"";
+    if(pre)$("#aiqV49991ReqUsername",modal).value=pre;
+    setTimeout(()=>$("#aiqV49991ReqUsername",modal)?.focus(),40);
+  }
+
+  function renderTracker(data){
+    const modal=ensureModal(),body=$("#aiqV131RequestBody",modal),c=Object.assign({},claim()||{},data||{});
+    const status=c.status||"new";
+    const key=c.accessKey||c.approvedCode||"";
+    const message=c.message||(status==="approved"?"Your key is ready.":status==="denied"?"This request was not accepted.":status==="reviewed"?"Your request is being reviewed.":"Your request is waiting for review.");
+    body.innerHTML='<h2>'+(status==="approved"?"Access approved":status==="denied"?"Request closed":"Request submitted")+'</h2><p>This browser is linked to the request with a private claim token. Keep the recovery code somewhere safe until the key is delivered.</p><div class="aiq-v131-request-state '+statusClass(status)+'">'+safe(message)+'</div><div class="aiq-v131-request-summary"><div class="row"><span>Apex username</span><b>'+safe(c.apexUsername||"—")+'</b></div><div class="row"><span>Request ID</span><code>'+safe(c.requestId||c.id||"—")+'</code></div><div class="row"><span>Recovery code</span><code>'+safe(c.recoveryCode||"Saved on this browser")+'</code></div>'+(key?'<div class="row"><span>Access key</span><code>'+safe(key)+'</code></div>':'')+'<div class="row"><span>Status</span><b>'+safe(status)+'</b></div></div>'+actions((key?'<button id="aiqV131Unlock" type="button" class="aiq-v49950-btn">Unlock ApexIQ</button><button id="aiqV131CopyKey" type="button" class="aiq-v49950-btn ghost">Copy key</button>':'<button id="aiqV131Check" type="button" class="aiq-v49950-btn">Check approval status</button>')+'<button id="aiqV131CopyRecovery" type="button" class="aiq-v49950-btn ghost">Copy recovery info</button><button id="aiqV131Close" type="button" class="aiq-v49950-btn ghost">Close</button>')+'<div class="aiq-v131-recovery"><button id="aiqV131StartOver" type="button" class="aiq-v49950-btn ghost">Start a different request</button></div><div id="aiqV49991ReqStatus" class="aiq-v49989-status"></div>';
+    $("#aiqV131Close",modal).onclick=()=>modal.remove();
+    $("#aiqV131Check",modal)?.addEventListener("click",()=>checkStatus(true));
+    $("#aiqV131Unlock",modal)?.addEventListener("click",()=>autoUnlock(key,c.apexUsername));
+    $("#aiqV131CopyKey",modal)?.addEventListener("click",async()=>{try{await navigator.clipboard.writeText(key);setModalStatus("Access key copied.",false)}catch(_){setModalStatus("Could not copy automatically.",true)}});
+    $("#aiqV131CopyRecovery",modal).onclick=async()=>{const text=["ApexIQ beta request","Request ID: "+(c.requestId||c.id||""),"Recovery code: "+(c.recoveryCode||""),"Apex username: "+(c.apexUsername||"")].join("\n");try{await navigator.clipboard.writeText(text);setModalStatus("Recovery information copied.",false)}catch(_){setModalStatus("Could not copy automatically. Take a screenshot of the request ID and recovery code.",true)}};
+    $("#aiqV131StartOver",modal).onclick=()=>{if(confirm("Start a different request? Keep the recovery information for this request before clearing it.")){localStorage.removeItem(CLAIM_KEY);clearPoll();renderNewRequest();patchRequestButton()}};
+  }
+
+  function renderRecovery(){
+    const modal=ensureModal(),body=$("#aiqV131RequestBody",modal),c=claim()||{};
+    body.innerHTML='<h2>Recover a beta request</h2><p>Use the request ID and recovery code shown after submission. Recovery links this browser without disabling the original browser.</p><div class="aiq-v49991-form-grid full"><label>Request ID<input id="aiqV131RecoveryId" placeholder="Request ID" value="'+safe(c.requestId||"")+'"></label><label>Recovery code<input id="aiqV131RecoveryCode" autocomplete="one-time-code" autocapitalize="characters" placeholder="RQ-XXXX-XXXX-XXXX" value="'+safe(c.recoveryCode||"")+'"></label></div>'+actions('<button id="aiqV131RecoverSubmit" type="button" class="aiq-v49950-btn">Recover request</button><button id="aiqV131RecoveryBack" type="button" class="aiq-v49950-btn ghost">Back</button><button id="aiqV131Close" type="button" class="aiq-v49950-btn ghost">Close</button>')+'<div id="aiqV49991ReqStatus" class="aiq-v49989-status"></div>';
+    $("#aiqV131RecoveryBack",modal).onclick=()=>claim()?.requestId?renderTracker():renderNewRequest();
+    $("#aiqV131Close",modal).onclick=()=>modal.remove();
+    $("#aiqV131RecoverSubmit",modal).onclick=recoverRequest;
+  }
+
+  function setModalStatus(text,err){const status=$("#aiqV49991ReqStatus");if(status){status.textContent=text||"";status.classList.toggle("err",!!err)}}
+  function openRequestForm(){claim()?.requestId?renderTracker():renderNewRequest()}
+
+  async function submitRequest(){
+    const button=$("#aiqV49991ReqSubmit"),body={name:$("#aiqV49991ReqName")?.value?.trim()||"",apexUsername:$("#aiqV49991ReqUsername")?.value?.trim()||"",platform:$("#aiqV49991ReqPlatform")?.value||"Auto",mainLegend:$("#aiqV49991ReqLegend")?.value?.trim()||"",device:$("#aiqV49991ReqDevice")?.value?.trim()||"",notes:$("#aiqV49991ReqNotes")?.value?.trim()||"",agreedNoShare:!!$("#aiqV49991ReqAgree")?.checked};
+    if(button)button.disabled=true;setModalStatus("Sending secure request…",false);
+    try{
+      const data=await post("/api/beta/request-access",body);
+      saveClaim({requestId:data.requestId||data.id,claimToken:data.claimToken,recoveryCode:data.recoveryCode,apexUsername:data.apexUsername||body.apexUsername,platform:data.platform||body.platform,status:data.status||"new",message:data.message,createdAt:data.createdAt});
+      renderTracker(data);
+      schedulePoll(POLL_MS);
+    }catch(e){setModalStatus(e.message||"Could not send request right now.",true);if(button)button.disabled=false}
+  }
+
+  async function recoverRequest(){
+    const button=$("#aiqV131RecoverSubmit"),requestId=$("#aiqV131RecoveryId")?.value?.trim()||"",recoveryCode=$("#aiqV131RecoveryCode")?.value?.trim()||"";
+    if(button)button.disabled=true;setModalStatus("Recovering secure request…",false);
+    try{
+      const data=await post("/api/beta/request-recover",{requestId,recoveryCode});
+      saveClaim({requestId:data.id||requestId,claimToken:data.claimToken,recoveryCode:data.recoveryCode||recoveryCode,apexUsername:data.apexUsername,platform:data.platform,status:data.status,message:data.message,accessKey:data.accessKey||""});
+      renderTracker(data);
+      if(data.status==="approved"&&data.accessKey)autoUnlock(data.accessKey,data.apexUsername);else schedulePoll(POLL_MS);
+    }catch(e){setModalStatus(e.message||"Could not recover this request.",true);if(button)button.disabled=false}
+  }
+
+  async function checkStatus(manual){
+    const c=claim();if(!c||!c.requestId||!c.claimToken||statusBusy)return;
+    statusBusy=true;if(manual)setModalStatus("Checking approval status…",false);
+    try{
+      const data=await post("/api/beta/request-status",{requestId:c.requestId,claimToken:c.claimToken});
+      saveClaim({status:data.status,message:data.message,accessKey:data.accessKey||c.accessKey||"",apexUsername:data.apexUsername||c.apexUsername,platform:data.platform||c.platform,firstDeliveredAt:data.firstDeliveredAt,lastDeliveredAt:data.lastDeliveredAt});
+      if($("#aiqV49991RequestModal"))renderTracker(data);
+      if(data.status==="approved"&&data.accessKey)await autoUnlock(data.accessKey,data.apexUsername||c.apexUsername);
+      else if(data.status==="denied")clearPoll();
+      else schedulePoll(POLL_MS);
+    }catch(e){
+      if(manual)setModalStatus(e.message||"Could not check the request.",true);
+      schedulePoll(POLL_MS);
+    }finally{statusBusy=false}
+  }
+
+  async function autoUnlock(accessKey,username){
+    if(!accessKey||sessionFresh()||autoLoginKey===accessKey)return;
+    autoLoginKey=accessKey;
+    const userInput=$("#aiqV49989BetaUsername"),keyInput=$("#aiqV49989BetaCode"),button=$("#aiqV49989BetaEnter");
+    if(!userInput||!keyInput||!button){autoLoginKey="";setModalStatus("Approved. Close this window, then enter the delivered key on the beta screen.",false);return}
+    userInput.value=username||claim()?.apexUsername||"";
+    keyInput.value=accessKey;
+    setModalStatus("Approved. Unlocking ApexIQ automatically…",false);
+    button.click();
+    setTimeout(()=>{
+      if(sessionFresh()){
+        saveClaim({status:"approved",accessKey,autoUnlockedAt:Date.now()});
+        $("#aiqV49991RequestModal")?.remove();
+        clearPoll();
+      }else{
+        autoLoginKey="";
+        setModalStatus("The key was delivered, but automatic login did not finish. Tap Unlock ApexIQ.",true);
+      }
+    },1800);
+  }
+
+  function patchRequestButton(){
+    const btn=$("#aiqV49989RequestBtn");if(!btn)return;
+    if(btn.dataset.v131Request)return;
+    const clone=btn.cloneNode(true);clone.dataset.v131Request="1";clone.textContent=claim()?.requestId?"Check beta request":"Request access key";
+    clone.addEventListener("click",function(e){e.preventDefault();e.stopPropagation();if(e.stopImmediatePropagation)e.stopImmediatePropagation();openRequestForm()});
+    btn.replaceWith(clone);
+  }
+
+  // Keep the legacy in-page admin request list functional, but use the
+  // idempotent approve-and-deliver endpoint.
+  function requestCardHTML(){return '<article id="aiqV49991RequestsCard" class="aiq-v49989-admin-card" style="grid-column:1/-1"><div class="aiq-v49989-admin-head" style="margin:0"><div><h3>Access Requests</h3><p class="aiq-v49989-mini">Accepting a request generates one key and securely delivers it to the requesting browser.</p></div><button id="aiqV49991RefreshRequests" type="button" class="aiq-v49950-btn ghost">Refresh requests</button></div><div id="aiqV49991RequestsStatus" class="aiq-v49989-status"></div><div id="aiqV49991RequestsList" class="aiq-v49991-request-list"></div></article>'}
+  function patchAdminRequests(){const grid=$("#aiqV49989AdminBody .aiq-v49989-admin-grid");if(!grid||$("#aiqV49991RequestsCard"))return;grid.insertAdjacentHTML("beforeend",requestCardHTML());$("#aiqV49991RefreshRequests")?.addEventListener("click",loadRequests);loadRequests()}
+  async function loadRequests(){const token=adminToken(),status=$("#aiqV49991RequestsStatus"),list=$("#aiqV49991RequestsList");if(!token||!list)return;if(status){status.textContent="Loading requests…";status.classList.remove("err")}try{const data=await get("/api/beta/admin/requests",token),reqs=data.requests||[];if(status)status.textContent=reqs.length+" request(s) loaded.";renderRequests(reqs)}catch(e){if(status){status.textContent=e.message||"Could not load requests.";status.classList.add("err")}}}
+  function renderRequests(reqs){const list=$("#aiqV49991RequestsList");if(!list)return;if(!reqs.length){list.innerHTML='<p class="aiq-v49989-mini">No access requests yet.</p>';return}list.innerHTML=reqs.map(r=>'<div class="aiq-v49991-request-row" data-id="'+safe(r.id)+'" data-username="'+safe(r.apexUsername)+'" data-platform="'+safe(r.platform)+'" data-legend="'+safe(r.mainLegend)+'" data-device="'+safe(r.device)+'" data-code="'+safe(r.approvedCode||"")+'"><div><b>'+safe(r.apexUsername||"No username")+'</b> <small>'+safe(r.status||"new")+' · '+safe(r.platform||"Auto")+' · '+safe(r.createdAt||"")+'</small></div><small>Name: '+safe(r.name||"—")+' · Main: '+safe(r.mainLegend||"—")+' · Device: '+safe(r.device||"—")+'</small><small>'+safe(r.notes||"")+'</small><div class="aiq-v49991-request-actions"><button class="aiq-v49950-btn ghost" data-req-act="copy">Copy info</button>'+(r.status==="approved"&&r.approvedCode?'<button class="aiq-v49950-btn ghost" data-req-act="copy-key">Copy key</button>':'<button class="aiq-v49950-btn ghost" data-req-act="approve">Accept & deliver</button>')+'<button class="aiq-v49950-btn ghost" data-req-act="reviewed">Mark reviewed</button><button class="aiq-v49950-btn ghost" data-req-act="denied">Deny</button></div></div>').join("");list.onclick=requestAction}
+  async function requestAction(e){const btn=e.target.closest("button[data-req-act]");if(!btn)return;const row=btn.closest("[data-id]"),token=adminToken();if(!row||!token)return;const id=row.dataset.id,act=btn.dataset.reqAct,username=row.dataset.username||"",platform=row.dataset.platform||"Auto",legend=row.dataset.legend||"",device=row.dataset.device||"",code=row.dataset.code||"";try{if(act==="copy"){await navigator.clipboard.writeText(["ApexIQ beta request","Apex username: "+username,"Platform: "+platform,"Main legend: "+legend,"Device: "+device].join("\n"));return}if(act==="copy-key"){await navigator.clipboard.writeText(code);return}if(act==="approve"){const data=await post("/api/beta/admin/request-approve",{id},token);alert("Approved "+username+".\n\nThe requesting browser can now receive the key automatically.\n\nKey: "+data.code);try{await navigator.clipboard.writeText(data.code)}catch(_){ }loadRequests();return}if(act==="reviewed"||act==="denied"){await post("/api/beta/admin/request-update",{id,status:act},token);loadRequests()}}catch(err){alert(err.message||"Request action failed.")}}
+
+  function boot(){
+    patchRequestButton();patchAdminRequests();
+    const c=claim();
+    if(c?.requestId&&c?.claimToken&&!sessionFresh())checkStatus(false);
+    document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&claim()?.requestId&&!sessionFresh())checkStatus(false)});
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
+  new MutationObserver(function(){patchRequestButton();patchAdminRequests()}).observe(document.documentElement,{childList:true,subtree:true});
   window.apexiqOpenBetaRequestFormV49991=openRequestForm;
+  window.apexiqBetaRequestV131={open:openRequestForm,check:()=>checkStatus(true),recover:renderRecovery,build:BUILD};
 })();
 </script>
 
@@ -11408,7 +11543,7 @@ body:not([data-aiq-v116-profile="true"]) [data-aiq-v116-snapshot-block="1"]{disp
 </script>
 
 
-<!-- === ApexIQ v4.9.9.130 Founder Persistence + Request/LFG Delete === -->
+<!-- === ApexIQ v4.9.9.131 Founder Persistence + Request/LFG Delete === -->
 <style id="apexiq-v499127-founder-css">
 .aiq-v499127-founder-inline{display:inline-flex;align-items:center;justify-content:center;width:clamp(30px,3.4vw,42px);height:clamp(30px,3.4vw,42px);margin-left:9px;vertical-align:middle;flex:0 0 auto;filter:drop-shadow(0 5px 11px rgba(168,85,247,.34));}
 .aiq-v499127-founder-inline img{display:block;width:100%;height:100%;object-fit:contain;}
@@ -11423,7 +11558,7 @@ body:not([data-aiq-v116-profile="true"]) [data-aiq-v116-snapshot-block="1"]{disp
 <script id="apexiq-v499129-founder-js">
 (function(){
   if(window.__apexiqV499130Booted)return;window.__apexiqV499130Booted=true;
-  var BUILD='v4.9.9.130-founder-persistence-request-lfg-delete';
+  var BUILD='v4.9.9.131-founder-persistence-request-lfg-delete';
   var ASSET='assets/approved-badges/founder_private_beta_001.png';
   var SESSION_KEY='apexiq:betaSession:v49989';
   var AWARD_KEY='apexiq:founderAwardSeen:v499129';
@@ -11554,15 +11689,15 @@ body:not([data-aiq-v116-profile="true"]) [data-aiq-v116-snapshot-block="1"]{disp
   window.apexiqFounderV499130={asset:ASSET,refresh:function(){founderCache.clear();scheduleFounderCheck(true)},build:BUILD};
 })();
 </script>
-<!-- === /ApexIQ v4.9.9.130 === -->
+<!-- === /ApexIQ v4.9.9.131 === -->
 
 <script id="apexiq-v499129-build-marker">
 (function(){
   function mark(){
-    document.documentElement.dataset.apexiqBuild="v4.9.9.130";
+    document.documentElement.dataset.apexiqBuild="v4.9.9.131";
     var panel=document.getElementById("settingsPanel");
     if(panel&&!document.getElementById("aiqV499129Build")){
-      panel.insertAdjacentHTML("afterbegin",'<div id="aiqV499129Build" class="notice"><b>ApexIQ v4.9.9.130</b><p>Founder badges are admin-assigned, case sizing is corrected, and beta requests open the public request form.</p></div>');
+      panel.insertAdjacentHTML("afterbegin",'<div id="aiqV499129Build" class="notice"><b>ApexIQ v4.9.9.131</b><p>Approved beta requests securely deliver their key to the requesting browser, with recovery-code support.</p></div>');
     }
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();

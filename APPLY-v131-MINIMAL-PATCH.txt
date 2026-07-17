@@ -1,0 +1,25 @@
+ApexIQ v4.9.9.131 minimal patch
+
+Replace in GitHub:
+- index.html
+- admin.html
+- admin-sw.js
+- admin-manifest.webmanifest
+- README.md
+
+Delete the old Worker file:
+- apexiq-worker-v4.9.9.130-founder-persistence-request-lfg-delete.js
+
+Add and deploy this exact Worker in Cloudflare:
+- apexiq-worker-v4.9.9.131-auto-key-delivery-recovery.js
+
+Required existing Cloudflare configuration:
+- APEXIQ_BETA_KV KV binding
+- APEXIQ_ADMIN_SECRET secret
+
+Test:
+1. Open a private/incognito browser and submit a beta request.
+2. Save the shown request ID and recovery code.
+3. In Admin → Requests, tap Accept & deliver key.
+4. Return to the requesting browser. It should unlock automatically within 20 seconds.
+5. To test recovery, use another browser and enter the request ID plus recovery code.
